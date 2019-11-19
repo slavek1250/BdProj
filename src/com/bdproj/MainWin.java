@@ -21,7 +21,7 @@ public class MainWin {
 
     public static void main(String[] args) {
         JFrame frame = new JFrame("WYCIĄG NARCIARSKI U SKOCZKA");
-        EmployeeWgt mainWin = new EmployeeWgt();
+        SupervisorWgt mainWin = new SupervisorWgt();
 
 
         mainWin.panelMain.setSize(500,500);
