@@ -18,9 +18,9 @@ public class MainWin {
     }
 
     public static void main(String[] args) {
-        JFrame frame = new JFrame("App");
+        JFrame frame = new JFrame("WYCIĄG NARCIARSKI U SKOCZKA");
         MainWin mainWin = new MainWin();
-        mainWin.panelMain.setSize(100,100);
+        mainWin.panelMain.setSize(500,500);
         frame.setContentPane(mainWin.panelMain);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.pack();
