@@ -7,6 +7,8 @@ import java.awt.event.ActionListener;
 public class MainWin {
     private JButton button1;
     private JPanel panelMain;
+    private JTextField textField1;
+    private JPasswordField passwordField1;
 
     public MainWin() {
         button1.addActionListener(new ActionListener() {
@@ -19,7 +21,9 @@ public class MainWin {
 
     public static void main(String[] args) {
         JFrame frame = new JFrame("WYCIĄG NARCIARSKI U SKOCZKA");
-        MainWin mainWin = new MainWin();
+        EmployeeWgt mainWin = new EmployeeWgt();
+
+
         mainWin.panelMain.setSize(500,500);
         frame.setContentPane(mainWin.panelMain);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
