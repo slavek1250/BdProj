@@ -23,17 +23,17 @@ public class EmployeeWgt {
     public EmployeeWgt(MainView mainView) {
         this.mainView = mainView;
 
-        nowyBiletCheckBox.addChangeListener(new ChangeListener() {
-            @Override
-            public void stateChanged(ChangeEvent changeEvent) {
 
-
-            }
-        });
         btnLogout.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
                 mainView.showMainView(panelMain);
+            }
+        });
+        nowyBiletCheckBox.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                textField1.setEnabled(!textField1.isEnabled());
             }
         });
     }
