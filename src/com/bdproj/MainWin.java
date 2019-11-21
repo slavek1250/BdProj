@@ -4,28 +4,62 @@ import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-public class MainWin {
-    private JButton button1;
+public class MainWin implements MainView {
+
+    static JFrame frame;
+    static SupervisorWgt supervisorWgt;
+    static EmployeeWgt employeeWgt;
+    private JButton btnLogin;
     private JPanel panelMain;
-    private JTextField textField1;
+    private JTextField txtLogin;
     private JPasswordField passwordField1;
 
     public MainWin() {
-        button1.addActionListener(new ActionListener() {
+        btnLogin.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
-                JOptionPane.showMessageDialog(null, "Hello World!");
+
+                if(isSupervisor()) {
+                    showSupervisorView();
+                }
+                else {
+                    showEmployeeView();
+                }
             }
         });
     }
 
+    public boolean isSupervisor() {
+        return txtLogin.getText().equals("kier");
+    }
+
+    public void showMainView(JPanel toHide) {
+        frame.remove(toHide);
+        frame.setContentPane(panelMain);
+        panelMain.updateUI();
+    }
+
+    public void showSupervisorView() {
+        frame.remove(panelMain);
+        frame.setContentPane(supervisorWgt.getPanel());
+        supervisorWgt.getPanel().updateUI();
+    }
+
+    public void showEmployeeView() {
+        frame.remove(panelMain);
+        frame.setContentPane(employeeWgt.getPanel());
+        employeeWgt.getPanel().updateUI();
+    }
+
     public static void main(String[] args) {
-        JFrame frame = new JFrame("WYCIĄG NARCIARSKI U SKOCZKA");
-        SupervisorWgt mainWin = new SupervisorWgt();
+        frame = new JFrame("WYCIĄG NARCIARSKI U SKOCZKA");
 
+        MainWin mainWin = new MainWin();
+        employeeWgt = new EmployeeWgt((MainView)mainWin);
+        supervisorWgt = new SupervisorWgt((MainView)mainWin);
 
-        mainWin.panelMain.setSize(500,500);
         frame.setContentPane(mainWin.panelMain);
+
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.pack();
         frame.setVisible(true);

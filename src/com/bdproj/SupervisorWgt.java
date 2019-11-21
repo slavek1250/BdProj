@@ -1,9 +1,11 @@
 package com.bdproj;
 
 import javax.swing.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 public class SupervisorWgt {
-    public JPanel panelMain;
+    private JPanel panelMain;
     private JTabbedPane tabbedPane1;
     private JTextField textField1;
     private JTextField textField2;
@@ -28,5 +30,22 @@ public class SupervisorWgt {
     private JTextField textField9;
     private JTextField textField10;
     private JButton drukujRaportButton;
-    private JButton wylogujButton;
+    private JButton btnLogout;
+
+    private MainView mainView;
+
+    public SupervisorWgt(MainView mainView) {
+        this.mainView = mainView;
+
+        btnLogout.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                mainView.showMainView(panelMain);
+            }
+        });
+    }
+
+    public JPanel getPanel() {
+        return panelMain;
+    }
 }
