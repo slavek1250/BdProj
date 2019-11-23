@@ -3,6 +3,8 @@ package com.bdproj;
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.*;
+import java.util.logging.*;
 
 public class MainWin implements MainView {
 
@@ -12,18 +14,30 @@ public class MainWin implements MainView {
     private JButton btnLogin;
     private JPanel panelMain;
     private JTextField txtLogin;
-    private JPasswordField passwordField1;
+    private JPasswordField passwLogin;
 
     public MainWin() {
+
         btnLogin.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
+                PreparedStatement ps;
+                ResultSet rs;
+                String username= txtLogin.getText();
+                String password= String.valueOf(passwLogin.getPassword());
+                String query= "SELECT * FROM slavek_bd2.kierownik WHERE login='karkab7028' AND haslo=MD5('test1234')";
+            try {
+                ps = MySQLConnection.getConnection().prepareStatement(query);
+                rs = ps.executeQuery();
 
-                if(isSupervisor()) {
-                    showSupervisorView();
+                if (rs.next()) {
+                 JOptionPane.showMessageDialog(null, "DZIALA BAZA");
                 }
-                else {
-                    showEmployeeView();
+                else{
+                    JOptionPane.showMessageDialog(null, "COS POSZLO NIE TAK ZIOMEK");
+                }
+                }catch(SQLException ex){
+                    Logger.getLogger(MainWin.class.getName()).log(Level.SEVERE,null, ex);
                 }
             }
         });
@@ -65,3 +79,17 @@ public class MainWin implements MainView {
         frame.setVisible(true);
     }
 }
+
+/*btnLogin.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+
+                if(isSupervisor()) {
+                    showSupervisorView();
+                }
+                else {
+                    showEmployeeView();
+                }
+            }
+        });
+ */
