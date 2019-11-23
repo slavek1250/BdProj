@@ -1,5 +1,6 @@
 package com.bdproj;
 
+import javax.naming.NamingException;
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -36,7 +37,7 @@ public class MainWin implements MainView {
                 else{
                     JOptionPane.showMessageDialog(null, "COS POSZLO NIE TAK ZIOMEK");
                 }
-                }catch(SQLException ex){
+                }catch(SQLException | NamingException ex){
                     Logger.getLogger(MainWin.class.getName()).log(Level.SEVERE,null, ex);
                 }
             }
