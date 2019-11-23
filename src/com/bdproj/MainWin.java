@@ -26,18 +26,31 @@ public class MainWin implements MainView {
                 ResultSet rs;
                 String username= txtLogin.getText();
                 String password= String.valueOf(passwLogin.getPassword());
-                String query= "SELECT * FROM slavek_bd2.kierownik WHERE login='karkab7028' AND haslo=MD5('test1234')";
+                String query=   "SELECT 'K' as WHO FROM kierownik WHERE login like ? AND haslo like MD5(?)\n" +
+                                "union all\n" +
+                                "SELECT 'P' as WHO FROM pracownicy WHERE login like ? AND haslo like MD5(?)";
             try {
                 ps = MySQLConnection.getConnection().prepareStatement(query);
+                ps.setString(1, username);
+                ps.setString(2, password);
+                ps.setString(3, username);
+                ps.setString(4, password);
                 rs = ps.executeQuery();
 
-                if (rs.next()) {
-                 JOptionPane.showMessageDialog(null, "DZIALA BAZA");
+                if (rs.first()) {
+                    String who = rs.getString("WHO");
+                    if (who.equals("K")) {
+                        showSupervisorView();
+                        return;
+                    } else if (who.equals("P")) {
+                        showEmployeeView();
+                        return;
+                    }
                 }
-                else{
-                    JOptionPane.showMessageDialog(null, "COS POSZLO NIE TAK ZIOMEK");
-                }
-                }catch(SQLException | NamingException ex){
+
+                JOptionPane.showMessageDialog(null, "COS POSZLO NIE TAK ZIOMEK");
+
+                } catch(SQLException ex){
                     Logger.getLogger(MainWin.class.getName()).log(Level.SEVERE,null, ex);
                 }
             }
