@@ -83,7 +83,7 @@
           <text value="Pozycja cennika: "/>
         </properties>
       </component>
-      <component id="8f999" class="javax.swing.JComboBox" binding="comboBox1" default-binding="true">
+      <component id="8f999" class="javax.swing.JComboBox" binding="pozcennika">
         <constraints>
           <grid row="5" column="2" row-span="1" col-span="3" vsize-policy="0" hsize-policy="2" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
         </constraints>
