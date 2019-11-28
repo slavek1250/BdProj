@@ -1,6 +1,5 @@
 package com.bdproj;
 
-import javax.naming.NamingException;
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -15,7 +14,7 @@ public class MainWin implements MainView {
     private JButton btnLogin;
     private JPanel panelMain;
     private JTextField txtLogin;
-    private JPasswordField passwLogin;
+    private JPasswordField txtPass;
 
     public MainWin() {
 
@@ -56,7 +55,7 @@ public class MainWin implements MainView {
         PreparedStatement ps;
         ResultSet rs;
         String username= txtLogin.getText();
-        String password= String.valueOf(passwLogin.getPassword());
+        String password= String.valueOf(txtPass.getPassword());
         String query=   "SELECT 'K' as WHO FROM kierownik WHERE login like ? AND haslo like MD5(?)\n" +
                 "union all\n" +
                 "SELECT 'P' as WHO FROM pracownicy WHERE login like ? AND haslo like MD5(?)";

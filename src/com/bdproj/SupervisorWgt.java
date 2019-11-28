@@ -7,30 +7,31 @@ import java.awt.event.ActionListener;
 public class SupervisorWgt {
     private JPanel panelMain;
     private JTabbedPane tabbedPane1;
-    private JTextField textField1;
-    private JTextField textField2;
-    private JButton dodajButton;
-    private JComboBox comboBox1;
-    private JTextField textField3;
-    private JTextField textField4;
-    private JButton zapiszZmianyButton;
-    private JButton usuńPracownikaButton;
-    private JTextField textField5;
-    private JTextField textField6;
-    private JTextField textField7;
-    private JCheckBox wUżytkuCheckBox;
-    private JComboBox comboBox2;
-    private JTextField textField8;
-    private JCheckBox wUżytkuCheckBox1;
-    private JButton usuńWyciągButton;
-    private JButton zapiszZmianyButton1;
-    private JTable table1;
-    private JButton zapiszJakoNowyCennikButton;
+    private JTextField txtNameNewEmpl;
+    private JTextField txtSurnameNewEmpl;
+    private JButton btnAddNewEmpl;
+    private JComboBox boxSelectEditEmpl;
+    private JTextField txtNameEditEmpl;
+    private JTextField txtSurnameEditEmpl;
+    private JButton btnSaveEditEmpl;
+    private JButton btnDeleteEmpl;
+    private JTextField txtNameNewLift;
+    private JTextField txtHeightNewLift;
+    private JCheckBox checkStateNewLift;
+    private JComboBox boxSelectEditLift;
+    private JTextField txtPointsCostEditLift;
+    private JCheckBox chechStateEditLift;
+    private JButton btnDeleteLift;
+    private JButton btnSaveEdtiLift;
+    private JTable tabPriceList;
+    private JButton saveNewPriceList;
     private JComboBox comboBox3;
     private JTextField textField9;
     private JTextField textField10;
-    private JButton drukujRaportButton;
     private JButton btnLogout;
+    private JTextField txtPointsCostNewLift;
+    private JTextField textField1;
+    private JButton btnPrintLiftRep;
 
     private MainView mainView;
 
@@ -47,5 +48,9 @@ public class SupervisorWgt {
 
     public JPanel getPanel() {
         return panelMain;
+    }
+
+    private void createUIComponents() {
+        // TODO: place custom component creation code here
     }
 }
