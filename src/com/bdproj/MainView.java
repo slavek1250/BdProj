@@ -3,5 +3,5 @@ package com.bdproj;
 import javax.swing.*;
 
 public interface MainView {
-    void showMainView(JPanel toHide);
+    void showMainView();
 }

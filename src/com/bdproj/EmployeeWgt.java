@@ -1,45 +1,48 @@
 package com.bdproj;
 
 import javax.swing.*;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.sql.*;
-public class EmployeeWgt {
+public class EmployeeWgt extends Employee {
     private JPanel panelMain;
     private JButton btnLogout;
-    private JTextField textField1;
-    private JCheckBox nowyBiletCheckBox;
-    private JTextField textField2;
-    private JComboBox pozcennika;
-    private JButton wydrukujBiletButton;
-    private JButton doładujBiletButton;
-    private JTextField textField3;
-    private JButton zablokujBiletButton;
+    private JTextField txtTicketNo;
+    private JCheckBox checkNewTicket;
+    private JTextField txtTicketPoints;
+    private JComboBox boxSelectPriceList;
+    private JButton btnPrintTicket;
+    private JButton btnTopUp;
+    private JTextField txtDeleteTicketNo;
+    private JButton btnDeleteTicket;
+    private JLabel lblHello;
 
     private MainView mainView;
 
-    public EmployeeWgt(MainView mainView) {
+    public EmployeeWgt(MainView mainView, SystemUser user) {
+        super(user);
         this.mainView = mainView;
-        wydrukujBiletButton.setEnabled(false);
+
+        lblHello.setText("Witaj, " + systemUser.getName() + "!");
+
+        btnPrintTicket.setEnabled(false);
 
         btnLogout.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
-                mainView.showMainView(panelMain);
+                mainView.showMainView();
             }
         });
 
-        nowyBiletCheckBox.addItemListener(new ItemListener() {
+        checkNewTicket.addItemListener(new ItemListener() {
             @Override
             public void itemStateChanged(ItemEvent e) {
                 if(e.getStateChange()==ItemEvent.SELECTED){
-                    wydrukujBiletButton.setEnabled(true);
-                    textField1.setEnabled(false);
-                    doładujBiletButton.setEnabled(false);
+                    btnPrintTicket.setEnabled(true);
+                    txtTicketNo.setEnabled(false);
+                    btnTopUp.setEnabled(false);
                     PreparedStatement ps;
                     ResultSet rs;
                     String query = "SELECT AUTO_INCREMENT FROM information_schema.TABLES WHERE TABLE_SCHEMA = \"slavek_bd2\" AND TABLE_NAME = \"karnet\"";
@@ -48,7 +51,7 @@ public class EmployeeWgt {
                         rs = ps.executeQuery();
 
                         if (rs.first()) {
-                            textField1.setText(rs.getString(1));
+                            txtTicketNo.setText(rs.getString(1));
                         }
 
                     } catch (SQLException e1) {
@@ -56,20 +59,20 @@ public class EmployeeWgt {
                     }
                 }
                 else{
-                    textField1.setText(null);
-                    textField1.setEnabled(true);
-                    doładujBiletButton.setEnabled(true);
-                    wydrukujBiletButton.setEnabled(false);
+                    txtTicketNo.setText(null);
+                    txtTicketNo.setEnabled(true);
+                    btnTopUp.setEnabled(true);
+                    btnPrintTicket.setEnabled(false);
                 }
             }
         });
-        zablokujBiletButton.addActionListener(new ActionListener() {
+        btnDeleteTicket.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
 
                 PreparedStatement ps;
                 ResultSet rs;
-                String ticketnumber= textField3.getText();
+                String ticketnumber= txtDeleteTicketNo.getText();
                 String query ="SELECT zablokowany FROM karnet WHERE id=?";
 
                 try {

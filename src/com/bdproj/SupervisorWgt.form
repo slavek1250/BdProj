@@ -45,13 +45,13 @@
                       <grid row="0" column="2" row-span="1" col-span="1" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
                     </constraints>
                   </hspacer>
-                  <component id="cf19b" class="javax.swing.JLabel">
+                  <component id="cf19b" class="javax.swing.JLabel" binding="lblHello">
                     <constraints>
                       <grid row="0" column="0" row-span="1" col-span="2" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                     </constraints>
                     <properties>
                       <background color="-12415041"/>
-                      <text value="Witaj, "/>
+                      <text value="Witaj, Jan"/>
                     </properties>
                   </component>
                   <tabbedpane id="818ad" binding="tabbedPane1" default-binding="true">
@@ -464,7 +464,7 @@
                               <text value="Wybierz wyciąg: "/>
                             </properties>
                           </component>
-                          <component id="5e0fe" class="javax.swing.JComboBox" binding="comboBox3" default-binding="true">
+                          <component id="5e0fe" class="javax.swing.JComboBox" binding="boxLiftRepSelect">
                             <constraints>
                               <grid row="1" column="1" row-span="1" col-span="5" vsize-policy="0" hsize-policy="2" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
                             </constraints>
@@ -492,7 +492,7 @@
                               <text value="Raport do: "/>
                             </properties>
                           </component>
-                          <component id="f506f" class="javax.swing.JTextField" binding="textField9" default-binding="true">
+                          <component id="f506f" class="javax.swing.JTextField" binding="txtLiftRepSince">
                             <constraints>
                               <grid row="2" column="1" row-span="1" col-span="5" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
                                 <preferred-size width="150" height="-1"/>
@@ -500,7 +500,7 @@
                             </constraints>
                             <properties/>
                           </component>
-                          <component id="acdbe" class="javax.swing.JTextField" binding="textField10" default-binding="true">
+                          <component id="acdbe" class="javax.swing.JTextField" binding="txtLiftRepTo">
                             <constraints>
                               <grid row="3" column="1" row-span="1" col-span="5" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
                                 <preferred-size width="150" height="-1"/>
@@ -533,7 +533,7 @@
                               <text value="Numer biletu: "/>
                             </properties>
                           </component>
-                          <component id="20830" class="javax.swing.JTextField" binding="textField1" default-binding="true">
+                          <component id="20830" class="javax.swing.JTextField" binding="txtTicketUseRepNo">
                             <constraints>
                               <grid row="7" column="1" row-span="1" col-span="5" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
                                 <preferred-size width="150" height="-1"/>
@@ -554,7 +554,7 @@
                               <text value="Drukuj raport"/>
                             </properties>
                           </component>
-                          <component id="38935" class="javax.swing.JButton">
+                          <component id="38935" class="javax.swing.JButton" binding="btnTicketUseRep">
                             <constraints>
                               <grid row="8" column="3" row-span="1" col-span="3" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
                             </constraints>

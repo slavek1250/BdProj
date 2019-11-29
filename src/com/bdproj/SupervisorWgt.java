@@ -4,7 +4,7 @@ import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-public class SupervisorWgt {
+public class SupervisorWgt extends Supervisor {
     private JPanel panelMain;
     private JTabbedPane tabbedPane1;
     private JTextField txtNameNewEmpl;
@@ -25,23 +25,28 @@ public class SupervisorWgt {
     private JButton btnSaveEdtiLift;
     private JTable tabPriceList;
     private JButton saveNewPriceList;
-    private JComboBox comboBox3;
-    private JTextField textField9;
-    private JTextField textField10;
+    private JComboBox boxLiftRepSelect;
+    private JTextField txtLiftRepSince;
+    private JTextField txtLiftRepTo;
     private JButton btnLogout;
     private JTextField txtPointsCostNewLift;
-    private JTextField textField1;
+    private JTextField txtTicketUseRepNo;
     private JButton btnPrintLiftRep;
+    private JLabel lblHello;
+    private JButton btnTicketUseRep;
 
     private MainView mainView;
 
-    public SupervisorWgt(MainView mainView) {
+    public SupervisorWgt(MainView mainView, SystemUser user) {
+        super(user);
         this.mainView = mainView;
+
+        lblHello.setText("Witaj, " + systemUser.getName() + "!");
 
         btnLogout.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
-                mainView.showMainView(panelMain);
+                mainView.showMainView();
             }
         });
     }

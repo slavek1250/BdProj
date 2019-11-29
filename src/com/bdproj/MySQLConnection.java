@@ -15,24 +15,31 @@ public class MySQLConnection {
     private static String database = "slavek_bd2";
     private static String databaseUser = "slavek_bd2_user";
     private static String databaseUserPass = "bd2@2020";
+    private static Connection connection = null;
+    private static String lastError;
 
-    public static Connection getConnection() throws SQLException {
-
-        Connection con = null;
+    public static boolean prepareConnection() {
         try {
-            Class.forName("com.mysql.jdbc.Driver");
-
-            con = DriverManager.getConnection(
-                    (databaseType + "://" + serverAddress + ":" + serverPort + "/" + database),
-                    databaseUser,
-                    databaseUserPass
-            );
-        } catch (Exception ex) {
-            System.out.println(ex.getMessage());
+            if (connection == null || connection.isClosed()) {
+                connection = DriverManager.getConnection(
+                        (databaseType + "://" + serverAddress + ":" + serverPort + "/" + database),
+                        databaseUser,
+                        databaseUserPass
+                );
+            }
+            return true;
         }
-
-        return con;
+        catch (SQLException ex) {
+            lastError = ex.getMessage();
+        }
+        return false;
     }
 
-}
+    public static Connection getConnection() {
+        return connection;
+    }
 
+    public static String getLastError() {
+        return lastError;
+    }
+}

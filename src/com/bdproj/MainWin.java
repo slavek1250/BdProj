@@ -6,111 +6,101 @@ import java.awt.event.ActionListener;
 import java.sql.*;
 import java.util.logging.*;
 
+/*
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+Proponuję następującą konwencję nazewnictwa:
+
+    - STAŁE_Z_DUŻEJ_LITERY_SPACJA_JAKO_PODŁOGA
+    - zmienneCzyMetodyZaczynamyZMałejZamiastSpacjiDuzaLitera
+    - NazwyKlasItdPodobnieJakZmienneTylkoPierwszyWyrazTakżeZDużej
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+ */
+
+
 public class MainWin implements MainView {
 
     static JFrame frame;
     static SupervisorWgt supervisorWgt;
     static EmployeeWgt employeeWgt;
+    static SystemUser systemUser;
     private JButton btnLogin;
     private JPanel panelMain;
     private JTextField txtLogin;
     private JPasswordField txtPass;
 
     public MainWin() {
-
-        btnLogin.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent actionEvent) {
-            logincheckwho();
-            }
-        });
+        btnLogin.addActionListener(actionEvent -> logIn());
     }
 
-    public boolean isSupervisor() {
-        return txtLogin.getText().equals("kier");
-    }
-
-    public void showMainView(JPanel toHide) {
-        frame.remove(toHide);
-        frame.setContentPane(panelMain);
-        frame.setSize(500,200);
-        panelMain.updateUI();
+    public void showMainView() {
+        showAnotherPanel(panelMain);
+        systemUser.logOut();
+        txtLogin.setText("");
+        txtPass.setText("");
     }
 
     public void showSupervisorView() {
-        frame.remove(panelMain);
-        frame.setContentPane(supervisorWgt.getPanel());
-        frame.setSize(700,500);
-
-        supervisorWgt.getPanel().updateUI();
+        supervisorWgt = new SupervisorWgt(this, systemUser);
+        showAnotherPanel(supervisorWgt.getPanel());
     }
 
     public void showEmployeeView() {
-        frame.remove(panelMain);
-        frame.setContentPane(employeeWgt.getPanel());
-        frame.setSize(600,500);
-        employeeWgt.getPanel().updateUI();
+        employeeWgt = new EmployeeWgt(this, systemUser);
+        showAnotherPanel(employeeWgt.getPanel());
     }
 
-    public void logincheckwho(){
-        PreparedStatement ps;
-        ResultSet rs;
-        String username= txtLogin.getText();
+    private static void showAnotherPanel(JPanel toShow) {
+        frame.remove(frame.getContentPane());
+        frame.setContentPane(toShow);
+        toShow.updateUI();
+    }
+
+    public void logIn(){
+
+        // login xxxyyyccc
+        // xxx - 3 pierwsze litery imienia
+        // yyy - 3 pierwsze litery nazwiska
+        // ccc - id % 1000
+
+        // hasło min 8 znaków
+
+        String loginRegEx = "[a-z]{6}[0-9]{4}";
+        String login= txtLogin.getText();
+        if(!login.matches(loginRegEx)) {
+            JOptionPane.showMessageDialog(panelMain, "Błędny login.");
+            return;
+        }
+
         String password= String.valueOf(txtPass.getPassword());
-        String query=   "SELECT 'K' as WHO FROM kierownik WHERE login like ? AND haslo like MD5(?)\n" +
-                "union all\n" +
-                "SELECT 'P' as WHO FROM pracownicy WHERE login like ? AND haslo like MD5(?)";
-        try {
-            ps = MySQLConnection.getConnection().prepareStatement(query);
-            ps.setString(1, username);
-            ps.setString(2, password);
-            ps.setString(3, username);
-            ps.setString(4, password);
-            rs = ps.executeQuery();
+        if(password.length() < 8) {
+            JOptionPane.showMessageDialog(panelMain, "Zbyt krótkie hasło.");
+            return;
+        }
 
-            if (rs.first()) {
-                String who = rs.getString("WHO");
-                if (who.equals("K")) {
-                    showSupervisorView();
-                    return;
-                } else if (who.equals("P")) {
-                    showEmployeeView();
-                    return;
-                }
-            }
+        SystemUser.UserType userType = systemUser.logIn(login, password);
 
-            JOptionPane.showMessageDialog(null, "COS POSZLO NIE TAK ZIOMEK");
-
-        } catch(SQLException ex){
-            Logger.getLogger(MainWin.class.getName()).log(Level.SEVERE,null, ex);
+        if(userType == SystemUser.UserType.SUPERVISOR) {
+            showSupervisorView();
+        }
+        else if (userType == SystemUser.UserType.EMPLOYEE) {
+            showEmployeeView();
+        }
+        else {
+            JOptionPane.showMessageDialog(panelMain, "Nie jesteś użytkownikiem systemu.");
         }
     }
 
     public static void main(String[] args) {
-        frame = new JFrame("WYCIĄG NARCIARSKI U SKOCZKA");
-
+        frame = new JFrame("Wyciąg Narciarski u Skoczka");
+        systemUser = new SystemUser();
         MainWin mainWin = new MainWin();
-        employeeWgt = new EmployeeWgt((MainView)mainWin);
-        supervisorWgt = new SupervisorWgt((MainView)mainWin);
 
         frame.setContentPane(mainWin.panelMain);
 
+        frame.setSize(600, 500);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.pack();
         frame.setVisible(true);
     }
 }
-
-/*btnLogin.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent actionEvent) {
-
-                if(isSupervisor()) {
-                    showSupervisorView();
-                }
-                else {
-                    showEmployeeView();
-                }
-            }
-        });
- */
