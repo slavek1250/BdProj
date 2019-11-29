@@ -21,16 +21,14 @@ Proponuję następującą konwencję nazewnictwa:
 
 public class MainWin implements MainView {
 
-    static JFrame frame;
-    static SupervisorWgt supervisorWgt;
-    static EmployeeWgt employeeWgt;
-    static SystemUser systemUser;
+    private static JFrame frame;
+    private static SystemUser systemUser;
     private JButton btnLogin;
     private JPanel panelMain;
     private JTextField txtLogin;
     private JPasswordField txtPass;
 
-    public MainWin() {
+    private MainWin() {
         btnLogin.addActionListener(actionEvent -> logIn());
     }
 
@@ -41,13 +39,13 @@ public class MainWin implements MainView {
         txtPass.setText("");
     }
 
-    public void showSupervisorView() {
-        supervisorWgt = new SupervisorWgt(this, systemUser);
+    private void showSupervisorView() {
+        SupervisorWgt supervisorWgt = new SupervisorWgt(this, systemUser);
         showAnotherPanel(supervisorWgt.getPanel());
     }
 
-    public void showEmployeeView() {
-        employeeWgt = new EmployeeWgt(this, systemUser);
+    private void showEmployeeView() {
+        EmployeeWgt employeeWgt = new EmployeeWgt(this, systemUser);
         showAnotherPanel(employeeWgt.getPanel());
     }
 
@@ -57,7 +55,7 @@ public class MainWin implements MainView {
         toShow.updateUI();
     }
 
-    public void logIn(){
+    private void logIn(){
 
         // login xxxyyyccc
         // xxx - 3 pierwsze litery imienia
