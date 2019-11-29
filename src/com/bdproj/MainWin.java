@@ -41,6 +41,7 @@ public class MainWin implements MainView {
         frame.remove(panelMain);
         frame.setContentPane(supervisorWgt.getPanel());
         frame.setSize(700,500);
+
         supervisorWgt.getPanel().updateUI();
     }
 
