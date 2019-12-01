@@ -21,6 +21,8 @@ Proponuję następującą konwencję nazewnictwa:
 
 public class MainWin implements MainView {
 
+    // TODO: Dopracowac wyglad GUI.
+
     private static JFrame frame;
     private static SystemUser systemUser;
     private JButton btnLogin;

@@ -41,6 +41,10 @@ public class SupervisorWgt extends Supervisor {
 
     private MainView mainView;
 
+    // TODO: Pracownicy: ladowanie pracownikow podleglych pod kierownika, walidacja danych wejsciowych.
+    // TODO: Wyciagi: ladowania wyciagow podlegajacych pod kierownika, walidacja danych wejsciowych.
+    // TODO: Raporty: Wybieranie dat dla raportu uzyc wyciagu, walidacja danych dla raportu uzycia biletu.
+
     public SupervisorWgt(MainView mainView, SystemUser user) {
         super(user);
         this.mainView = mainView;
@@ -63,9 +67,12 @@ public class SupervisorWgt extends Supervisor {
         return panelMain;
     }
 
+    // ??
+    /*
     private void createUIComponents() {
-        // TODO: place custom component creation code here
+
     }
+    */
 
     private void loadPriceList() {
         if(priceList.fetchPriceList()) {

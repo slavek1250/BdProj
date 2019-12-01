@@ -21,6 +21,8 @@ public class EmployeeWgt extends Employee {
 
     private MainView mainView;
 
+    // TODO: Migracja kodu tworzenie biletow do klasy Tickets.
+
     public EmployeeWgt(MainView mainView, SystemUser user) {
         super(user);
         this.mainView = mainView;
