@@ -1,8 +1,12 @@
 package com.bdproj;
 
 import javax.swing.*;
+import javax.swing.event.TableModelListener;
+import javax.swing.table.DefaultTableModel;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
+import java.util.Vector;
 
 public class SupervisorWgt extends Supervisor {
     private JPanel panelMain;
@@ -43,12 +47,16 @@ public class SupervisorWgt extends Supervisor {
 
         lblHello.setText("Witaj, " + systemUser.getName() + "!");
 
+        loadPriceList();
+
+
         btnLogout.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
                 mainView.showMainView();
             }
         });
+        saveNewPriceList.addActionListener(actionEvent -> savePriceList());
     }
 
     public JPanel getPanel() {
@@ -57,5 +65,64 @@ public class SupervisorWgt extends Supervisor {
 
     private void createUIComponents() {
         // TODO: place custom component creation code here
+    }
+
+    private void loadPriceList() {
+        if(priceList.fetchPriceList()) {
+            ArrayList<String> priceListNames = priceList.getPriceListNames();
+            ArrayList<Double> priceListPrices = priceList.getPriceListPrices();
+
+            DefaultTableModel tableModel = new DefaultTableModel() {
+                @Override
+                public boolean isCellEditable(int row, int column) {
+                    return column != 0;
+                }
+            };
+            tableModel.addColumn("Nazwa");
+            tableModel.addColumn("Cena");
+
+            for (int i = 0; i < priceListNames.size(); i++) {
+                Vector<String> row = new Vector<String>(2);
+                row.add(priceListNames.get(i));
+                row.add(priceListPrices.get(i) != -1 ? priceListPrices.get(i).toString() : "");
+                tableModel.addRow(row);
+            }
+            tabPriceList.setModel(tableModel);
+        }
+    }
+
+    private void savePriceList() {
+        boolean anyPriceHasChanged = false;
+        String priceValidator = "[0-9]+(.[0-9]{1,2})?";
+        ArrayList<Double> priceListPrices = priceList.getPriceListPrices();
+        ArrayList<Double> newPriceListPrices = new ArrayList<Double>();
+
+        for(int i = 0; i < priceListPrices.size(); i++) {
+
+            String cellVal = (String) tabPriceList.getValueAt(i, 1); // ??
+
+            if(!cellVal.matches(priceValidator)) {
+                JOptionPane.showMessageDialog(panelMain, "Ta wartość: " + cellVal + " nie jest ceną w poprawnym formacie.");
+                return;
+            }
+            Double cellPrice = Double.parseDouble(cellVal);
+            if(!priceListPrices.get(i).equals(cellPrice)) {
+                anyPriceHasChanged = true;
+            }
+            newPriceListPrices.add(cellPrice);
+        }
+
+        if(anyPriceHasChanged) {
+            priceList.setPriceListPrices(newPriceListPrices);
+            if(priceList.createNewPriceList()) {
+                JOptionPane.showMessageDialog(panelMain, "Pomyślnie dodano nowy cennik.");
+            }
+            else {
+                JOptionPane.showMessageDialog(panelMain, priceList.getLastError());
+            }
+        }
+        else {
+            JOptionPane.showMessageDialog(panelMain, "Nie wprowadzono żadnych zmian w cenniku.");
+        }
     }
 }
