@@ -38,6 +38,8 @@ public class SupervisorWgt extends Supervisor {
     private JButton btnPrintLiftRep;
     private JLabel lblHello;
     private JButton btnTicketUseRep;
+    private JLabel lblPriceListAuthor;
+    private JLabel lblPriceListSince;
 
     private MainView mainView;
 
@@ -70,23 +72,30 @@ public class SupervisorWgt extends Supervisor {
     */
 
     private void loadPriceList() {
+        Integer nameColumn = 0;
+        Integer unitColumn = 2;
+
         if(priceList.fetchPriceList()) {
+            loadPriceListDetails();
+
             ArrayList<String> priceListNames = priceList.getPriceListNames();
             ArrayList<Double> priceListPrices = priceList.getPriceListPrices();
 
             DefaultTableModel tableModel = new DefaultTableModel() {
                 @Override
                 public boolean isCellEditable(int row, int column) {
-                    return column != 0;
+                    return (column != nameColumn && column != unitColumn);
                 }
             };
             tableModel.addColumn("Nazwa");
             tableModel.addColumn("Cena");
+            tableModel.addColumn("Jednostka");
 
             for (int i = 0; i < priceListNames.size(); i++) {
                 Vector<String> row = new Vector<String>(2);
                 row.add(priceListNames.get(i));
                 row.add(priceListPrices.get(i) != -1 ? priceListPrices.get(i).toString() : "");
+                row.add(priceList.getUnit());
                 tableModel.addRow(row);
             }
             tabPriceList.setModel(tableModel);
@@ -117,6 +126,7 @@ public class SupervisorWgt extends Supervisor {
         if(anyPriceHasChanged) {
             priceList.setPriceListPrices(newPriceListPrices);
             if(priceList.createNewPriceList()) {
+                loadPriceListDetails();
                 JOptionPane.showMessageDialog(panelMain, "Pomyślnie dodano nowy cennik.");
             }
             else {
@@ -126,5 +136,10 @@ public class SupervisorWgt extends Supervisor {
         else {
             JOptionPane.showMessageDialog(panelMain, "Nie wprowadzono żadnych zmian w cenniku.");
         }
+    }
+
+    private void loadPriceListDetails() {
+        lblPriceListAuthor.setText("Autor cennika: " + priceList.getAuthor());
+        lblPriceListSince.setText("Ważny od: " + priceList.getValidSince());
     }
 }
