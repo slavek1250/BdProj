@@ -85,7 +85,7 @@ public class PriceList {
 
         PreparedStatement ps;
         ResultSet rs;
-        String query1 = "insert into cennik set od=now();";
+        String query1 = "insert into cennik set od=now(), kierownik_id=?;";
         String query2 = "select max(id) as cennik_id from cennik;";
         String query3 = "insert into poz_cennik(cena, cennik_id, slownik_cennik_id) values(?, ?, ?);";
 
@@ -96,6 +96,7 @@ public class PriceList {
 
         try {
             ps = MySQLConnection.getConnection().prepareStatement(query1);
+            ps.setInt(1, systemUser.getId());
             ps.execute();
             rs = ps.executeQuery(query2);
 

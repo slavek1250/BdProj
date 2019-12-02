@@ -54,12 +54,7 @@ public class SupervisorWgt extends Supervisor {
         loadPriceList();
 
 
-        btnLogout.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent actionEvent) {
-                mainView.showMainView();
-            }
-        });
+        btnLogout.addActionListener(actionEvent -> mainView.showMainView());
         saveNewPriceList.addActionListener(actionEvent -> savePriceList());
     }
 

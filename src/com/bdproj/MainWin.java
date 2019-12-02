@@ -15,7 +15,7 @@ Proponuję następującą konwencję nazewnictwa:
     - zmienneCzyMetodyZaczynamyZMałejZamiastSpacjiDuzaLitera
     - NazwyKlasItdPodobnieJakZmienneTylkoPierwszyWyrazTakżeZDużej
 
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!♠♣!!!!!!
  */
 
 
