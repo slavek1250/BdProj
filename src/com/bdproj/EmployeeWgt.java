@@ -1,5 +1,7 @@
 package com.bdproj;
 
+import javafx.event.Event;
+
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -20,7 +22,6 @@ public class EmployeeWgt extends Employee {
     private JLabel lblHello;
 
     private MainView mainView;
-    private Tickets tickets;
     // TODO: Migracja kodu tworzenie biletow do klasy Tickets.
 
     public EmployeeWgt(MainView mainView, SystemUser user) {
@@ -38,21 +39,8 @@ public class EmployeeWgt extends Employee {
             }
         });
 
-        checkNewTicket.addItemListener(e -> {
-            if(e.getStateChange()==ItemEvent.SELECTED){
-                btnPrintTicket.setEnabled(true);
-                txtTicketNo.setEnabled(false);
-                btnTopUp.setEnabled(false);
-                String out=tickets.ticketNoIncrement();
-                txtTicketNo.setText(out);
-            }
-            else{
-                txtTicketNo.setText(null);
-                txtTicketNo.setEnabled(true);
-                btnTopUp.setEnabled(true);
-                btnPrintTicket.setEnabled(false);
-            }
-        });
+        checkNewTicket.addItemListener(e -> newTicketSlot(e));
+
         btnDeleteTicket.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -94,4 +82,21 @@ public class EmployeeWgt extends Employee {
     public JPanel getPanel() {
         return panelMain;
     }
+
+    public void newTicketSlot(ItemEvent e) {
+            if(e.getStateChange()==ItemEvent.SELECTED){
+                btnPrintTicket.setEnabled(true);
+                txtTicketNo.setEnabled(false);
+                btnTopUp.setEnabled(false);
+                String out=tickets.ticketNoIncrement();
+                txtTicketNo.setText(out);
+            }
+            else{
+                txtTicketNo.setText(null);
+                txtTicketNo.setEnabled(true);
+                btnTopUp.setEnabled(true);
+                btnPrintTicket.setEnabled(false);
+            }
+        }
+
 }
