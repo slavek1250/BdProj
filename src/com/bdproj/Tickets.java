@@ -9,10 +9,10 @@ public class Tickets {
     private SystemUser systemUser;
 
 
-    // TODO: Generowanie nowego biletu, generacja id.
-    // TODO: Pobieranie bierzacego cennika.
-    // TODO: Doladowywanie biletu.
-    // TODO: Blokowanie biletow (ustawienie flagi).
+    // TODO: Generowanie nowego biletu, generacja id. #KLAUDIA#
+    // TODO: Pobieranie bierzacego cennika. #KLAUDIA#
+    // TODO: Doladowywanie biletu. #KLAUDIA#
+    // TODO: Blokowanie biletow (ustawienie flagi). !!DONE!!
 
     // Pobieranie najnowszego cennika z bazy:
     // select pc.id as 'poz_cennik_id', sc.nazwa, pc.cena from poz_cennik pc join slownik_cennik sc on pc.slownik_cennik_id = sc.id where pc.cennik_id = (select max(c.id) from cennik c);
@@ -38,7 +38,36 @@ public class Tickets {
         }
         return out;
     }
+public void blockTicket (String ticketnumber){
+    PreparedStatement ps;
+    ResultSet rs;
+    //String ticketnumber= txtDeleteTicketNo.getText();
+    String query ="SELECT zablokowany FROM karnet WHERE id=?";
 
+    try {
+        ps = MySQLConnection.getConnection().prepareStatement(query);
+        ps.setString(1,ticketnumber);
+        rs= ps.executeQuery();
+        if(rs.first()) {
+            int zab = rs.getInt("zablokowany");
+            if (zab == 1) {
+                JOptionPane.showMessageDialog(null, "Ten bilet jest już zablokowany");
+            }
+            else{
+                String query1="UPDATE karnet SET zablokowany=1 WHERE id=?";
+                PreparedStatement ps1 = MySQLConnection.getConnection().prepareStatement(query1);
+                ps1.setString(1,ticketnumber);
+                int rs1= ps1.executeUpdate();
+                JOptionPane.showConfirmDialog(null, "Czy na pewno chcesz zablokować bilet");
+            }
+        }
+        else{
+            JOptionPane.showMessageDialog(null,"Nie ma takiego biletu");
+        }
+    } catch (SQLException ex) {
+        ex.printStackTrace();
+    }
+}
 
     public Tickets(SystemUser user) {
         systemUser = user;
