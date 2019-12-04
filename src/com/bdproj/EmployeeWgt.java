@@ -20,7 +20,7 @@ public class EmployeeWgt extends Employee {
     private JLabel lblHello;
 
     private MainView mainView;
-
+    private Tickets tickets;
     // TODO: Migracja kodu tworzenie biletow do klasy Tickets.
 
     public EmployeeWgt(MainView mainView, SystemUser user) {
@@ -38,34 +38,19 @@ public class EmployeeWgt extends Employee {
             }
         });
 
-        checkNewTicket.addItemListener(new ItemListener() {
-            @Override
-            public void itemStateChanged(ItemEvent e) {
-                if(e.getStateChange()==ItemEvent.SELECTED){
-                    btnPrintTicket.setEnabled(true);
-                    txtTicketNo.setEnabled(false);
-                    btnTopUp.setEnabled(false);
-                    PreparedStatement ps;
-                    ResultSet rs;
-                    String query = "SELECT AUTO_INCREMENT FROM information_schema.TABLES WHERE TABLE_SCHEMA = \"slavek_bd2\" AND TABLE_NAME = \"karnet\"";
-                    try {
-                        ps = MySQLConnection.getConnection().prepareStatement(query);
-                        rs = ps.executeQuery();
-
-                        if (rs.first()) {
-                            txtTicketNo.setText(rs.getString(1));
-                        }
-
-                    } catch (SQLException e1) {
-                        e1.printStackTrace();
-                    }
-                }
-                else{
-                    txtTicketNo.setText(null);
-                    txtTicketNo.setEnabled(true);
-                    btnTopUp.setEnabled(true);
-                    btnPrintTicket.setEnabled(false);
-                }
+        checkNewTicket.addItemListener(e -> {
+            if(e.getStateChange()==ItemEvent.SELECTED){
+                btnPrintTicket.setEnabled(true);
+                txtTicketNo.setEnabled(false);
+                btnTopUp.setEnabled(false);
+                String out=tickets.ticketNoIncrement();
+                txtTicketNo.setText(out);
+            }
+            else{
+                txtTicketNo.setText(null);
+                txtTicketNo.setEnabled(true);
+                btnTopUp.setEnabled(true);
+                btnPrintTicket.setEnabled(false);
             }
         });
         btnDeleteTicket.addActionListener(new ActionListener() {
