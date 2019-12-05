@@ -66,7 +66,7 @@ public class MainWin implements MainView {
 
         // hasło min 8 znaków
 
-        String loginRegEx = "[a-z]{6}[0-9]{4}";
+        String loginRegEx = "^[a-z]{6}[0-9]{4}$";
         String login= txtLogin.getText();
         if(!login.matches(loginRegEx)) {
             JOptionPane.showMessageDialog(panelMain, "Błędny login.");

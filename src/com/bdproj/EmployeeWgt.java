@@ -42,7 +42,7 @@ public class EmployeeWgt extends Employee {
         return panelMain;
     }
 
-    public void newTicketSlot(ItemEvent e) {
+    private void newTicketSlot(ItemEvent e) {
             if(e.getStateChange()==ItemEvent.SELECTED){
                 btnPrintTicket.setEnabled(true);
                 txtTicketNo.setEnabled(false);
@@ -57,7 +57,7 @@ public class EmployeeWgt extends Employee {
                 btnPrintTicket.setEnabled(false);
             }
         }
-public void blockTicket(){
+private void blockTicket(){
     String ticketnumber= txtDeleteTicketNo.getText();
     tickets.blockTicket(ticketnumber);
 }

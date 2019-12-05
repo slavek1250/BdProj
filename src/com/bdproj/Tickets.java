@@ -21,51 +21,50 @@ public class Tickets {
         ResultSet rs;
         String out="0";
         String query = "SELECT AUTO_INCREMENT FROM information_schema.TABLES WHERE TABLE_SCHEMA = \"slavek_bd2\" AND TABLE_NAME = \"karnet\"";
-        try {
-            ps = MySQLConnection.getConnection().prepareStatement(query);
-            rs = ps.executeQuery();
+        if(MySQLConnection.prepareConnection()) {
+            try {
+                ps = MySQLConnection.getConnection().prepareStatement(query);
+                rs = ps.executeQuery();
 
-            if (rs.first()) {
-                out=(rs.getString(1));
-            }
-            else{
-                out="NIE MA ŻADNEGO BILETU";
-            }
+                if (rs.first()) {
+                    out = (rs.getString(1));
+                } else {
+                    out = "W bazie nie ma żadnych biletów";
+                }
 
-        } catch (
-                SQLException e1) {
-            e1.printStackTrace();
+            } catch (
+                    SQLException e1) {
+                e1.printStackTrace();
+            }
         }
         return out;
     }
 public void blockTicket (String ticketnumber){
     PreparedStatement ps;
     ResultSet rs;
-    //String ticketnumber= txtDeleteTicketNo.getText();
     String query ="SELECT zablokowany FROM karnet WHERE id=?";
-
-    try {
-        ps = MySQLConnection.getConnection().prepareStatement(query);
-        ps.setString(1,ticketnumber);
-        rs= ps.executeQuery();
-        if(rs.first()) {
-            int zab = rs.getInt("zablokowany");
-            if (zab == 1) {
-                JOptionPane.showMessageDialog(null, "Ten bilet jest już zablokowany");
+    if(MySQLConnection.prepareConnection()) {
+        try {
+            ps = MySQLConnection.getConnection().prepareStatement(query);
+            ps.setString(1, ticketnumber);
+            rs = ps.executeQuery();
+            if (rs.first()) {
+                int zab = rs.getInt("zablokowany");
+                if (zab == 1) {
+                    JOptionPane.showMessageDialog(null, "Ten bilet jest już zablokowany");
+                } else {
+                    String query1 = "UPDATE karnet SET zablokowany=1 WHERE id=?";
+                    PreparedStatement ps1 = MySQLConnection.getConnection().prepareStatement(query1);
+                    ps1.setString(1, ticketnumber);
+                    int rs1 = ps1.executeUpdate();
+                    JOptionPane.showConfirmDialog(null, "Czy na pewno chcesz zablokować bilet");
+                }
+            } else {
+                JOptionPane.showMessageDialog(null, "Nie ma takiego biletu");
             }
-            else{
-                String query1="UPDATE karnet SET zablokowany=1 WHERE id=?";
-                PreparedStatement ps1 = MySQLConnection.getConnection().prepareStatement(query1);
-                ps1.setString(1,ticketnumber);
-                int rs1= ps1.executeUpdate();
-                JOptionPane.showConfirmDialog(null, "Czy na pewno chcesz zablokować bilet");
-            }
+        } catch (SQLException ex) {
+            ex.printStackTrace();
         }
-        else{
-            JOptionPane.showMessageDialog(null,"Nie ma takiego biletu");
-        }
-    } catch (SQLException ex) {
-        ex.printStackTrace();
     }
 }
 
