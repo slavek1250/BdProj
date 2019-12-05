@@ -20,7 +20,7 @@ public class MySQLConnection {
 
     public static boolean prepareConnection() {
         try {
-            if (connection == null || connection.isClosed()) {
+            if (connection == null || !connection.isValid(2)) {
                 connection = DriverManager.getConnection(
                         (databaseType + "://" + serverAddress + ":" + serverPort + "/" + database),
                         databaseUser,
