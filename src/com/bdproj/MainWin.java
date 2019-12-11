@@ -15,13 +15,13 @@ Proponuję następującą konwencję nazewnictwa:
     - zmienneCzyMetodyZaczynamyZMałejZamiastSpacjiDuzaLitera
     - NazwyKlasItdPodobnieJakZmienneTylkoPierwszyWyrazTakżeZDużej
 
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!♠♣!!!!!!
  */
 
 
 public class MainWin implements MainView {
 
-    // TODO: Dopracowac wyglad GUI.
+    // TODO: Dopracowac wyglad GUI. #KLAUDIA# #KAROL#
 
     private static JFrame frame;
     private static SystemUser systemUser;
@@ -66,7 +66,7 @@ public class MainWin implements MainView {
 
         // hasło min 8 znaków
 
-        String loginRegEx = "[a-z]{6}[0-9]{4}";
+        String loginRegEx = "^[a-z]{6}[0-9]{4}$";
         String login= txtLogin.getText();
         if(!login.matches(loginRegEx)) {
             JOptionPane.showMessageDialog(panelMain, "Błędny login.");

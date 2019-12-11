@@ -14,7 +14,11 @@ public class PriceList {
     private ArrayList<Integer> priceListIds;
     private ArrayList<String> priceListNames;
     private ArrayList<Double> priceListPrices;
+    private ArrayList<Double> priceListPricesNew;
     private Integer priceListId;
+    private String unit = "zł/pkt";
+    private String author = "";
+    private String validSince = "";
 
     PriceList(SystemUser user) {
         systemUser = user;
@@ -25,11 +29,9 @@ public class PriceList {
 
         PreparedStatement ps;
         ResultSet rs;
-        String query = "select pc.cennik_id, sc.id as slownik_cennik_id, sc.nazwa, pc.cena \n" +
-                        "from poz_cennik pc right outer join slownik_cennik sc on pc.slownik_cennik_id = sc.id \n" +
-                        "where not exists ( select c.id from cennik c where pc.cennik_id < any (\n" +
-                            "\tselect c1.id from cennik c1) \n" +
-                        ");";
+        String query = "select CONCAT(k.imie, ' ', k.nazwisko) as 'autor', DATE_FORMAT(c.od, '%Y-%m-%d %H:%i') as 'od', c.id as 'cennik_id', sc.id as 'slownik_cennik_id', sc.nazwa, pc.cena \n" +
+                        "from kierownik k join cennik c on k.id = c.kierownik_id join poz_cennik pc on c.id = pc.cennik_id right outer join slownik_cennik sc on pc.slownik_cennik_id = sc.id \n" +
+                        "where not exists ( select c1.id from cennik c1 where pc.cennik_id < any ( select c2.id from cennik c2 ) );";
 
         if (!MySQLConnection.prepareConnection()) {
             lastError = MySQLConnection.getLastError();
@@ -45,6 +47,10 @@ public class PriceList {
             priceListPrices = new ArrayList<Double>();
 
             while (rs.next()) {
+                author = rs.getString("autor");
+                author = (rs.wasNull() ? "" : author);
+                validSince = rs.getString("od");
+                validSince = (rs.wasNull() ? "" : validSince);
                 priceListId = rs.getInt("cennik_id");
                 priceListIds.add(rs.getInt("slownik_cennik_id"));
                 priceListNames.add(rs.getString("nazwa"));
@@ -77,16 +83,30 @@ public class PriceList {
         return lastError;
     }
 
+    public String getUnit() {
+        return unit;
+    }
+
+    public String getAuthor() {
+        return author;
+    }
+
+    public String getValidSince() {
+        return validSince;
+    }
+
     public void setPriceListPrices(ArrayList<Double> priceListPrices) {
-        this.priceListPrices = priceListPrices;
+        this.priceListPricesNew = priceListPrices;
     }
 
     public boolean createNewPriceList() {
 
         PreparedStatement ps;
         ResultSet rs;
-        String query1 = "insert into cennik set od=now();";
-        String query2 = "select max(id) as cennik_id from cennik;";
+        String query1 = "insert into cennik set od=now(), kierownik_id=?;";
+        String query2 = "select CONCAT(k.imie, ' ', k.nazwisko) as 'autor', DATE_FORMAT(c.od, '%Y-%m-%d %H:%i') as 'od', c.id as 'cennik_id' \n" +
+                        "from cennik c join kierownik k on c.kierownik_id = k.id \n" +
+                        "where c.id = (select max(c1.id) from cennik c1);";
         String query3 = "insert into poz_cennik(cena, cennik_id, slownik_cennik_id) values(?, ?, ?);";
 
         if (!MySQLConnection.prepareConnection()) {
@@ -96,22 +116,27 @@ public class PriceList {
 
         try {
             ps = MySQLConnection.getConnection().prepareStatement(query1);
+            ps.setInt(1, systemUser.getId());
             ps.execute();
             rs = ps.executeQuery(query2);
 
             if(rs.first()) {
+                this.author = rs.getString("autor");
+                this.validSince = rs.getString("od");
                 this.priceListId = rs.getInt("cennik_id");
 
                 ps = MySQLConnection.getConnection().prepareStatement(query3);
 
                 for (int i = 0; i < priceListIds.size(); i++) {
-                    ps.setDouble(1, priceListPrices.get(i));
+                    ps.setDouble(1, priceListPricesNew.get(i));
                     ps.setInt(2, priceListId);
                     ps.setInt(3, priceListIds.get(i));
                     ps.addBatch();
                 }
 
                 ps.executeBatch();
+                priceListPrices = priceListPricesNew;
+                priceListPricesNew = null;
                 return true;
             }
             lastError = "Can not get new price list id.";
