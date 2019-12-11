@@ -125,6 +125,8 @@ public class SystemUser {
 
             name = (newName.isEmpty() ? name : newName);
             surname = (newSurname.isEmpty() ? surname : newSurname);
+            newName = null;
+            newSurname = null;
             return true;
         }
         catch (SQLException ex) {

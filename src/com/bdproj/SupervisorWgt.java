@@ -53,7 +53,9 @@ public class SupervisorWgt extends Supervisor {
 
     private MainView mainView;
 
-    private String nameSurnameRegEx = "^[A-ZĄĆĘŁŃÓŚŹŻ]{1}[a-ząćęłńóśźż]{1,50}$";
+    private String nameRegEx = "^[A-ZĄĆĘŁŃÓŚŹŻ]{1}[a-ząćęłńóśźż]{1,49}$";
+    private String surnameRegEx = "^[A-ZĄĆĘŁŃÓŚŹŻ]{1}(([a-ząćęłńóśźż]+)(-[A-ZĄĆĘŁŃÓŚŹŻ]{1}[a-ząćęłńóśźż]+)?)$";
+    private int surnameMaxLength = 50;
 
     // TODO: Pracownicy: ladowanie pracownikow podleglych pod kierownika, walidacja danych wejsciowych. !!DONE!!
     // TODO: Pracownicy: Mianowanie na kierownika, powinno automatycznie usuwać z listy pracowników pod kierownikiem ( w bazie ustaiwnie flagi jako pracownik zwolniony i kopia danych do kierownika )
@@ -102,11 +104,11 @@ public class SupervisorWgt extends Supervisor {
             JOptionPane.showMessageDialog(panelMain, "Dane nie uległy zmianie.");
             return;
         }
-        if(!newName.matches(nameSurnameRegEx)) {
+        if(!newName.matches(nameRegEx)) {
             JOptionPane.showMessageDialog(panelMain, "Podane imie jest w niepoprawnym formacie.");
             return;
         }
-        if(!newSurname.matches(nameSurnameRegEx)) {
+        if(!newSurname.matches(surnameRegEx) || newSurname.length() >= surnameMaxLength) {
             JOptionPane.showMessageDialog(panelMain, "Podane nazwisko jest w niepoprawnym formacie.");
             return;
         }
@@ -217,7 +219,7 @@ private void addUser(){
 
     String name= txtNameNewEmpl.getText();
     String surname= txtSurnameNewEmpl.getText();
-    if(!name.matches(nameSurnameRegEx)||!surname.matches(nameSurnameRegEx)){
+    if(!name.matches(nameRegEx)||!surname.matches(surnameRegEx) || surname.length() >= surnameMaxLength){
         JOptionPane.showMessageDialog(null,"Imie lub nazwisko zawiera niepoprawne znaki");
         return;
     }
