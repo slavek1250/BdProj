@@ -49,7 +49,7 @@ public class SupervisorWgt extends Supervisor {
     private JButton btnSaveSupervisor;
     private JButton btnQuitJobSupervisor;
     private JComboBox comboBox1;
-    private JButton mianujNaZarządcęButton;
+    private JButton btnMakeAdminLift;
 
     private MainView mainView;
 

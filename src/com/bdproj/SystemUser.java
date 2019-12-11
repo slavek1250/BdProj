@@ -107,7 +107,7 @@ public class SystemUser {
             return false;
         }
         if(userType != UserType.SUPERVISOR) {
-            lastError = "Nie jesteś kieronikem!";
+            lastError = "Nie jesteś kierownikem!";
             return false;
         }
         if(!MySQLConnection.prepareConnection()) {
@@ -151,7 +151,7 @@ public class SystemUser {
             return false;
         }
         if(userType != UserType.SUPERVISOR) {
-            lastError = "Nie jesteś kieronikem!";
+            lastError = "Nie jesteś kierownikem!";
             return false;
         }
 
