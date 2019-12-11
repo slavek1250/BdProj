@@ -74,7 +74,7 @@ public ArrayList<String> getEmployees(){
 
     PreparedStatement ps;
     ResultSet rs;
-    String query="SELECT CONCAT(p.imie,' ', p.nazwisko,'    ',p.login) AS 'pracownik' FROM pracownicy p JOIN kierownik k ON p.kierownik_id=k.id WHERE kierownik_id=? AND zwolniony=0";
+    String query="SELECT CONCAT(p.imie,' ', p.nazwisko,'    ',p.login) AS 'pracownik' FROM pracownicy p JOIN kierownik k ON p.kierownik_id=k.id WHERE kierownik_id=? AND p.zwolniony=0";
     ArrayList<String> emp =new ArrayList<String>();
     if(MySQLConnection.prepareConnection()) {
         try {

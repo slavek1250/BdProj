@@ -42,12 +42,29 @@ public class SupervisorWgt extends Supervisor {
     private JButton btnTicketUseRep;
     private JLabel lblPriceListAuthor;
     private JLabel lblPriceListSince;
+    private JButton btnDelAdminPrivLift;
+    private JButton btnMakeSupervisor;
+    private JTextField txtSurnameSupervisor;
+    private JTextField txtNameSupervisor;
+    private JButton btnSaveSupervisor;
+    private JButton btnQuitJobSupervisor;
+    private JComboBox comboBox1;
+    private JButton btnMakeAdminLift;
 
     private MainView mainView;
 
+    private String nameRegEx = "^[A-ZĄĆĘŁŃÓŚŹŻ]{1}[a-ząćęłńóśźż]{1,49}$";
+    private String surnameRegEx = "^[A-ZĄĆĘŁŃÓŚŹŻ]{1}(([a-ząćęłńóśźż]+)(-[A-ZĄĆĘŁŃÓŚŹŻ]{1}[a-ząćęłńóśźż]+)?)$";
+    private int surnameMaxLength = 50;
+
     // TODO: Pracownicy: ladowanie pracownikow podleglych pod kierownika, walidacja danych wejsciowych. !!DONE!!
-    // TODO: Wyciagi: ladowania wyciagow podlegajacych pod kierownika, walidacja danych wejsciowych.
-    // TODO: Raporty: Wybieranie dat dla raportu uzyc wyciagu, walidacja danych dla raportu uzycia biletu.
+    // TODO: Pracownicy: Mianowanie na kierownika, powinno automatycznie usuwać z listy pracowników pod kierownikiem ( w bazie ustaiwnie flagi jako pracownik zwolniony i kopia danych do kierownika )
+    // TODO: Wyciagi: ladowanie wyciagow podlegajacych pod kierownika (o ile obecna data jest w zakresie `od`, `do`, najlepiej `do` niech bedzie null) kosztów punktowych i stanu, walidacja danych wejsciowych (czy różne od bieżączych w przypadku edycji).
+    // TODO: Wyciagi: ladowanie listy kieronikow, dodawanie jako zarzadce. Usuwanie swojego prawa do administorwania wyciągiem (o ile nie jest ostatnim kierownikiem mogącym zarządzać).
+    // TODO: Cennik: Ladowanie biezacego cennika dla wszystkich pozycji ze slownika, walidacja danych wejsciowych. #Dominik# !!DONE!!
+    // TODO: Raporty: Wybieranie dat dla raportu uzyc wyciagu, walidacja danych dla raportu uzycia biletu. #Dominik#
+    // TODO: Moje dane: Ladownianie obecnych danych kierownika, walidacja zmodyfikowanych. #Dominik# !!DONE!!
+
 
     public SupervisorWgt(MainView mainView, SystemUser user) {
         super(user);
@@ -57,6 +74,7 @@ public class SupervisorWgt extends Supervisor {
 
         loadPriceList();
         loadEmployees();
+        loadSupervisorData();
 
 
         btnLogout.addActionListener(actionEvent -> mainView.showMainView());
@@ -65,18 +83,65 @@ public class SupervisorWgt extends Supervisor {
         boxSelectEditEmpl.addActionListener(actionEvent ->chooseUser(actionEvent));
         btnSaveEditEmpl.addActionListener(ActionEvent ->saveEmployeeMod());
         btnDeleteEmpl.addActionListener(ActionEvent ->deleteEmployee());
+        btnSaveSupervisor.addActionListener(ActionEvent -> updateSupervisorData());
+        btnQuitJobSupervisor.addActionListener(ActionEvent -> quitJobSupervisor());
     }
 
     public JPanel getPanel() {
         return panelMain;
     }
 
-    // ??
-    /*
-    private void createUIComponents() {
-
+    private void loadSupervisorData() {
+        txtNameSupervisor.setText(systemUser.getName());
+        txtSurnameSupervisor.setText(systemUser.getSurname());
     }
-    */
+
+    private void updateSupervisorData() {
+        String newName = txtNameSupervisor.getText();
+        String newSurname = txtSurnameSupervisor.getText();
+
+        if(systemUser.getName().equals(newName) && systemUser.getSurname().equals(newSurname)) {
+            JOptionPane.showMessageDialog(panelMain, "Dane nie uległy zmianie.");
+            return;
+        }
+        if(!newName.matches(nameRegEx)) {
+            JOptionPane.showMessageDialog(panelMain, "Podane imie jest w niepoprawnym formacie.");
+            return;
+        }
+        if(!newSurname.matches(surnameRegEx) || newSurname.length() >= surnameMaxLength) {
+            JOptionPane.showMessageDialog(panelMain, "Podane nazwisko jest w niepoprawnym formacie.");
+            return;
+        }
+
+        int resp = JOptionPane.showConfirmDialog(panelMain, "Czy na pewno zaktualizować dane?", "Potwierdź", JOptionPane.YES_NO_OPTION);
+        if(resp == JOptionPane.NO_OPTION) {
+            return;
+        }
+
+        systemUser.updateName(newName);
+        systemUser.updateSurname(newSurname);
+        if(systemUser.commitChanges()) {
+            JOptionPane.showMessageDialog(panelMain, "Pomyślnie zapisano zmiany.");
+        }
+        else {
+            JOptionPane.showMessageDialog(panelMain, systemUser.getLastError());
+        }
+    }
+
+    private void quitJobSupervisor() {
+        int resp = JOptionPane.showConfirmDialog(panelMain, "Czy na pewno chcesz zwolnić się z pracy?", "Potwierdź", JOptionPane.YES_NO_OPTION);
+        if(resp == JOptionPane.NO_OPTION) {
+            return;
+        }
+
+        if(systemUser.quitJob()) {
+            JOptionPane.showMessageDialog(panelMain, "Zostałeś pomyślnie zwolniony z pracy.");
+            mainView.showMainView();
+        }
+        else {
+            JOptionPane.showMessageDialog(panelMain, systemUser.getLastError());
+        }
+    }
 
     private void loadPriceList() {
         Integer nameColumn = 0;
@@ -151,10 +216,10 @@ public class SupervisorWgt extends Supervisor {
     }
 
 private void addUser(){
-    String loginRegEx ="^[A-ZĄĆĘŁŃÓŚŹŻ]{1}[a-ząćęłńóśźż]{1,50}$";
+
     String name= txtNameNewEmpl.getText();
     String surname= txtSurnameNewEmpl.getText();
-    if(!name.matches(loginRegEx)||!surname.matches(loginRegEx)){
+    if(!name.matches(nameRegEx)||!surname.matches(surnameRegEx) || surname.length() >= surnameMaxLength){
         JOptionPane.showMessageDialog(null,"Imie lub nazwisko zawiera niepoprawne znaki");
         return;
     }
@@ -233,8 +298,7 @@ private void chooseUser(ActionEvent e){
         employeeAdmin.deleteEmployee();
 }
 
-
-    }
+}
 
 
 
