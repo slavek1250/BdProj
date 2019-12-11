@@ -43,13 +43,16 @@ public class SupervisorWgt extends Supervisor {
     private JLabel lblPriceListAuthor;
     private JLabel lblPriceListSince;
     private JButton btnDelAdminPrivLift;
-    private JButton btnMakeSupervisor;
+    private JButton btnMakeSupervisorEmpl;
     private JTextField txtSurnameSupervisor;
     private JTextField txtNameSupervisor;
     private JButton btnSaveSupervisor;
     private JButton btnQuitJobSupervisor;
-    private JComboBox comboBox1;
+    private JComboBox boxSupervisorSelectLift;
     private JButton btnMakeAdminLift;
+    private JComboBox boxSupervisorSelectEmpl;
+    private JButton btnChangeSupervisorEmpl;
+    private JButton btnNewAddLift;
 
     private MainView mainView;
 
@@ -59,6 +62,7 @@ public class SupervisorWgt extends Supervisor {
 
     // TODO: Pracownicy: ladowanie pracownikow podleglych pod kierownika, walidacja danych wejsciowych. !!DONE!!
     // TODO: Pracownicy: Mianowanie na kierownika, powinno automatycznie usuwać z listy pracowników pod kierownikiem ( w bazie ustaiwnie flagi jako pracownik zwolniony i kopia danych do kierownika )
+    // TODO: Pracownicy: Przekazywanie kierownictwa. #Karol#
     // TODO: Wyciagi: ladowanie wyciagow podlegajacych pod kierownika (o ile obecna data jest w zakresie `od`, `do`, najlepiej `do` niech bedzie null) kosztów punktowych i stanu, walidacja danych wejsciowych (czy różne od bieżączych w przypadku edycji).
     // TODO: Wyciagi: ladowanie listy kieronikow, dodawanie jako zarzadce. Usuwanie swojego prawa do administorwania wyciągiem (o ile nie jest ostatnim kierownikiem mogącym zarządzać).
     // TODO: Cennik: Ladowanie biezacego cennika dla wszystkich pozycji ze slownika, walidacja danych wejsciowych. #Dominik# !!DONE!!
@@ -72,9 +76,6 @@ public class SupervisorWgt extends Supervisor {
 
         lblHello.setText("Witaj, " + systemUser.getName() + "!");
 
-        loadPriceList();
-        loadEmployees();
-        loadSupervisorData();
 
 
         btnLogout.addActionListener(actionEvent -> mainView.showMainView());
@@ -85,6 +86,11 @@ public class SupervisorWgt extends Supervisor {
         btnDeleteEmpl.addActionListener(ActionEvent ->deleteEmployee());
         btnSaveSupervisor.addActionListener(ActionEvent -> updateSupervisorData());
         btnQuitJobSupervisor.addActionListener(ActionEvent -> quitJobSupervisor());
+
+
+        loadPriceList();
+        loadEmployees();
+        loadSupervisorData();
     }
 
     public JPanel getPanel() {
@@ -255,6 +261,8 @@ private void loadEmployees (){
 
        ArrayList employees= employeeAdmin.getEmployees();
        boxSelectEditEmpl.setModel(new DefaultComboBoxModel(employees.toArray()));
+       if(employees.size() > 0)
+            boxSelectEditEmpl.setSelectedIndex(0);
 }
 
 private void chooseUser(ActionEvent e){
