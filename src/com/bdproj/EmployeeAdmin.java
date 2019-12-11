@@ -12,10 +12,10 @@ public class EmployeeAdmin {
     private String surname;
     private String login;
 
-    // TODO: Dodawanie nowego pracownika. !!DONE!!
-    // TODO: Modyfikacja obecnych pracownikow. !!DONE!!
-    // TODO: Usuwanie pracownikow (ustawianie flagi). !!DONE!!
-    // TODO: Pobieranie listy przy starcie id imie nazwisko podleglych pod systemUser.getId(). !!DONE!!
+    // TODO: Dodawanie nowego pracownika.#Karol# !!DONE!!
+    // TODO: Modyfikacja obecnych pracownikow.#Karol# !!DONE!!
+    // TODO: Usuwanie pracownikow (ustawianie flagi).#Karol# !!DONE!!
+    // TODO: Pobieranie listy przy starcie id imie nazwisko podleglych pod systemUser.getId().#Karol# !!DONE!!
 
     public EmployeeAdmin(SystemUser user) {
         systemUser = user;
