@@ -6,7 +6,7 @@ import java.sql.SQLException;
 
 public class SystemUser {
 
-    // TODO: Sprawdzanie czy pracownik nie zostal zawolniony #KAROL# !!DONE!!
+    // TODO: Sprawdzanie czy pracownik nie zostal zawolniony #Karol# !!DONE!!
 
     public enum UserType {
         UNREGISTERED,

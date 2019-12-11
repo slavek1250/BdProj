@@ -12,7 +12,7 @@ public class Tickets {
     // TODO: Generowanie nowego biletu, generacja id. #KLAUDIA#
     // TODO: Pobieranie bierzacego cennika. #KLAUDIA#
     // TODO: Doladowywanie biletu. #KLAUDIA#
-    // TODO: Blokowanie biletow (ustawienie flagi). !!DONE!!
+    // TODO: Blokowanie biletow (ustawienie flagi).#Karol# !!DONE!!
 
     // Pobieranie najnowszego cennika z bazy:
     // select pc.id as 'poz_cennik_id', sc.nazwa, pc.cena from poz_cennik pc join slownik_cennik sc on pc.slownik_cennik_id = sc.id where pc.cennik_id = (select max(c.id) from cennik c);

@@ -22,7 +22,7 @@ public class EmployeeWgt extends Employee {
     private JLabel lblHello;
 
     private MainView mainView;
-    // TODO: Migracja kodu tworzenie biletow do klasy Tickets. !!DONE!!
+    // TODO: Migracja kodu tworzenie biletow do klasy Tickets.#Karol# !!DONE!!
 
     public EmployeeWgt(MainView mainView, SystemUser user) {
         super(user);
