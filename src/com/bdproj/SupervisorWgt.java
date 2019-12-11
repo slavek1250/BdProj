@@ -37,6 +37,8 @@ public class SupervisorWgt extends Supervisor {
     private JTable tabPriceList;
     private JButton saveNewPriceList;
     private JComboBox boxLiftRepSelect;
+    private JTextField txtLiftRepSince;
+    private JTextField txtLiftRepTo;
     private JButton btnLogout;
     private JTextField txtPointsCostNewLift;
     private JTextField txtTicketUseRepNo;
@@ -67,6 +69,11 @@ public class SupervisorWgt extends Supervisor {
     private final int SURNAME_MAX_LENGTH = 50;
     private final String DATE_FORMAT = "yyyy-MM-dd";
 
+    private String nameRegEx = "^[A-ZĄĆĘŁŃÓŚŹŻ]{1}[a-ząćęłńóśźż]{1,49}$";
+    private String surnameRegEx = "^[A-ZĄĆĘŁŃÓŚŹŻ]{1}(([a-ząćęłńóśźż]+)(-[A-ZĄĆĘŁŃÓŚŹŻ]{1}[a-ząćęłńóśźż]+)?)$";
+    private int surnameMaxLength = 50;
+    private String onlyNumbersRegEx = "\\d+";
+
     // TODO: Pracownicy: ladowanie pracownikow podleglych pod kierownika, walidacja danych wejsciowych. #Karol# !!DONE!!
     // TODO: Pracownicy: Mianowanie na kierownika, powinno automatycznie usuwać z listy pracowników pod kierownikiem ( w bazie ustaiwnie flagi jako pracownik zwolniony i kopia danych do kierownika ) #Karol#
     // TODO: Pracownicy: Przekazywanie kierownictwa. #Karol#
@@ -75,6 +82,7 @@ public class SupervisorWgt extends Supervisor {
     // TODO: Cennik: Ladowanie biezacego cennika dla wszystkich pozycji ze slownika, walidacja danych wejsciowych. #Dominik# !!DONE!!
     // TODO: Raporty: Wybieranie dat dla raportu uzyc wyciagu, walidacja danych dla raportu uzycia biletu. #Dominik#
     // TODO: Moje dane: Ladownianie obecnych danych kierownika, walidacja zmodyfikowanych. #Dominik# !!DONE!!
+
 
     public SupervisorWgt(MainView mainView, SystemUser user) {
         super(user);
@@ -98,6 +106,7 @@ public class SupervisorWgt extends Supervisor {
         btnPrintLiftRep.addActionListener(ActionEvent -> generateSkiLiftReport());
         btnSaveSupervisor.addActionListener(ActionEvent -> updateSupervisorData());
         btnQuitJobSupervisor.addActionListener(ActionEvent -> quitJobSupervisor());
+        btnNewAddLift.addActionListener(ActionEvent -> addLift());
 
         loadPriceList();
         loadEmployees();
@@ -336,6 +345,27 @@ private void chooseUser(ActionEvent e){
         String surname=txtSurnameEditEmpl.getText();
         employeeAdmin.deleteEmployee();
 }
+
+    private void addLift(){
+        String name = txtNameNewLift.getText();
+        String height = txtHeightNewLift.getText();
+        String pointsCost = txtPointsCostNewLift.getText();
+        int idSup = systemUser.getId();
+        boolean state = checkStateNewLift.isSelected();
+        //skiLiftAdmin.addNewLift(name, height, pointsCost, state, idSup);
+        if(!height.matches(onlyNumbersRegEx) || !pointsCost.matches(onlyNumbersRegEx) ){
+            JOptionPane.showMessageDialog(null,"Niedozwolone dane wejściowe. Wysokość i koszt powinny być liczbą!");
+            return;
+        }
+        else{
+            int response= JOptionPane.showConfirmDialog(null, "Czy na pewno chcesz dodać wyciąg?","Confirm",JOptionPane.YES_NO_OPTION);
+            if(response==JOptionPane.YES_OPTION) {
+                skiLiftAdmin.addNewLift(name, height, pointsCost, state, idSup);
+                JOptionPane.showMessageDialog(null, "Dodano wyciąg");
+            }
+            else{return;}
+        }
+    }
 
 }
 
