@@ -1,0 +1,17 @@
+<component name="libraryTable">
+  <library name="com.itextpdf:html2pdf:2.1.6" type="repository">
+    <properties maven-id="com.itextpdf:html2pdf:2.1.6" />
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/com/itextpdf/html2pdf/2.1.6/html2pdf-2.1.6.jar!/" />
+      <root url="jar://$MAVEN_REPOSITORY$/com/itextpdf/forms/7.1.9/forms-7.1.9.jar!/" />
+      <root url="jar://$MAVEN_REPOSITORY$/com/itextpdf/kernel/7.1.9/kernel-7.1.9.jar!/" />
+      <root url="jar://$MAVEN_REPOSITORY$/com/itextpdf/io/7.1.9/io-7.1.9.jar!/" />
+      <root url="jar://$MAVEN_REPOSITORY$/com/itextpdf/layout/7.1.9/layout-7.1.9.jar!/" />
+      <root url="jar://$MAVEN_REPOSITORY$/com/itextpdf/svg/7.1.9/svg-7.1.9.jar!/" />
+      <root url="jar://$MAVEN_REPOSITORY$/com/itextpdf/styled-xml-parser/7.1.9/styled-xml-parser-7.1.9.jar!/" />
+      <root url="jar://$MAVEN_REPOSITORY$/org/slf4j/slf4j-api/1.7.13/slf4j-api-1.7.13.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

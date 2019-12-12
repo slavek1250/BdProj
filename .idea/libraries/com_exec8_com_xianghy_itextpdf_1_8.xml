@@ -1,0 +1,16 @@
+<component name="libraryTable">
+  <library name="com.exec8:com.xianghy.itextpdf:1.8" type="repository">
+    <properties maven-id="com.exec8:com.xianghy.itextpdf:1.8" />
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/com/exec8/com.xianghy.itextpdf/1.8/com.xianghy.itextpdf-1.8.jar!/" />
+      <root url="jar://$MAVEN_REPOSITORY$/com/itextpdf/itextpdf/5.0.6/itextpdf-5.0.6.jar!/" />
+      <root url="jar://$MAVEN_REPOSITORY$/org/bouncycastle/bcmail-jdk14/1.38/bcmail-jdk14-1.38.jar!/" />
+      <root url="jar://$MAVEN_REPOSITORY$/org/bouncycastle/bcprov-jdk14/1.38/bcprov-jdk14-1.38.jar!/" />
+      <root url="jar://$MAVEN_REPOSITORY$/org/bouncycastle/bctsp-jdk14/1.38/bctsp-jdk14-1.38.jar!/" />
+      <root url="jar://$MAVEN_REPOSITORY$/com/itextpdf/itext-asian/5.2.0/itext-asian-5.2.0.jar!/" />
+      <root url="jar://$MAVEN_REPOSITORY$/org/apache/commons/commons-lang3/3.4/commons-lang3-3.4.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
