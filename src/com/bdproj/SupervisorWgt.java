@@ -1,18 +1,18 @@
 package com.bdproj;
 
+import javafx.util.Pair;
 import org.jdesktop.swingx.JXDatePicker;
 
 import javax.swing.*;
 import javax.swing.event.TableModelListener;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Vector;
-import java.util.Random;
+import java.util.*;
 
 
 public class SupervisorWgt extends Supervisor {
@@ -44,7 +44,7 @@ public class SupervisorWgt extends Supervisor {
     private JTextField txtTicketUseRepNo;
     private JButton btnPrintLiftRep;
     private JLabel lblHello;
-    private JButton btnTicketUseRep;
+    private JButton btnPrintTicketUseRep;
     private JLabel lblPriceListAuthor;
     private JLabel lblPriceListSince;
     private JButton btnDelAdminPrivLift;
@@ -69,10 +69,7 @@ public class SupervisorWgt extends Supervisor {
     private final int SURNAME_MAX_LENGTH = 50;
     private final String DATE_FORMAT = "yyyy-MM-dd";
 
-    private String nameRegEx = "^[A-ZĄĆĘŁŃÓŚŹŻ]{1}[a-ząćęłńóśźż]{1,49}$";
-    private String surnameRegEx = "^[A-ZĄĆĘŁŃÓŚŹŻ]{1}(([a-ząćęłńóśźż]+)(-[A-ZĄĆĘŁŃÓŚŹŻ]{1}[a-ząćęłńóśźż]+)?)$";
-    private int surnameMaxLength = 50;
-    private String onlyNumbersRegEx = "\\d+";
+    private String onlyNumbersRegEx = "^\\d+$";
 
     // TODO: Pracownicy: ladowanie pracownikow podleglych pod kierownika, walidacja danych wejsciowych. #Karol# !!DONE!!
     // TODO: Pracownicy: Mianowanie na kierownika, powinno automatycznie usuwać z listy pracowników pod kierownikiem ( w bazie ustaiwnie flagi jako pracownik zwolniony i kopia danych do kierownika ) #Karol#
@@ -104,6 +101,7 @@ public class SupervisorWgt extends Supervisor {
         btnSaveEditEmpl.addActionListener(ActionEvent ->saveEmployeeMod());
         btnDeleteEmpl.addActionListener(ActionEvent ->deleteEmployee());
         btnPrintLiftRep.addActionListener(ActionEvent -> generateSkiLiftReport());
+        btnPrintTicketUseRep.addActionListener(ActionEvent -> generateTicketReport());
         btnSaveSupervisor.addActionListener(ActionEvent -> updateSupervisorData());
         btnQuitJobSupervisor.addActionListener(ActionEvent -> quitJobSupervisor());
         btnNewAddLift.addActionListener(ActionEvent -> addLift());
@@ -135,8 +133,61 @@ public class SupervisorWgt extends Supervisor {
         }
         String selectedSkiLift = boxLiftRepSelect.getSelectedItem().toString(); // Id. nazwa
         Integer skiLiftId = Integer.parseInt(selectedSkiLift.replaceAll("\\..*", ""));
+        Date reportSince = dateLiftRepSince.getDate();
+        Date reportTo = dateLiftRepTo.getDate();
+        if( !reportSince.before(reportTo) ) {
+            JOptionPane.showMessageDialog(panelMain, "Początek okresu raportu musi być przed konicem tego okersu.");
+            return;
+        }
+        if((new Date()).before(reportTo)) {
+            JOptionPane.showMessageDialog(panelMain, "Koniec okresu nie może być późniejszy niż " + (new SimpleDateFormat(DATE_FORMAT)).format(new Date())+ ".");
+        }
 
-        JOptionPane.showMessageDialog(null, getSkiLiftName(skiLiftId));
+        boolean success = reports.generateSkiLiftReport(skiLiftId, reportSince, reportTo);
+        if(success) {
+            success = saveReportAs();
+        }
+        if(!success) {
+            JOptionPane.showMessageDialog(panelMain, reports.getLastError());
+        }
+    }
+
+    public void generateTicketReport() {
+        String ticketNo = txtTicketUseRepNo.getText();
+        if(!ticketNo.matches(onlyNumbersRegEx)) {
+            JOptionPane.showMessageDialog(panelMain, "Błędny format numeru, popraw i spróbuj ponownie.");
+            return;
+        }
+        Integer ticketId = Integer.parseInt(ticketNo);
+
+        boolean success = reports.generateTicketUseReport(ticketId);
+        if(success) {
+            success = saveReportAs();
+        }
+        if(!success) {
+            JOptionPane.showMessageDialog(panelMain, reports.getLastError());
+        }
+    }
+
+    public boolean saveReportAs() {
+        boolean tryToSave = true;
+        while (tryToSave) {
+            JFileChooser fileChooser = new JFileChooser();
+            fileChooser.setDialogTitle("Zapisz raport jako");
+            fileChooser.setAcceptAllFileFilterUsed(false);
+            fileChooser.addChoosableFileFilter(new FileNameExtensionFilter("Plik PDF", "pdf"));
+
+            int returnValue = fileChooser.showSaveDialog(panelMain);
+            if (returnValue == JFileChooser.APPROVE_OPTION) {
+
+                return reports.saveReportToFile(fileChooser.getSelectedFile().getAbsolutePath());
+
+            } else {
+                int resp = JOptionPane.showConfirmDialog(panelMain, "Błąd podczas próby zapisu raportu, spróbować ponownie?", "Błąd", JOptionPane.YES_NO_OPTION);
+                if(resp == JOptionPane.NO_OPTION) tryToSave = false;
+            }
+        }
+        return true;
     }
 
     private void loadSupervisorData() {
@@ -366,7 +417,6 @@ private void chooseUser(ActionEvent e){
             else{return;}
         }
     }
-
 }
 
 
