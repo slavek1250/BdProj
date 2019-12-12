@@ -143,8 +143,9 @@ public class SystemUser {
                         "( select distinct z2.wyciag_id from zarzadcy z2 where z2.kierownik_id = ? )\n" +
                         "and z1.od < now() and (z1.do is null or z1.do > now())\n" +
                         "group by z1.wyciag_id, w.nazwa having count(z1.id) = 1;";
-        String query2 = "update kierownik set zwolniony = 1 where id = ?;";
-        String query3 = "update zarzadcy set do=now() where kierownik_id = ?;";
+        String query2 = "select concat(imie, ' ', nazwisko, ' - ', login) as 'pracownik' from pracownicy where zawolniony = 0 and kierownik_id = ?;";
+        String query3 = "update kierownik set zwolniony = 1 where id = ?;";
+        String query4 = "update zarzadcy set do=now() where kierownik_id = ?;";
 
         if(!MySQLConnection.prepareConnection()) {
             lastError = MySQLConnection.getLastError();
@@ -156,29 +157,49 @@ public class SystemUser {
         }
 
         try {
-            PreparedStatement ps = MySQLConnection.getConnection().prepareStatement(query1);
-            ps.setInt(1, id);
-            ResultSet rs = ps.executeQuery();
+            PreparedStatement ps1 = MySQLConnection.getConnection().prepareStatement(query1);
+            ps1.setInt(1, id);
+            ResultSet rs1 = ps1.executeQuery();
 
             String skiLiftsList = "";
             int i = 0;
-            while (rs.next()) {
-                skiLiftsList += "\t" + rs.getString("nazwa") + ",\n";
+            while (rs1.next()) {
+                skiLiftsList += rs1.getString("nazwa") + ",\n";
                 i++;
             }
 
-            if(i > 0) {
-                lastError = "Jesteś jedynym nadzorcą wyciąg(u/ów):\n" + skiLiftsList + "nie możesz się teraz zwolnić.";
+            PreparedStatement ps2 = MySQLConnection.getConnection().prepareStatement(query2);
+            ps2.setInt(1, id);
+            ResultSet rs2 = ps2.executeQuery();
+
+            String employeesList = "";
+            int j = 0;
+            while(rs2.next()) {
+                employeesList += rs2.getString("pracownik") + ",\n";
+                j++;
+            }
+
+            if(i > 0 || j > 0) {
+                if(i > 0) {
+                    skiLiftsList = skiLiftsList.replaceAll(",\n$", "");
+                    skiLiftsList = "Jesteś jedynym nadzorcą " + (i == 1 ? "wyciągu:\n" : "wyciągów:\n") + skiLiftsList + ".\n\n";
+                }
+                if(j > 0) {
+                    employeesList = employeesList.replaceAll(",\n$", "");
+                    employeesList = "Jesteś kierownikiem " + (j == 1 ? "pracownika:\n" : "następujących pracowników:\n") + employeesList + ".\n\n";
+                }
+
+                lastError = skiLiftsList + employeesList + "Nie możesz się zwolnić.";
                 return false;
             }
 
-            PreparedStatement ps1 = MySQLConnection.getConnection().prepareStatement(query2);
-            ps1.setInt(1, id);
-            ps1.execute();
+            PreparedStatement ps3 = MySQLConnection.getConnection().prepareStatement(query3);
+            ps3.setInt(1, id);
+            ps3.execute();
 
-            PreparedStatement ps2 = MySQLConnection.getConnection().prepareStatement(query3);
-            ps2.setInt(1, id);
-            ps2.execute();
+            PreparedStatement ps4 = MySQLConnection.getConnection().prepareStatement(query4);
+            ps4.setInt(1, id);
+            ps4.execute();
 
             return true;
         }

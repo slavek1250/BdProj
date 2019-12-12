@@ -1,14 +1,18 @@
 package com.bdproj;
 
-import java.lang.*;
+import javafx.util.Pair;
+import org.jdesktop.swingx.JXDatePicker;
+
 import javax.swing.*;
 import javax.swing.event.TableModelListener;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.table.DefaultTableModel;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.ArrayList;
-import java.util.Vector;
-import java.util.Random;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 
 public class SupervisorWgt extends Supervisor {
@@ -40,7 +44,7 @@ public class SupervisorWgt extends Supervisor {
     private JTextField txtTicketUseRepNo;
     private JButton btnPrintLiftRep;
     private JLabel lblHello;
-    private JButton btnTicketUseRep;
+    private JButton btnPrintTicketUseRep;
     private JLabel lblPriceListAuthor;
     private JLabel lblPriceListSince;
     private JButton btnDelAdminPrivLift;
@@ -54,21 +58,26 @@ public class SupervisorWgt extends Supervisor {
     private JComboBox boxSupervisorSelectEmpl;
     private JButton btnChangeSupervisorEmpl;
     private JButton btnNewAddLift;
+    private JXDatePicker dateLiftRepSince;
+    private JXDatePicker dateLiftRepTo;
+    private JPanel tmpdate;
 
     private MainView mainView;
 
-    private String nameRegEx = "^[A-ZĄĆĘŁŃÓŚŹŻ]{1}[a-ząćęłńóśźż]{1,49}$";
-    private String surnameRegEx = "^[A-ZĄĆĘŁŃÓŚŹŻ]{1}(([a-ząćęłńóśźż]+)(-[A-ZĄĆĘŁŃÓŚŹŻ]{1}[a-ząćęłńóśźż]+)?)$";
-    private int surnameMaxLength = 50;
-    private String onlyNumbersRegEx = "[123456789]{1}\\d+";
-    
+    private final String NAME_REG_EX = "^[A-ZĄĆĘŁŃÓŚŹŻ]{1}[a-ząćęłńóśźż]{1,49}$";
+    private final String SURNAME_REG_EX = "^[A-ZĄĆĘŁŃÓŚŹŻ]{1}(([a-ząćęłńóśźż]+)(-[A-ZĄĆĘŁŃÓŚŹŻ]{1}[a-ząćęłńóśźż]+)?)$";
+    private final int SURNAME_MAX_LENGTH = 50;
+    private final String DATE_FORMAT = "yyyy-MM-dd";
+
+    private String onlyNumbersRegEx = "^\\d+$";
+
     // TODO: Pracownicy: ladowanie pracownikow podleglych pod kierownika, walidacja danych wejsciowych. #Karol# !!DONE!!
     // TODO: Pracownicy: Mianowanie na kierownika, powinno automatycznie usuwać z listy pracowników pod kierownikiem ( w bazie ustaiwnie flagi jako pracownik zwolniony i kopia danych do kierownika ) #Karol#
     // TODO: Pracownicy: Przekazywanie kierownictwa. #Karol#
     // TODO: Wyciagi: ladowanie wyciagow podlegajacych pod kierownika (o ile obecna data jest w zakresie `od`, `do`, najlepiej `do` niech bedzie null) kosztów punktowych i stanu, walidacja danych wejsciowych (czy różne od bieżączych w przypadku edycji).
     // TODO: Wyciagi: ladowanie listy kieronikow, dodawanie jako zarzadce. Usuwanie swojego prawa do administorwania wyciągiem (o ile nie jest ostatnim kierownikiem mogącym zarządzać).
     // TODO: Cennik: Ladowanie biezacego cennika dla wszystkich pozycji ze slownika, walidacja danych wejsciowych. #Dominik# !!DONE!!
-    // TODO: Raporty: Wybieranie dat dla raportu uzyc wyciagu, walidacja danych dla raportu uzycia biletu. #Dominik#
+    // TODO: Raporty: Wybieranie dat dla raportu uzyc wyciagu, walidacja danych dla raportu uzycia biletu. #Dominik# !!DONE!!
     // TODO: Moje dane: Ladownianie obecnych danych kierownika, walidacja zmodyfikowanych. #Dominik# !!DONE!!
 
 
@@ -78,7 +87,12 @@ public class SupervisorWgt extends Supervisor {
 
         lblHello.setText("Witaj, " + systemUser.getName() + "!");
 
-
+        if(!fetchSkiLifts()) {
+            JOptionPane.showMessageDialog(panelMain, getLastError());
+        }
+        if(!fetchSupervisors()) {
+            JOptionPane.showMessageDialog(panelMain, getLastError());
+        }
 
         btnLogout.addActionListener(actionEvent -> mainView.showMainView());
         saveNewPriceList.addActionListener(actionEvent -> savePriceList());
@@ -86,17 +100,102 @@ public class SupervisorWgt extends Supervisor {
         boxSelectEditEmpl.addActionListener(actionEvent ->chooseUser(actionEvent));
         btnSaveEditEmpl.addActionListener(ActionEvent ->saveEmployeeMod());
         btnDeleteEmpl.addActionListener(ActionEvent ->deleteEmployee());
+        btnPrintLiftRep.addActionListener(ActionEvent -> generateSkiLiftReport());
+        btnPrintTicketUseRep.addActionListener(ActionEvent -> generateTicketReport());
         btnSaveSupervisor.addActionListener(ActionEvent -> updateSupervisorData());
         btnQuitJobSupervisor.addActionListener(ActionEvent -> quitJobSupervisor());
         btnNewAddLift.addActionListener(ActionEvent -> addLift());
 
         loadPriceList();
         loadEmployees();
+        loadReports();
         loadSupervisorData();
     }
 
     public JPanel getPanel() {
         return panelMain;
+    }
+
+    private void loadReports() {
+        ArrayList<String> skiLifts = new ArrayList<>();
+        skiLiftsList.stream().map(lift -> (lift.getKey() + ". " + lift.getValue())).forEach(skiLifts::add);
+        boxLiftRepSelect.setModel(new DefaultComboBoxModel(skiLifts.toArray()));
+
+        boxLiftRepSelect.setSelectedIndex(-1);
+        dateLiftRepSince.setFormats(DATE_FORMAT);
+        dateLiftRepTo.setFormats(DATE_FORMAT);
+    }
+
+    private void generateSkiLiftReport() {
+        if(boxLiftRepSelect.getSelectedIndex() == -1) {
+            JOptionPane.showMessageDialog(panelMain, "Nie wybrano żadnego wyciągu.");
+            return;
+        }
+        String selectedSkiLift = boxLiftRepSelect.getSelectedItem().toString(); // Id. nazwa
+        Integer skiLiftId = Integer.parseInt(selectedSkiLift.replaceAll("\\..*", ""));
+        Date reportSince = dateLiftRepSince.getDate();
+        Date reportTo = dateLiftRepTo.getDate();
+        if( !reportSince.before(reportTo) ) {
+            JOptionPane.showMessageDialog(panelMain, "Początek okresu raportu musi być przed konicem tego okersu.");
+            return;
+        }
+        if((new Date()).before(reportTo)) {
+            JOptionPane.showMessageDialog(panelMain, "Koniec okresu nie może być późniejszy niż " + (new SimpleDateFormat(DATE_FORMAT)).format(new Date())+ ".");
+        }
+
+        boolean success = reports.generateSkiLiftReport(skiLiftId, reportSince, reportTo);
+        if(success) {
+            saveReportAs();
+        }
+        else {
+            JOptionPane.showMessageDialog(panelMain, reports.getLastError());
+        }
+    }
+
+    public void generateTicketReport() {
+        String ticketNo = txtTicketUseRepNo.getText();
+        if(!ticketNo.matches(onlyNumbersRegEx)) {
+            JOptionPane.showMessageDialog(panelMain, "Błędny format numeru, popraw i spróbuj ponownie.");
+            return;
+        }
+        Integer ticketId = Integer.parseInt(ticketNo);
+
+        boolean success = reports.generateTicketUseReport(ticketId);
+        if(success) {
+            saveReportAs();
+        }
+        else {
+            JOptionPane.showMessageDialog(panelMain, reports.getLastError());
+        }
+    }
+
+    public void saveReportAs() {
+        boolean success = false;
+        boolean tryToSave = true;
+        while (tryToSave) {
+            JFileChooser fileChooser = new JFileChooser();
+            fileChooser.setDialogTitle("Zapisz raport jako");
+            fileChooser.setAcceptAllFileFilterUsed(false);
+            fileChooser.addChoosableFileFilter(new FileNameExtensionFilter("Plik PDF", "pdf"));
+
+            int returnValue = fileChooser.showSaveDialog(panelMain);
+            if (returnValue == JFileChooser.APPROVE_OPTION) {
+
+                success = reports.saveReportToFile(fileChooser.getSelectedFile().getAbsolutePath());
+                tryToSave = false;
+
+            } else {
+                int resp = JOptionPane.showConfirmDialog(panelMain, "Błąd podczas próby zapisu raportu, spróbować ponownie?", "Błąd", JOptionPane.YES_NO_OPTION);
+                if(resp == JOptionPane.NO_OPTION) tryToSave = false;
+            }
+        }
+
+        if(success) {
+            JOptionPane.showMessageDialog(panelMain ,"Pomyślnie zapisano raport.");
+        }
+        else {
+            JOptionPane.showMessageDialog(panelMain, reports.getLastError());
+        }
     }
 
     private void loadSupervisorData() {
@@ -112,11 +211,11 @@ public class SupervisorWgt extends Supervisor {
             JOptionPane.showMessageDialog(panelMain, "Dane nie uległy zmianie.");
             return;
         }
-        if(!newName.matches(nameRegEx)) {
+        if(!newName.matches(NAME_REG_EX)) {
             JOptionPane.showMessageDialog(panelMain, "Podane imie jest w niepoprawnym formacie.");
             return;
         }
-        if(!newSurname.matches(surnameRegEx) || newSurname.length() >= surnameMaxLength) {
+        if(!newSurname.matches(SURNAME_REG_EX) || newSurname.length() >= SURNAME_MAX_LENGTH) {
             JOptionPane.showMessageDialog(panelMain, "Podane nazwisko jest w niepoprawnym formacie.");
             return;
         }
@@ -227,7 +326,7 @@ private void addUser(){
 
     String name= txtNameNewEmpl.getText();
     String surname= txtSurnameNewEmpl.getText();
-    if(!name.matches(nameRegEx)||!surname.matches(surnameRegEx) || surname.length() >= surnameMaxLength){
+    if(!name.matches(NAME_REG_EX)||!surname.matches(SURNAME_REG_EX) || surname.length() >= SURNAME_MAX_LENGTH){
         JOptionPane.showMessageDialog(null,"Imie lub nazwisko zawiera niepoprawne znaki");
         return;
     }
@@ -326,8 +425,6 @@ private void chooseUser(ActionEvent e){
             else{return;}
         }
     }
-
-
 }
 
 
