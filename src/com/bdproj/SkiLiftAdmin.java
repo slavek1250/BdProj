@@ -1,9 +1,9 @@
 package com.bdproj;
-import java.sql.Date;
+import javax.swing.*;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-
+import java.util.ArrayList;
 public class SkiLiftAdmin {
     private SystemUser systemUser;
 
@@ -47,5 +47,7 @@ public class SkiLiftAdmin {
             }
         }
     }
+
+
 }
 

@@ -62,7 +62,6 @@ public class Reports {
         }
 
         try {
-
             List<IElement> elements =
                     HtmlConverter.convertToElements(html, null);
             PdfDocument pdf = new PdfDocument(new PdfWriter(filepath));
@@ -72,13 +71,12 @@ public class Reports {
                 document.add((IBlockElement)element);
             }
             document.close();
-
+            html = null;
             return true;
         }
         catch (IOException ex) {
             lastError = ex.getMessage();
         }
-
         return false;
     }
 }

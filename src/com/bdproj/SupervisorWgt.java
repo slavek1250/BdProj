@@ -109,6 +109,7 @@ public class SupervisorWgt extends Supervisor {
         loadPriceList();
         loadEmployees();
         loadReports();
+        loadSupervisors();
         loadSupervisorData();
     }
 
@@ -120,10 +121,18 @@ public class SupervisorWgt extends Supervisor {
         ArrayList<String> skiLifts = new ArrayList<>();
         skiLiftsList.stream().map(lift -> (lift.getKey() + ". " + lift.getValue())).forEach(skiLifts::add);
         boxLiftRepSelect.setModel(new DefaultComboBoxModel(skiLifts.toArray()));
-
+        boxSelectEditLift.setModel(new DefaultComboBoxModel(skiLifts.toArray()));
         boxLiftRepSelect.setSelectedIndex(-1);
         dateLiftRepSince.setFormats(DATE_FORMAT);
         dateLiftRepTo.setFormats(DATE_FORMAT);
+        boxSelectEditLift.setSelectedIndex(-1);
+    }
+
+    private void loadSupervisors(){
+        ArrayList<String> supLists = new ArrayList<>();
+        supervisorsList.stream().map(sup->(sup.getKey()+". " +sup.getValue().getValue()+ " "+sup.getValue().getKey())).forEach(supLists::add);
+        boxSupervisorSelectLift.setModel(new DefaultComboBoxModel(supLists.toArray()));
+        boxSupervisorSelectLift.setSelectedIndex(-1);
     }
 
     private void generateSkiLiftReport() {

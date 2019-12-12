@@ -4,6 +4,8 @@ import javax.swing.*;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+
 
 public class Tickets {
     private SystemUser systemUser;
@@ -13,6 +15,29 @@ public class Tickets {
     // TODO: Pobieranie bierzacego cennika. #KLAUDIA#
     // TODO: Doladowywanie biletu. #KLAUDIA#
     // TODO: Blokowanie biletow (ustawienie flagi).#Karol# !!DONE!!
+
+    public static ArrayList<String> getPriceListItem(){
+
+        PreparedStatement ps;
+        ResultSet rs;
+        String query="SELECT CONCAT(sc.id,'. ', sc.nazwa) AS 'cennik' FROM slownik_cennik sc";
+        ArrayList<String> prc =new ArrayList<String>();
+        if(MySQLConnection.prepareConnection()) {
+            try {
+                ps = MySQLConnection.getConnection().prepareStatement(query);
+                rs = ps.executeQuery();
+                while (rs.next()) {
+                    int i = 1;
+                    prc.add(rs.getString(i));
+                    i++;
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        return prc;
+    }
+
 
     // Pobieranie najnowszego cennika z bazy:
     // select pc.id as 'poz_cennik_id', sc.nazwa, pc.cena from poz_cennik pc join slownik_cennik sc on pc.slownik_cennik_id = sc.id where pc.cennik_id = (select max(c.id) from cennik c);
