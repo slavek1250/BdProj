@@ -257,7 +257,8 @@
                           <tabbedpane title="Wyciągi"/>
                         </constraints>
                         <properties>
-                          <background color="-12019249"/>
+                          <background color="-12828863"/>
+                          <enabled value="false"/>
                         </properties>
                         <border type="none"/>
                         <children>
@@ -595,11 +596,7 @@
                               <grid row="2" column="1" row-span="1" col-span="5" vsize-policy="0" hsize-policy="2" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
                             </constraints>
                             <properties>
-                              <model>
-                                <item value="Wyciąg 1"/>
-                                <item value="Wyciąg 2"/>
-                                <item value="Wyciąg 3"/>
-                              </model>
+                              <model/>
                             </properties>
                           </component>
                           <component id="c5cd9" class="javax.swing.JLabel">
@@ -617,22 +614,6 @@
                             <properties>
                               <text value="Raport do: "/>
                             </properties>
-                          </component>
-                          <component id="f506f" class="javax.swing.JTextField" binding="txtLiftRepSince">
-                            <constraints>
-                              <grid row="3" column="1" row-span="1" col-span="5" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
-                                <preferred-size width="150" height="-1"/>
-                              </grid>
-                            </constraints>
-                            <properties/>
-                          </component>
-                          <component id="acdbe" class="javax.swing.JTextField" binding="txtLiftRepTo">
-                            <constraints>
-                              <grid row="4" column="1" row-span="1" col-span="5" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
-                                <preferred-size width="150" height="-1"/>
-                              </grid>
-                            </constraints>
-                            <properties/>
                           </component>
                           <component id="fccfa" class="javax.swing.JLabel">
                             <constraints>
@@ -671,7 +652,7 @@
                               <text value="Drukuj raport"/>
                             </properties>
                           </component>
-                          <component id="38935" class="javax.swing.JButton" binding="btnTicketUseRep">
+                          <component id="38935" class="javax.swing.JButton" binding="btnPrintTicketUseRep">
                             <constraints>
                               <grid row="9" column="3" row-span="1" col-span="3" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
                             </constraints>
@@ -697,6 +678,18 @@
                           <component id="65120" class="javax.swing.JSeparator">
                             <constraints>
                               <grid row="6" column="0" row-span="1" col-span="6" vsize-policy="6" hsize-policy="6" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+                            </constraints>
+                            <properties/>
+                          </component>
+                          <component id="941b0" class="org.jdesktop.swingx.JXDatePicker" binding="dateLiftRepSince">
+                            <constraints>
+                              <grid row="3" column="1" row-span="1" col-span="5" vsize-policy="3" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                            </constraints>
+                            <properties/>
+                          </component>
+                          <component id="12e50" class="org.jdesktop.swingx.JXDatePicker" binding="dateLiftRepTo">
+                            <constraints>
+                              <grid row="4" column="1" row-span="1" col-span="5" vsize-policy="3" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                             </constraints>
                             <properties/>
                           </component>
