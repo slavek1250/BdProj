@@ -80,7 +80,7 @@ public class Supervisor {
     }
 
     protected boolean fetchSupervisors() {
-        String query = "select id, nazwisko, imie from kierownik where zwolniony = 0;";
+        String query = "select id, nazwisko, imie from kierownik where zwolniony = 0 and id!=?;";
 
         if(!MySQLConnection.prepareConnection()) {
             lastError = MySQLConnection.getLastError();
@@ -89,6 +89,7 @@ public class Supervisor {
 
         try {
             PreparedStatement ps = MySQLConnection.getConnection().prepareStatement(query);
+            ps.setInt(1,systemUser.getId());
             ResultSet rs = ps.executeQuery();
 
             supervisorsList = new ArrayList<>();
@@ -112,7 +113,7 @@ public class Supervisor {
         String query = "select w.id, w.nazwa from wyciag w\n" +
                         "where (w.id, 0) = (\n" +
                         "\t\tselect d.wyciag_id, sum(d.nieistniejacy) from wyciag_dane d\n" +
-                        "\t\twhere d.wyciag_id = w.id group by wyciag_id );";
+                        "\t\twhere d.wyciag_id = w.id and kierownik_id=? group by wyciag_id );";
 
         if(!MySQLConnection.prepareConnection()) {
             lastError = MySQLConnection.getLastError();
@@ -121,6 +122,7 @@ public class Supervisor {
 
         try {
             PreparedStatement ps = MySQLConnection.getConnection().prepareStatement(query);
+            ps.setInt(1,systemUser.getId());
             ResultSet rs = ps.executeQuery();
 
             skiLiftsList = new ArrayList<>();
