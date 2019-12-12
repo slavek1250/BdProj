@@ -8,6 +8,8 @@ import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.sql.*;
+import java.util.ArrayList;
+
 public class EmployeeWgt extends Employee {
     private JPanel panelMain;
     private JButton btnLogout;
@@ -36,6 +38,8 @@ public class EmployeeWgt extends Employee {
         checkNewTicket.addItemListener(e -> newTicketSlot(e));
 
         btnDeleteTicket.addActionListener(e ->blockTicket());
+
+        loadPriceListItem();
     }
 
     public JPanel getPanel() {
@@ -61,4 +65,11 @@ private void blockTicket(){
     String ticketnumber= txtDeleteTicketNo.getText();
     tickets.blockTicket(ticketnumber);
 }
+
+    private void loadPriceListItem (){
+
+        ArrayList listitem = Tickets.getPriceListItem();
+        boxSelectPriceList.setModel(new DefaultComboBoxModel(listitem.toArray()));
+        boxSelectPriceList.setSelectedIndex(-1);
+    }
 }
