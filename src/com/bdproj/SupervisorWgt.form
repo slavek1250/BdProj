@@ -257,7 +257,7 @@
                           <tabbedpane title="Wyciągi"/>
                         </constraints>
                         <properties>
-                          <background color="-12828863"/>
+                          <background color="-6312492"/>
                           <enabled value="false"/>
                         </properties>
                         <border type="none"/>

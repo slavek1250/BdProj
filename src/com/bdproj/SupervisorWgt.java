@@ -60,7 +60,7 @@ public class SupervisorWgt extends Supervisor {
     private String nameRegEx = "^[A-ZĄĆĘŁŃÓŚŹŻ]{1}[a-ząćęłńóśźż]{1,49}$";
     private String surnameRegEx = "^[A-ZĄĆĘŁŃÓŚŹŻ]{1}(([a-ząćęłńóśźż]+)(-[A-ZĄĆĘŁŃÓŚŹŻ]{1}[a-ząćęłńóśźż]+)?)$";
     private int surnameMaxLength = 50;
-    private String onlyNumbersRegEx = "\\d+";
+    private String onlyNumbersRegEx = "[123456789]{1}\\d+";
     
     // TODO: Pracownicy: ladowanie pracownikow podleglych pod kierownika, walidacja danych wejsciowych. #Karol# !!DONE!!
     // TODO: Pracownicy: Mianowanie na kierownika, powinno automatycznie usuwać z listy pracowników pod kierownikiem ( w bazie ustaiwnie flagi jako pracownik zwolniony i kopia danych do kierownika ) #Karol#
@@ -326,6 +326,7 @@ private void chooseUser(ActionEvent e){
             else{return;}
         }
     }
+
 
 }
 
