@@ -77,7 +77,7 @@ public class SupervisorWgt extends Supervisor {
     // TODO: Wyciagi: ladowanie wyciagow podlegajacych pod kierownika (o ile obecna data jest w zakresie `od`, `do`, najlepiej `do` niech bedzie null) kosztów punktowych i stanu, walidacja danych wejsciowych (czy różne od bieżączych w przypadku edycji).
     // TODO: Wyciagi: ladowanie listy kieronikow, dodawanie jako zarzadce. Usuwanie swojego prawa do administorwania wyciągiem (o ile nie jest ostatnim kierownikiem mogącym zarządzać).
     // TODO: Cennik: Ladowanie biezacego cennika dla wszystkich pozycji ze slownika, walidacja danych wejsciowych. #Dominik# !!DONE!!
-    // TODO: Raporty: Wybieranie dat dla raportu uzyc wyciagu, walidacja danych dla raportu uzycia biletu. #Dominik#
+    // TODO: Raporty: Wybieranie dat dla raportu uzyc wyciagu, walidacja danych dla raportu uzycia biletu. #Dominik# !!DONE!!
     // TODO: Moje dane: Ladownianie obecnych danych kierownika, walidacja zmodyfikowanych. #Dominik# !!DONE!!
 
 
@@ -145,9 +145,9 @@ public class SupervisorWgt extends Supervisor {
 
         boolean success = reports.generateSkiLiftReport(skiLiftId, reportSince, reportTo);
         if(success) {
-            success = saveReportAs();
+            saveReportAs();
         }
-        if(!success) {
+        else {
             JOptionPane.showMessageDialog(panelMain, reports.getLastError());
         }
     }
@@ -162,14 +162,15 @@ public class SupervisorWgt extends Supervisor {
 
         boolean success = reports.generateTicketUseReport(ticketId);
         if(success) {
-            success = saveReportAs();
+            saveReportAs();
         }
-        if(!success) {
+        else {
             JOptionPane.showMessageDialog(panelMain, reports.getLastError());
         }
     }
 
-    public boolean saveReportAs() {
+    public void saveReportAs() {
+        boolean success = false;
         boolean tryToSave = true;
         while (tryToSave) {
             JFileChooser fileChooser = new JFileChooser();
@@ -180,14 +181,21 @@ public class SupervisorWgt extends Supervisor {
             int returnValue = fileChooser.showSaveDialog(panelMain);
             if (returnValue == JFileChooser.APPROVE_OPTION) {
 
-                return reports.saveReportToFile(fileChooser.getSelectedFile().getAbsolutePath());
+                success = reports.saveReportToFile(fileChooser.getSelectedFile().getAbsolutePath());
+                tryToSave = false;
 
             } else {
                 int resp = JOptionPane.showConfirmDialog(panelMain, "Błąd podczas próby zapisu raportu, spróbować ponownie?", "Błąd", JOptionPane.YES_NO_OPTION);
                 if(resp == JOptionPane.NO_OPTION) tryToSave = false;
             }
         }
-        return true;
+
+        if(success) {
+            JOptionPane.showMessageDialog(panelMain ,"Pomyślnie zapisano raport.");
+        }
+        else {
+            JOptionPane.showMessageDialog(panelMain, reports.getLastError());
+        }
     }
 
     private void loadSupervisorData() {
