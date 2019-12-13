@@ -57,8 +57,7 @@ public class Tickets {
                     out = "W bazie nie ma żadnych biletów";
                 }
 
-            } catch (
-                    SQLException e1) {
+            } catch (SQLException e1) {
                 e1.printStackTrace();
             }
         }

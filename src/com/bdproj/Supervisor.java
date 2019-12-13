@@ -24,7 +24,7 @@ public class Supervisor {
         priceList = new PriceList(user);
         employeeAdmin = new EmployeeAdmin(user);
         skiLiftAdmin = new SkiLiftAdmin(user);
-        reports = new Reports(user);
+        //reports = new Reports(user);
     }
 
     protected Integer getSkiLiftId(String name) {

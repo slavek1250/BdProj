@@ -150,11 +150,12 @@ public class SupervisorWgt extends Supervisor {
         }
         if((new Date()).before(reportTo)) {
             JOptionPane.showMessageDialog(panelMain, "Koniec okresu nie może być późniejszy niż " + (new SimpleDateFormat(DATE_FORMAT)).format(new Date())+ ".");
+            return;
         }
 
-        boolean success = reports.generateSkiLiftReport(skiLiftId, reportSince, reportTo);
+        boolean success = true;// reports.generateSkiLiftReport(skiLiftId, reportSince, reportTo);
         if(success) {
-            saveReportAs();
+            //saveReportAs();
         }
         else {
             JOptionPane.showMessageDialog(panelMain, reports.getLastError());
@@ -169,18 +170,21 @@ public class SupervisorWgt extends Supervisor {
         }
         Integer ticketId = Integer.parseInt(ticketNo);
 
-        boolean success = reports.generateTicketUseReport(ticketId);
+        TicketUseReport ticketUseReport = new TicketUseReport(systemUser);
+        boolean success = ticketUseReport.generateReport(ticketId);
         if(success) {
-            saveReportAs();
+            saveReportAs(ticketUseReport);
         }
         else {
             JOptionPane.showMessageDialog(panelMain, reports.getLastError());
         }
     }
 
-    public void saveReportAs() {
+    public void saveReportAs(HtmlReport htmlReport) {
         boolean success = false;
         boolean tryToSave = true;
+        Reports reports = new Reports(htmlReport);
+
         while (tryToSave) {
             JFileChooser fileChooser = new JFileChooser();
             fileChooser.setDialogTitle("Zapisz raport jako");
