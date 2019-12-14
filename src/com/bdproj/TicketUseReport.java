@@ -36,7 +36,7 @@ import java.util.EnumMap;
 
 public class TicketUseReport implements HtmlReport {
 
-    private String HTML_TEMPLATE_PATH = "reports/templates/TicketUseTemplate.html";
+    private final String HTML_TEMPLATE_PATH = "reports/templates/TicketUseTemplate.html";
 
     private SystemUser systemUser;
     private Integer ticketId;
@@ -95,10 +95,15 @@ public class TicketUseReport implements HtmlReport {
         return htmlReport;
     }
 
+    public String getLastError() {
+        return lastError;
+    }
+
     public boolean generateReport(Integer ticketId) {
 
         this.ticketId = ticketId;
 
+        if(!isExistingId()) return false;
         if(!fetchAllData()) return false;
 
         try {
@@ -149,6 +154,28 @@ public class TicketUseReport implements HtmlReport {
         htmlReport = htmlReport.replace("$table_2_content", sb2.toString());
 
         return true;
+    }
+
+    private boolean isExistingId() {
+        if(!MySQLConnection.prepareConnection()) {
+            lastError = MySQLConnection.getLastError();
+            return false;
+        }
+        try {
+            PreparedStatement ps = MySQLConnection.getConnection().prepareStatement("select * from karnet where id=?;");
+            ps.setInt(1, ticketId);
+            ResultSet rs = ps.executeQuery();
+            if(rs.first()) {
+                return true;
+            }
+            else {
+                lastError = "Karnet o numerze " + ticketId + " nie istnieje.";
+            }
+        }
+        catch (SQLException ex) {
+            lastError = ex.getMessage();
+        }
+        return false;
     }
 
     private boolean fetchAllData() {

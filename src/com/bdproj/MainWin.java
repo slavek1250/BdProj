@@ -1,12 +1,6 @@
 package com.bdproj;
 
-import org.jdesktop.swingx.JXDatePicker;
-
 import javax.swing.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.sql.*;
-import java.util.logging.*;
 
 /*
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -101,7 +95,7 @@ public class MainWin implements MainView {
 
         frame.setContentPane(mainWin.panelMain);
 
-        frame.setSize(600, 500);
+        frame.setSize(700, 700);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setVisible(true);
     }

@@ -1,14 +1,11 @@
 package com.bdproj;
 
 import java.io.IOException;
-import java.nio.charset.Charset;
 import java.util.List;
 
 import com.itextpdf.html2pdf.ConverterProperties;
 import com.itextpdf.html2pdf.HtmlConverter;
 import com.itextpdf.html2pdf.resolver.font.DefaultFontProvider;
-import com.itextpdf.io.font.FontProgram;
-import com.itextpdf.io.font.FontProgramFactory;
 import com.itextpdf.kernel.geom.PageSize;
 import com.itextpdf.kernel.pdf.PdfDocument;
 import com.itextpdf.kernel.pdf.PdfWriter;
@@ -16,19 +13,14 @@ import com.itextpdf.layout.Document;
 import com.itextpdf.layout.element.IBlockElement;
 import com.itextpdf.layout.element.IElement;
 import com.itextpdf.layout.font.FontProvider;
-import com.itextpdf.text.DocumentException;
-import com.itextpdf.text.Font;
-
-import com.itextpdf.text.Paragraph;
-import com.itextpdf.text.pdf.BaseFont;
 
 
 public class Reports {
 
     HtmlReport htmlReport;
 
-    // TODO: Generowanie raportow uzyc poszczegolnych wyciagow od do. Ile zarobil, ile razy uzyto, srednie dzienne, tygodniowe, itd. #Dominik#
-    // TODO: Generowanie reportow uzyc poszczegolnych biletow, ile km przejechane (przewyzszenie) ile wydano na pkt, srednie, itd. #Dominik#
+    // TODO: Generowanie raportow uzyc poszczegolnych wyciagow od do. Ile zarobil, ile razy uzyto, srednie dzienne, tygodniowe, itd. #Dominik# !!DONE!!
+    // TODO: Generowanie reportow uzyc poszczegolnych biletow, ile km przejechane (przewyzszenie) ile wydano na pkt, srednie, itd. #Dominik# !!DONE!!
 
     private String lastError;
 
@@ -39,24 +31,7 @@ public class Reports {
     public String getLastError() {
         return lastError;
     }
-/*
-    public boolean generateSkiLiftReport(Integer id, Date since, Date to) {
 
-        return true;
-    }
-
-    public boolean generateTicketUseReport(Integer ticketId) {
-
-        try {
-            html = Files.readString(Paths.get("E:\\studia_lab\\sem_V_lab\\BDProj\\JavaProgram\\src\\com\\bdproj\\test.html"));
-        }
-        catch (IOException ex) {
-            lastError = ex.getMessage();
-            return false;
-        }
-        return true;
-    }
-*/
     public boolean saveReportToFile(String filepath) {
 
         filepath = filepath.replaceAll("\\.+.*$", "");

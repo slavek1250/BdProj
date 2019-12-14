@@ -76,6 +76,7 @@ public class SupervisorWgt extends Supervisor {
     // TODO: Pracownicy: Przekazywanie kierownictwa. #Karol#
     // TODO: Wyciagi: ladowanie wyciagow podlegajacych pod kierownika (o ile obecna data jest w zakresie `od`, `do`, najlepiej `do` niech bedzie null) kosztów punktowych i stanu, walidacja danych wejsciowych (czy różne od bieżączych w przypadku edycji).
     // TODO: Wyciagi: ladowanie listy kieronikow, dodawanie jako zarzadce. Usuwanie swojego prawa do administorwania wyciągiem (o ile nie jest ostatnim kierownikiem mogącym zarządzać).
+    // TODO: Wyciagi: Sprawdzenie czy wybrany kierownik nie jest w bieżącej grupie zarządców wyciągu(przy dodawaniu nowego zarządcy).
     // TODO: Cennik: Ladowanie biezacego cennika dla wszystkich pozycji ze slownika, walidacja danych wejsciowych. #Dominik# !!DONE!!
     // TODO: Raporty: Wybieranie dat dla raportu uzyc wyciagu, walidacja danych dla raportu uzycia biletu. #Dominik# !!DONE!!
     // TODO: Moje dane: Ladownianie obecnych danych kierownika, walidacja zmodyfikowanych. #Dominik# !!DONE!!
@@ -153,12 +154,13 @@ public class SupervisorWgt extends Supervisor {
             return;
         }
 
-        boolean success = true;// reports.generateSkiLiftReport(skiLiftId, reportSince, reportTo);
+        SkiLiftUseReport skiLiftUseReport = new SkiLiftUseReport(systemUser);
+        boolean success = skiLiftUseReport.generateReport(skiLiftId, getSkiLiftName(skiLiftId), reportSince, reportTo);
         if(success) {
-            //saveReportAs();
+            saveReportAs(skiLiftUseReport);
         }
         else {
-            JOptionPane.showMessageDialog(panelMain, reports.getLastError());
+            JOptionPane.showMessageDialog(panelMain, skiLiftUseReport.getLastError());
         }
     }
 
@@ -176,7 +178,7 @@ public class SupervisorWgt extends Supervisor {
             saveReportAs(ticketUseReport);
         }
         else {
-            JOptionPane.showMessageDialog(panelMain, reports.getLastError());
+            JOptionPane.showMessageDialog(panelMain, ticketUseReport.getLastError());
         }
     }
 
@@ -199,7 +201,7 @@ public class SupervisorWgt extends Supervisor {
 
             } else {
                 int resp = JOptionPane.showConfirmDialog(panelMain, "Błąd podczas próby zapisu raportu, spróbować ponownie?", "Błąd", JOptionPane.YES_NO_OPTION);
-                if(resp == JOptionPane.NO_OPTION) tryToSave = false;
+                if(resp == JOptionPane.NO_OPTION) return;
             }
         }
 
@@ -313,6 +315,12 @@ public class SupervisorWgt extends Supervisor {
                 anyPriceHasChanged = true;
             }
             newPriceListPrices.add(cellPrice);
+        }
+
+        int resp = JOptionPane.showConfirmDialog(panelMain, "Czy na pewno chcesz dodać nowy cennik?\nJeżeli zrezygnujesz zostanie załadowny poprzeni cennik.", "Potwierdź", JOptionPane.YES_NO_OPTION);
+        if(resp == JOptionPane.NO_OPTION) {
+            loadPriceList();
+            return;
         }
 
         if(anyPriceHasChanged) {

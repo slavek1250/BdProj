@@ -110,10 +110,10 @@ public class Supervisor {
 
     protected boolean fetchSkiLifts() {
 
-        String query = "select w.id, w.nazwa from wyciag w\n" +
-                        "where (w.id, 0) = (\n" +
+        String query = "select w.id, w.nazwa from wyciag w join zarzadcy z on w.id = z.wyciag_id\n" +
+                        "where z.kierownik_id = ? and (w.id, 0) = (\n" +
                         "\t\tselect d.wyciag_id, sum(d.nieistniejacy) from wyciag_dane d\n" +
-                        "\t\twhere d.wyciag_id = w.id and kierownik_id=? group by wyciag_id );";
+                        "\t\twhere d.wyciag_id = w.id group by wyciag_id );";
 
         if(!MySQLConnection.prepareConnection()) {
             lastError = MySQLConnection.getLastError();
@@ -122,7 +122,7 @@ public class Supervisor {
 
         try {
             PreparedStatement ps = MySQLConnection.getConnection().prepareStatement(query);
-            ps.setInt(1,systemUser.getId());
+            ps.setInt(1, systemUser.getId());
             ResultSet rs = ps.executeQuery();
 
             skiLiftsList = new ArrayList<>();
