@@ -1,0 +1,104 @@
+<html>
+    <head>
+        <style> 
+            body, html {
+                width: 595px;
+            }
+            img {
+                width: 500px;
+            }
+            #tab table, #tab td, #tab th {
+                border: 1px solid black;
+                padding: 3px;
+            }
+            #tab table tr td {
+                text-align: center;
+            }
+            #tab table {
+                border-collapse: collapse;
+                width: 100%;
+            }
+        </style>
+    </head>
+    <body>
+        <div style="font-family: MyFont;">
+            <div style="margin-top: 10px;">
+                <table style="right: 0; position: inherit;">
+                    <tr>
+                        <td style="text-align: right;">
+                            Data generacji raportu: 
+                        </td>
+                        <td style="padding-left: 5px;">
+                            $gen_rep_timestamp
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="text-align: right;">
+                            Wygenerowano dla: 
+                        </td>
+                        <td style="padding-left: 5px;">
+                            $supervisor_name_surname
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <div style="text-align: center; margin-top: 40px;">
+                Raport użyć biletu
+            </div>
+            <div style="margin-top: 40;">
+                <p>
+                    Numer biletu: $ticket_no.<br/>
+                    Data zakupu biletu: $first_top_up.<br/>
+                    Data ostatniego doładowania: $last_top_up.<br/>
+                    <br/>
+                    Stan konta: $ticket_balance punktów.<br/>
+                    <br/>
+                    Liczba użyć: $use_count, wydano $total_points_spent punktów.<br/>
+                    Przewyższenie całkowite: $total_height metrów.
+                </p>
+            </div>
+            <div id="tab">
+                <table style="margin-top: 40;">
+                    <thead>
+                        <th>
+                            #
+                        </th>
+                        <th>
+                            Pozycja cennika
+                        </th>
+                        <th>
+                            Cena jednostkowa [zł]
+                        </th>
+                        <th>
+                            Liczba doładowań
+                        </th>
+                        <th>
+                            Suma punktów
+                        </th>
+                        <th>
+                            Łączna kwota [zł]
+                        </th>
+                    </thead>
+                    $table_1_content
+                </table>
+                <table style="margin-top: 40;">
+                    <thead>
+                        <th>
+                            Wyciąg
+                        </th>
+                        <th>
+                            Liczba użyć
+                        </th>
+                        <th>
+                            Wydane punkty
+                        </th>
+                        <th>
+                            Przewyższenie [m]
+                        </th>
+                    </thead>
+                    $table_2_content
+                </table>
+            </div>
+        </div>
+    </body>
+</html>
