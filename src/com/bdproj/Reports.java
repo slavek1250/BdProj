@@ -1,14 +1,27 @@
 package com.bdproj;
 
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.util.List;
 
+import com.itextpdf.html2pdf.ConverterProperties;
 import com.itextpdf.html2pdf.HtmlConverter;
+import com.itextpdf.html2pdf.resolver.font.DefaultFontProvider;
+import com.itextpdf.io.font.FontProgram;
+import com.itextpdf.io.font.FontProgramFactory;
+import com.itextpdf.kernel.geom.PageSize;
 import com.itextpdf.kernel.pdf.PdfDocument;
 import com.itextpdf.kernel.pdf.PdfWriter;
 import com.itextpdf.layout.Document;
 import com.itextpdf.layout.element.IBlockElement;
 import com.itextpdf.layout.element.IElement;
+import com.itextpdf.layout.font.FontProvider;
+import com.itextpdf.text.DocumentException;
+import com.itextpdf.text.Font;
+
+import com.itextpdf.text.Paragraph;
+import com.itextpdf.text.pdf.BaseFont;
+
 
 public class Reports {
 
@@ -57,16 +70,24 @@ public class Reports {
         }
 
         try {
-            List<IElement> elements =
-                    HtmlConverter.convertToElements(html, null);
+            ConverterProperties converterProperties = new ConverterProperties();
+            FontProvider fontProvider = new DefaultFontProvider(false, false, false);
+            //FontProgram fontProgram = FontProgramFactory.createFont("AbhayaLibre-Regular.ttf");
+            //fontProvider.addFont(fontProgram);
+            fontProvider.addDirectory("reports/font");
+
+            converterProperties.setFontProvider(fontProvider);
+
+            List<IElement> elements = HtmlConverter.convertToElements(html, converterProperties);
             PdfDocument pdf = new PdfDocument(new PdfWriter(filepath));
+
+            pdf.setDefaultPageSize(PageSize.A4);
             Document document = new Document(pdf);
 
             for (IElement element : elements) {
                 document.add((IBlockElement)element);
             }
             document.close();
-            html = null;
             return true;
         }
         catch (IOException ex) {

@@ -36,6 +36,8 @@ import java.util.EnumMap;
 
 public class TicketUseReport implements HtmlReport {
 
+    private String HTML_TEMPLATE_PATH = "reports/templates/TicketUseTemplate.html";
+
     private SystemUser systemUser;
     private Integer ticketId;
     private String htmlReport = null;
@@ -69,7 +71,7 @@ public class TicketUseReport implements HtmlReport {
                  "\t(select sum(wd.koszt_pkt) from uzycia_karnetu uk join wyciag_dane wd on uk.wyciag_dane_id = wd.id where uk.karnet_id = k.id) as 'l_pkt'\n" +
             "from karnet k where k.id = ?;";
 
-    private enum Query5Enum { TOTAL_USE_COUNT, TOTAL_POINTS_SPEND, TOTAL_HEIGHT };
+    private enum Query5Enum { TOTAL_USE_COUNT, TOTAL_POINTS_SPENT, TOTAL_HEIGHT };
     private EnumMap<Query5Enum, String> query5Map;
     private final String QUERY_5_TOTAL_USE_COUNT_POINTS_SPEND_HEIGHT =
             "select count(uk.id) as 'l_uzyc', sum(wd.koszt_pkt) as 'wydane_pkt', sum(w.wysokosc) as 'przewyz_calk'\n" +
@@ -97,23 +99,55 @@ public class TicketUseReport implements HtmlReport {
 
         this.ticketId = ticketId;
 
-
-
-        fetchAllData();
-
-
-
-
-
-
+        if(!fetchAllData()) return false;
 
         try {
-            htmlReport = Files.readString(Paths.get("E:\\studia_lab\\sem_V_lab\\BDProj\\JavaProgram\\src\\com\\bdproj\\test.html"));
+            htmlReport = Files.readString(Paths.get(HTML_TEMPLATE_PATH));
         }
         catch (IOException ex) {
             lastError = ex.getMessage();
             return false;
         }
+
+        htmlReport = htmlReport.replace("$gen_rep_timestamp", query1Map.get(Query1Enum.TIMESTAMP));
+        htmlReport = htmlReport.replace("$supervisor_name_surname", (systemUser.getName() + " " + systemUser.getSurname()));
+
+        htmlReport = htmlReport.replace("$ticket_no", ticketId.toString());
+        htmlReport = htmlReport.replace("$first_top_up", query2Map.get(Query2Enum.FIRST_TOP_UP));
+        htmlReport = htmlReport.replace("$last_top_up", query2Map.get(Query2Enum.LAST_TOP_UP));
+
+        htmlReport = htmlReport.replace("$ticket_balance", query4Map.get(Query4Enum.TICKET_BALANCE));
+        htmlReport = htmlReport.replace("$use_count", query5Map.get(Query5Enum.TOTAL_USE_COUNT));
+        htmlReport = htmlReport.replace("$total_points_spent", query5Map.get(Query5Enum.TOTAL_POINTS_SPENT));
+        htmlReport = htmlReport.replace("$total_height", query5Map.get(Query5Enum.TOTAL_HEIGHT));
+
+        StringBuilder sb1 = new StringBuilder("");
+        query3ListOfMaps
+                .stream()
+                .map(query3 -> (
+                        "<tr><td>" + query3.get(Query3Enum.PRICE_LIST_POSITION_ID) + "</td>" +
+                        "<td>" + query3.get(Query3Enum.PRICE_LIST_POSITION_NAME) + "</td>" +
+                        "<td>" + query3.get(Query3Enum.UNIT_PRICE) + "</td>" +
+                        "<td>" + query3.get(Query3Enum.TOP_UPS_NUMBER) + "</td>" +
+                        "<td>" + query3.get(Query3Enum.POINTS_COUNT) + "</td>" +
+                        "<td>" + query3.get(Query3Enum.AMOUNT) + "</td></tr>"
+
+                ))
+                .forEach(sb1::append);
+        htmlReport = htmlReport.replace("$table_1_content", sb1.toString());
+
+        StringBuilder sb2 = new StringBuilder("");
+        query6ListOfMaps
+                .stream()
+                .map(query6 -> (
+                        "<tr><td>" + query6.get(Query6Enum.SKI_LIFT_NAME) + "</td>" +
+                        "<td>" + query6.get(Query6Enum.USE_COUNT_SINGLE_LIFT) + "</td>" +
+                        "<td>" + query6.get(Query6Enum.POINTS_SPEND_SINGLE_LIFT) + "</td>" +
+                        "<td>" + query6.get(Query6Enum.HEIGHT_SINGLE_LIFT) + "</td></tr>"
+                 ))
+                .forEach(sb2::append);
+        htmlReport = htmlReport.replace("$table_2_content", sb2.toString());
+
         return true;
     }
 
@@ -172,7 +206,7 @@ public class TicketUseReport implements HtmlReport {
             query5Map = new EnumMap<>(Query5Enum.class);
             if(rs5.first()) {
                 query5Map.put(Query5Enum.TOTAL_USE_COUNT, rs5.getString(1));
-                query5Map.put(Query5Enum.TOTAL_POINTS_SPEND, rs5.getString(2));
+                query5Map.put(Query5Enum.TOTAL_POINTS_SPENT, rs5.getString(2));
                 query5Map.put(Query5Enum.TOTAL_HEIGHT, rs5.getString(3));
             }
 
