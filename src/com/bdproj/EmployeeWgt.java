@@ -33,10 +33,15 @@ public class EmployeeWgt extends Employee {
         lblHello.setText("Witaj, " + systemUser.getName() + "!");
         btnPrintTicket.setEnabled(false);
 
-        btnLogout.addActionListener(new ActionListener() {public void actionPerformed(ActionEvent actionEvent) { mainView.showMainView(); }});
+        if(!tickets.fetchCurrentPriceList()) {
+            JOptionPane.showMessageDialog(panelMain, tickets.getLastError());
+        }
 
+        btnLogout.addActionListener(actionEvent -> mainView.showMainView());
+
+        btnTopUp.addActionListener(actionEvent -> topUpTicket());
+        btnPrintTicket.addActionListener(actionEvent -> createNewTicket());
         checkNewTicket.addItemListener(e -> newTicketSlot(e));
-
         btnDeleteTicket.addActionListener(e ->blockTicket());
 
         loadPriceListItem();
@@ -44,6 +49,32 @@ public class EmployeeWgt extends Employee {
 
     public JPanel getPanel() {
         return panelMain;
+    }
+
+    private void createNewTicket() {
+        if(!validateTopUpNewTicektData()) return;
+
+        // dodanie nowego biletu do bazy
+
+        topUpTicket();
+    }
+
+    private void topUpTicket() {
+        if(!validateTopUpNewTicektData()) return;
+
+        String selectedPriceListDictionary= boxSelectPriceList.getSelectedItem().toString();
+        Integer priceListDictionaryId = Integer.parseInt(selectedPriceListDictionary.replaceAll("\\..*", ""));
+        JOptionPane.showMessageDialog(panelMain, "Id pozycji cennika: " + tickets.getPriceListItemId(priceListDictionaryId) + " cena: " + tickets.getPrice(priceListDictionaryId));
+
+        Double unitPrice = tickets.getPrice(priceListDictionaryId);
+        Integer priceListItemId = tickets.getPriceListItemId(priceListDictionaryId);
+
+        // doładowanie biletu, wyświelenie kwoty itd...
+    }
+
+    private boolean validateTopUpNewTicektData() {
+        // walidajca
+        return true;
     }
 
     private void newTicketSlot(ItemEvent e) {
@@ -68,7 +99,7 @@ private void blockTicket(){
 
     private void loadPriceListItem (){
 
-        ArrayList listitem = Tickets.getPriceListItem();
+        ArrayList listitem = tickets.getPriceListItem();
         boxSelectPriceList.setModel(new DefaultComboBoxModel(listitem.toArray()));
         boxSelectPriceList.setSelectedIndex(-1);
     }

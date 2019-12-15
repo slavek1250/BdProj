@@ -1,13 +1,18 @@
 package com.bdproj;
 
+import org.knowm.xchart.style.markers.Square;
+
 import javax.swing.*;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.EnumMap;
 
 
 public class Tickets {
+
+    private String lastError;
     private SystemUser systemUser;
 
 
@@ -16,8 +21,51 @@ public class Tickets {
     // TODO: Doladowywanie biletu. #KLAUDIA#
     // TODO: Blokowanie biletow (ustawienie flagi).#Karol# !!DONE!!
 
-    public static ArrayList<String> getPriceListItem(){
+    private enum PriceListEnum { ID_PRICE_LIST_ITEM, ID_PRICE_LIST_DICTIONARY, NAME, PRICE };
+    private ArrayList<EnumMap<PriceListEnum, String>> currentPriceList;
 
+    public String getLastError() {
+        return lastError;
+    }
+
+    public boolean fetchCurrentPriceList() {
+        String query =
+                "select  pc.id as 'poz_cennik_id', sc.id as 'slownik_cennik_id', sc.nazwa, pc.cena\n" +
+                "from poz_cennik pc join slownik_cennik sc on pc.slownik_cennik_id = sc.id\n" +
+                "where pc.cennik_id = (select c.id from cennik c where c.od < now() order by c.od desc limit 1);";
+
+        if(!MySQLConnection.prepareConnection()) {
+            lastError = MySQLConnection.getLastError();
+            return false;
+        }
+
+        try {
+            PreparedStatement ps = MySQLConnection.getConnection().prepareStatement(query);
+            ResultSet rs = ps.executeQuery();
+            currentPriceList = new ArrayList<>();
+            while (rs.next()) {
+                EnumMap<PriceListEnum, String> item = new EnumMap<>(PriceListEnum.class);
+                item.put(PriceListEnum.ID_PRICE_LIST_ITEM, rs.getString("poz_cennik_id"));
+                item.put(PriceListEnum.ID_PRICE_LIST_DICTIONARY, rs.getString("slownik_cennik_id"));
+                item.put(PriceListEnum.NAME, rs.getString("nazwa"));
+                item.put(PriceListEnum.PRICE, rs.getString("cena"));
+                currentPriceList.add(item);
+            }
+            if(currentPriceList.isEmpty()) {
+                lastError = "Brak zdefiniowanego cennika.";
+            }
+            else return true;
+        }
+        catch (SQLException ex) {
+            lastError = ex.getMessage();
+        }
+        return false;
+    }
+
+
+    public ArrayList<String> getPriceListItem(){
+
+        /*
         PreparedStatement ps;
         ResultSet rs;
         String query="SELECT CONCAT(sc.id,'. ', sc.nazwa) AS 'cennik' FROM slownik_cennik sc";
@@ -35,12 +83,41 @@ public class Tickets {
                 e.printStackTrace();
             }
         }
+
+         */
+        ArrayList<String> prc = new ArrayList<String>();
+        currentPriceList
+                .stream()
+                .map(item -> (
+                        item.get(PriceListEnum.ID_PRICE_LIST_DICTIONARY) + ". " + item.get(PriceListEnum.NAME)
+                ))
+                .forEach(prc::add);
         return prc;
     }
 
+    public Double getPrice(Integer dictionaryId) {
+        EnumMap<PriceListEnum, String> priceListItem = currentPriceList
+                .stream()
+                .filter(
+                        item -> item.get(PriceListEnum.ID_PRICE_LIST_DICTIONARY).equals(dictionaryId.toString()
+                ))
+                .findAny()
+                .orElse(null);
+        return (priceListItem == null ? 0.0 : Double.parseDouble(priceListItem.get(PriceListEnum.PRICE)));
+    }
 
-    // Pobieranie najnowszego cennika z bazy:
-    // select pc.id as 'poz_cennik_id', sc.nazwa, pc.cena from poz_cennik pc join slownik_cennik sc on pc.slownik_cennik_id = sc.id where pc.cennik_id = (select max(c.id) from cennik c);
+    public Integer getPriceListItemId(Integer dictionaryId) {
+        EnumMap<PriceListEnum, String> priceListItem = currentPriceList
+                .stream()
+                .filter(
+                        item -> item.get(PriceListEnum.ID_PRICE_LIST_DICTIONARY).equals(dictionaryId.toString()
+                        ))
+                .findAny()
+                .orElse(null);
+        return (priceListItem == null ? 0 : Integer.parseInt(priceListItem.get(PriceListEnum.ID_PRICE_LIST_ITEM)));
+    }
+
+
     public String ticketNoIncrement () {
         PreparedStatement ps;
         ResultSet rs;
