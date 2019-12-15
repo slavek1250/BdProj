@@ -3,8 +3,11 @@ package com.bdproj;
 import javafx.util.Pair;
 import org.knowm.xchart.*;
 import org.knowm.xchart.style.Styler;
+import org.knowm.xchart.style.colors.ChartColor;
 
 import javax.swing.*;
+import javax.swing.text.Document;
+import java.awt.*;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -17,6 +20,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.EnumMap;
+import java.util.Locale;
 
 /**
  *                                                                  Data generacji raportu: yyyy-MM-dd hh:mm:ss
@@ -146,25 +150,24 @@ public class SkiLiftUseReport implements HtmlReport {
         htmlReport = htmlReport.replace("$time_base", currentTimeBase.getValue());
         htmlReport = htmlReport.replace("$table_1_content", sb.toString());
 
-
         // wykres
+        String chartFileName = "SkiLiftUseChart";
         ArrayList<String> xData = new ArrayList<>();
-        ArrayList<Integer> yData = new ArrayList<>();
+        ArrayList<Integer> yData1 = new ArrayList<>();
+        ArrayList<Double> yData2 = new ArrayList<>();
 
         query3ListOfMaps.stream().map(i -> i.get(Query3Enum.TIME)).forEach(xData::add);
-        query3ListOfMaps.stream().map(i -> Integer.parseInt(i.get(Query3Enum.POINTS_SPENT))).forEach(yData::add);
+        query3ListOfMaps.stream().map(i -> Integer.parseInt(i.get(Query3Enum.POINTS_SPENT))).forEach(yData1::add);
+        query3ListOfMaps.stream().map(i -> Double.parseDouble(i.get(Query3Enum.AMOUNT))).forEach(yData2::add);
 
-        CategoryChart chart = new CategoryChartBuilder().width(550).height(400).title("Liczba punktów").xAxisTitle(currentTimeBase.getValue()).yAxisTitle("Punkty").theme(Styler.ChartTheme.GGPlot2).build();
-        chart.addSeries("Punkty", xData, yData);
-
-        try {
-            BitmapEncoder.saveBitmap(chart, "reports/chart", BitmapEncoder.BitmapFormat.JPG);
-        }
-        catch (IOException ex) {
-            JOptionPane.showMessageDialog(null, ex.getMessage());
-        }
-        //new SwingWrapper(chart).displayChart();
-
+        ReportChart reportChart = new ReportChart("Statystyki", currentTimeBase.getValue(), "");
+        reportChart.addSeries("Punkty", xData, yData1);
+        reportChart.addSeries("Kwota [zł]", xData, yData2);
+        if(!reportChart.saveAs(chartFileName)) {
+            lastError = reportChart.getLastError();
+            return false;
+        };
+        htmlReport = htmlReport.replace("$chart_file_name", chartFileName);
 
         return true;
     }

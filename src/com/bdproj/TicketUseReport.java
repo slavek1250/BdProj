@@ -78,12 +78,12 @@ public class TicketUseReport implements HtmlReport {
             "from uzycia_karnetu uk join wyciag_dane wd on uk.wyciag_dane_id = wd.id join wyciag w on wd.wyciag_id = w.id\n" +
             "where uk.karnet_id = ? group by uk.karnet_id;";
 
-    private enum Query6Enum { SKI_LIFT_ID, SKI_LIFT_NAME, USE_COUNT_SINGLE_LIFT, POINTS_SPEND_SINGLE_LIFT, HEIGHT_SINGLE_LIFT };
+    private enum Query6Enum { SKI_LIFT_ID, SKI_LIFT_NAME, USE_COUNT_SINGLE_LIFT, POINTS_SPENT_SINGLE_LIFT, HEIGHT_SINGLE_LIFT };
     private ArrayList<EnumMap<Query6Enum, String>> query6ListOfMaps;
     private final String QUERY_6_USE_COUNT_POINTS_SPEND_HEIGHT_BY_SKI_LIFT =
             "select w.id, w.nazwa, count(*) as 'l_zjad', sum(wd.koszt_pkt) as 'wydane_pkt', sum(w.wysokosc) as 'przewyz'\n" +
             "from uzycia_karnetu uk join wyciag_dane wd on uk.wyciag_dane_id = wd.id join wyciag w on wd.wyciag_id = w.id\n" +
-            "where uk.karnet_id = ? group by w.id, w.nazwa;";
+            "where uk.karnet_id = ? group by w.id, w.nazwa order by sum(w.wysokosc);";
 
 
     public TicketUseReport(SystemUser user) {
@@ -147,11 +147,30 @@ public class TicketUseReport implements HtmlReport {
                 .map(query6 -> (
                         "<tr><td>" + query6.get(Query6Enum.SKI_LIFT_NAME) + "</td>" +
                         "<td>" + query6.get(Query6Enum.USE_COUNT_SINGLE_LIFT) + "</td>" +
-                        "<td>" + query6.get(Query6Enum.POINTS_SPEND_SINGLE_LIFT) + "</td>" +
+                        "<td>" + query6.get(Query6Enum.POINTS_SPENT_SINGLE_LIFT) + "</td>" +
                         "<td>" + query6.get(Query6Enum.HEIGHT_SINGLE_LIFT) + "</td></tr>"
                  ))
                 .forEach(sb2::append);
         htmlReport = htmlReport.replace("$table_2_content", sb2.toString());
+
+        // Wykres
+        String chartFileName = "TicketUseChart";
+        ArrayList<String> xData = new ArrayList<>();
+        //ArrayList<Integer> yData1 = new ArrayList<>();
+        ArrayList<Double> yData2 = new ArrayList<>();
+
+        query6ListOfMaps.stream().map(i -> i.get(Query6Enum.SKI_LIFT_NAME)).forEach(xData::add);
+        //query6ListOfMaps.stream().map(i -> Integer.parseInt(i.get(Query6Enum.POINTS_SPENT_SINGLE_LIFT))).forEach(yData1::add);
+        query6ListOfMaps.stream().map(i -> Double.parseDouble(i.get(Query6Enum.HEIGHT_SINGLE_LIFT))).forEach(yData2::add);
+
+        ReportChart reportChart = new ReportChart("Statystyki dla wyciągów", "Nazwa wyciągu", "");
+        //reportChart.addSeries("Wydane punkty", xData, yData1);
+        reportChart.addSeries("Przewyższenie", xData, yData2);
+        if(!reportChart.saveAs(chartFileName)) {
+            lastError = reportChart.getLastError();
+            return false;
+        };
+        htmlReport = htmlReport.replace("$chart_file_name", chartFileName);
 
         return true;
     }
@@ -246,7 +265,7 @@ public class TicketUseReport implements HtmlReport {
                 rs6Map.put(Query6Enum.SKI_LIFT_ID, rs6.getString(1));
                 rs6Map.put(Query6Enum.SKI_LIFT_NAME, rs6.getString(2));
                 rs6Map.put(Query6Enum.USE_COUNT_SINGLE_LIFT, rs6.getString(3));
-                rs6Map.put(Query6Enum.POINTS_SPEND_SINGLE_LIFT, rs6.getString(4));
+                rs6Map.put(Query6Enum.POINTS_SPENT_SINGLE_LIFT, rs6.getString(4));
                 rs6Map.put(Query6Enum.HEIGHT_SINGLE_LIFT, rs6.getString(5));
                 query6ListOfMaps.add(rs6Map);
             }

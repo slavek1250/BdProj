@@ -1,6 +1,11 @@
 package com.bdproj;
 
+import org.knowm.xchart.SwingWrapper;
+
 import javax.swing.*;
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 /*
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -95,8 +100,22 @@ public class MainWin implements MainView {
 
         frame.setContentPane(mainWin.panelMain);
 
+        //chartDesignHelper();
+
         frame.setSize(700, 700);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setVisible(true);
+    }
+
+    public static void chartDesignHelper() {
+        ReportChart ticketChart = new ReportChart("Statystyki dla wyciągów", "Nazwa wyciągu", "");
+        ticketChart.addSeries("Przewyższenie", new ArrayList<String>(Arrays.asList(new String[] {"Czarny groń", "Mały"})), new ArrayList<Integer>(Arrays.asList(new Integer[]{1586, 400})));
+        new SwingWrapper(ticketChart.getChart()).displayChart();
+
+        ReportChart skiLiftChart = new ReportChart("Statystyki", "Godzina", "");
+        skiLiftChart.addSeries("Punkty", new ArrayList<String>(Arrays.asList(new String[] {"13", "14"})), new ArrayList<Integer>(Arrays.asList(new Integer[]{60, 30})));
+        skiLiftChart.addSeries("Kwota [zł]", new ArrayList<String>(Arrays.asList(new String[] {"13", "14"})), new ArrayList<Double>(Arrays.asList(new Double[]{27.0, 13.5})));
+        new SwingWrapper(skiLiftChart.getChart()).displayChart();
+
     }
 }
