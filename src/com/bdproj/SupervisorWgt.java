@@ -1,5 +1,6 @@
 package com.bdproj;
 
+import javafx.event.Event;
 import javafx.util.Pair;
 import org.jdesktop.swingx.JXDatePicker;
 
@@ -10,12 +11,13 @@ import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ComponentAdapter;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
 
-public class SupervisorWgt extends Supervisor {
+public class SupervisorWgt extends Supervisor  {
     private JPanel panelMain;
     private JTabbedPane tabbedPane1;
     private JTextField txtNameNewEmpl;
@@ -93,11 +95,14 @@ public class SupervisorWgt extends Supervisor {
         if(!fetchSupervisors()) {
             JOptionPane.showMessageDialog(panelMain, getLastError());
         }
+        if(!fetchEmployees()){
+            JOptionPane.showMessageDialog(panelMain, getLastError());
+        }
 
         btnLogout.addActionListener(actionEvent -> mainView.showMainView());
         saveNewPriceList.addActionListener(actionEvent -> savePriceList());
         btnAddNewEmpl.addActionListener(actionEvent -> addUser());
-        boxSelectEditEmpl.addActionListener(actionEvent ->chooseUser(actionEvent));
+        boxSelectEditEmpl.addActionListener(actionEvent ->chooseUser());
         btnSaveEditEmpl.addActionListener(ActionEvent ->saveEmployeeMod());
         btnDeleteEmpl.addActionListener(ActionEvent ->deleteEmployee());
         btnPrintLiftRep.addActionListener(ActionEvent -> generateSkiLiftReport());
@@ -105,12 +110,30 @@ public class SupervisorWgt extends Supervisor {
         btnSaveSupervisor.addActionListener(ActionEvent -> updateSupervisorData());
         btnQuitJobSupervisor.addActionListener(ActionEvent -> quitJobSupervisor());
         btnNewAddLift.addActionListener(ActionEvent -> addLift());
+        btnMakeSupervisorEmpl.addActionListener(ActionEvent -> promoteToSupervisor());
 
         loadPriceList();
         loadEmployees();
         loadReports();
         loadSupervisors();
         loadSupervisorData();
+
+/*
+        boxSelectEditEmpl.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                if(boxSelectEditEmpl.getSelectedIndex()==-1) {
+                    return;
+                }
+                else{
+                int id=getEmployeeId();
+                txtNameEditEmpl.setText(getEmployeeName(id));
+                txtSurnameEditEmpl.setText(getEmployeeSurname(id));
+            }
+            }
+        });
+
+ */
     }
 
     public JPanel getPanel() {
@@ -122,6 +145,7 @@ public class SupervisorWgt extends Supervisor {
         skiLiftsList.stream().map(lift -> (lift.getKey() + ". " + lift.getValue())).forEach(skiLifts::add);
         boxLiftRepSelect.setModel(new DefaultComboBoxModel(skiLifts.toArray()));
         boxSelectEditLift.setModel(new DefaultComboBoxModel(skiLifts.toArray()));
+
         boxLiftRepSelect.setSelectedIndex(-1);
         dateLiftRepSince.setFormats(DATE_FORMAT);
         dateLiftRepTo.setFormats(DATE_FORMAT);
@@ -132,7 +156,15 @@ public class SupervisorWgt extends Supervisor {
         ArrayList<String> supLists = new ArrayList<>();
         supervisorsList.stream().map(sup->(sup.getKey()+". " +sup.getValue().getValue()+ " "+sup.getValue().getKey())).forEach(supLists::add);
         boxSupervisorSelectLift.setModel(new DefaultComboBoxModel(supLists.toArray()));
+        boxSupervisorSelectEmpl.setModel(new DefaultComboBoxModel(supLists.toArray()));
         boxSupervisorSelectLift.setSelectedIndex(-1);
+        boxSupervisorSelectEmpl.setSelectedIndex(-1);
+    }
+    private void loadEmployees (){
+        ArrayList<String> employees= new ArrayList<>();
+        employeeList.stream().map(sup->(sup.getKey()+". " +sup.getValue().getValue()+ " "+sup.getValue().getKey())).forEach(employees::add);
+        boxSelectEditEmpl.setModel(new DefaultComboBoxModel(employees.toArray()));
+        boxSelectEditEmpl.setSelectedIndex(-1);
     }
 
     private void generateSkiLiftReport() {
@@ -145,7 +177,7 @@ public class SupervisorWgt extends Supervisor {
         Date reportSince = dateLiftRepSince.getDate();
         Date reportTo = dateLiftRepTo.getDate();
         if( !reportSince.before(reportTo) ) {
-            JOptionPane.showMessageDialog(panelMain, "Początek okresu raportu musi być przed konicem tego okersu.");
+            JOptionPane.showMessageDialog(panelMain, "Początek okresu raportu musi być przed końcem tego okresu.");
             return;
         }
         if((new Date()).before(reportTo)) {
@@ -367,25 +399,27 @@ private String newLogin (String name, String surname){
     return login;
 }
 
-private void loadEmployees (){
+private void chooseUser(){
+    if(boxSelectEditEmpl.getSelectedIndex() == -1) {
+        return;
+    }
+    int id=getEmployeeId();
+    txtNameEditEmpl.setText(getEmployeeName(id));
+    txtSurnameEditEmpl.setText(getEmployeeSurname(id));
+    }
 
-       ArrayList employees= employeeAdmin.getEmployees();
-       boxSelectEditEmpl.setModel(new DefaultComboBoxModel(employees.toArray()));
-}
-
-private void chooseUser(ActionEvent e){
-        JComboBox comboBox=(JComboBox) e.getSource();
-    String user= (String)boxSelectEditEmpl.getSelectedItem();
-    employeeAdmin.splitSelected(user);
-    txtNameEditEmpl.setText(employeeAdmin.getName());
-    txtSurnameEditEmpl.setText(employeeAdmin.getSurname());
+    private Integer getEmployeeId(){
+        String selectedEmp = boxSelectEditEmpl.getSelectedItem().toString(); // Id. nazwisko imie
+        Integer EmployeeId = Integer.parseInt(selectedEmp.replaceAll("\\..*", ""));
+        return EmployeeId;
     }
 
     private void saveEmployeeMod(){
     String name=txtNameEditEmpl.getText();
     String surname=txtSurnameEditEmpl.getText();
-    String givenName=employeeAdmin.getName();
-    String givenSurname=employeeAdmin.getSurname();
+    int id=getEmployeeId();
+    String givenName=getEmployeeName(id);
+    String givenSurname=getEmployeeSurname(id);
     String loginRegEx ="^[A-ZĄĆĘŁŃÓŚŹŻ]{1}[a-ząćęłńóśźż]{1,50}$";
     if(!name.matches(loginRegEx)||!surname.matches(loginRegEx)) {
         JOptionPane.showMessageDialog(null,"Imie lub nazwisko zawiera niepoprawne znaki");
@@ -394,25 +428,34 @@ private void chooseUser(ActionEvent e){
     else {
         if (name.equals(givenName) && surname.equals(givenSurname)) {
             JOptionPane.showMessageDialog(null,"Dane użytkowinika się nie zmieniły");
-        }
-        else{
-
-            int response=JOptionPane.showConfirmDialog(null,"Czy na pewno chcesz znowdyfikować dane pracownika?","Confirm",JOptionPane.YES_NO_OPTION);
-            if (response==JOptionPane.YES_OPTION) {
-                employeeAdmin.saveModChanges(name, surname);
-                loadEmployees();
             }
-            else{return;}
-        }
+            else{
 
-    }
+                int response=JOptionPane.showConfirmDialog(null,"Czy na pewno chcesz znowdyfikować dane pracownika?","Confirm",JOptionPane.YES_NO_OPTION);
+                if (response==JOptionPane.YES_OPTION) {
+                    employeeAdmin.saveModChanges(id,name, surname);
+                    fetchEmployees();
+                    loadEmployees();
+                    txtNameEditEmpl.setText(null);
+                    txtSurnameEditEmpl.setText(null);
+                }
+                else{return;}
+            }
+
+         }
     }
 
     private void deleteEmployee(){
+        int id=getEmployeeId();
         String name=txtNameEditEmpl.getText();
         String surname=txtSurnameEditEmpl.getText();
-        employeeAdmin.deleteEmployee();
+        employeeAdmin.deleteEmployee(id);
 }
+
+    private void promoteToSupervisor(){
+
+    }
+
 
     private void addLift(){
         String name = txtNameNewLift.getText();

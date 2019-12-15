@@ -9,8 +9,6 @@ import java.util.ArrayList;
 
 public class Tickets {
     private SystemUser systemUser;
-
-
     // TODO: Generowanie nowego biletu, generacja id. #KLAUDIA#
     // TODO: Pobieranie bierzacego cennika. #KLAUDIA#
     // TODO: Doladowywanie biletu. #KLAUDIA#
