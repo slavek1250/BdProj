@@ -67,7 +67,6 @@ private void blockTicket(){
 }
 
     private void loadPriceListItem (){
-
         ArrayList listitem = Tickets.getPriceListItem();
         boxSelectPriceList.setModel(new DefaultComboBoxModel(listitem.toArray()));
         boxSelectPriceList.setSelectedIndex(-1);
