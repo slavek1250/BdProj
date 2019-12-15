@@ -78,6 +78,7 @@ public class SupervisorWgt extends Supervisor  {
     // TODO: Pracownicy: Przekazywanie kierownictwa. #Karol#
     // TODO: Wyciagi: ladowanie wyciagow podlegajacych pod kierownika (o ile obecna data jest w zakresie `od`, `do`, najlepiej `do` niech bedzie null) kosztów punktowych i stanu, walidacja danych wejsciowych (czy różne od bieżączych w przypadku edycji).
     // TODO: Wyciagi: ladowanie listy kieronikow, dodawanie jako zarzadce. Usuwanie swojego prawa do administorwania wyciągiem (o ile nie jest ostatnim kierownikiem mogącym zarządzać).
+    // TODO: Wyciagi: Sprawdzenie czy wybrany kierownik nie jest w bieżącej grupie zarządców wyciągu(przy dodawaniu nowego zarządcy).
     // TODO: Cennik: Ladowanie biezacego cennika dla wszystkich pozycji ze slownika, walidacja danych wejsciowych. #Dominik# !!DONE!!
     // TODO: Raporty: Wybieranie dat dla raportu uzyc wyciagu, walidacja danych dla raportu uzycia biletu. #Dominik# !!DONE!!
     // TODO: Moje dane: Ladownianie obecnych danych kierownika, walidacja zmodyfikowanych. #Dominik# !!DONE!!
@@ -142,7 +143,7 @@ public class SupervisorWgt extends Supervisor  {
 
     private void loadReports() {
         ArrayList<String> skiLifts = new ArrayList<>();
-        skiLiftsList.stream().map(lift -> (lift.getKey() + ". " + lift.getValue())).forEach(skiLifts::add);
+        skiLiftsList.stream().map(lift -> (lift.get(SkiLiftsListEnum.ID) + ". " + lift.get(SkiLiftsListEnum.NAME))).forEach(skiLifts::add);
         boxLiftRepSelect.setModel(new DefaultComboBoxModel(skiLifts.toArray()));
         boxSelectEditLift.setModel(new DefaultComboBoxModel(skiLifts.toArray()));
 
@@ -154,7 +155,7 @@ public class SupervisorWgt extends Supervisor  {
 
     private void loadSupervisors(){
         ArrayList<String> supLists = new ArrayList<>();
-        supervisorsList.stream().map(sup->(sup.getKey()+". " +sup.getValue().getValue()+ " "+sup.getValue().getKey())).forEach(supLists::add);
+        supervisorsList.stream().map(sup->(sup.get(SupervisorsListEnum.ID)+". " +sup.get(SupervisorsListEnum.NAME)+ " "+sup.get(SupervisorsListEnum.SURNAME))).forEach(supLists::add);
         boxSupervisorSelectLift.setModel(new DefaultComboBoxModel(supLists.toArray()));
         boxSupervisorSelectEmpl.setModel(new DefaultComboBoxModel(supLists.toArray()));
         boxSupervisorSelectLift.setSelectedIndex(-1);
@@ -182,14 +183,16 @@ public class SupervisorWgt extends Supervisor  {
         }
         if((new Date()).before(reportTo)) {
             JOptionPane.showMessageDialog(panelMain, "Koniec okresu nie może być późniejszy niż " + (new SimpleDateFormat(DATE_FORMAT)).format(new Date())+ ".");
+            return;
         }
 
-        boolean success = reports.generateSkiLiftReport(skiLiftId, reportSince, reportTo);
+        SkiLiftUseReport skiLiftUseReport = new SkiLiftUseReport(systemUser);
+        boolean success = skiLiftUseReport.generateReport(skiLiftId, getSkiLiftName(skiLiftId), reportSince, reportTo);
         if(success) {
-            saveReportAs();
+            saveReportAs(skiLiftUseReport);
         }
         else {
-            JOptionPane.showMessageDialog(panelMain, reports.getLastError());
+            JOptionPane.showMessageDialog(panelMain, skiLiftUseReport.getLastError());
         }
     }
 
@@ -201,18 +204,21 @@ public class SupervisorWgt extends Supervisor  {
         }
         Integer ticketId = Integer.parseInt(ticketNo);
 
-        boolean success = reports.generateTicketUseReport(ticketId);
+        TicketUseReport ticketUseReport = new TicketUseReport(systemUser);
+        boolean success = ticketUseReport.generateReport(ticketId);
         if(success) {
-            saveReportAs();
+            saveReportAs(ticketUseReport);
         }
         else {
-            JOptionPane.showMessageDialog(panelMain, reports.getLastError());
+            JOptionPane.showMessageDialog(panelMain, ticketUseReport.getLastError());
         }
     }
 
-    public void saveReportAs() {
+    public void saveReportAs(HtmlReport htmlReport) {
         boolean success = false;
         boolean tryToSave = true;
+        Reports reports = new Reports(htmlReport);
+
         while (tryToSave) {
             JFileChooser fileChooser = new JFileChooser();
             fileChooser.setDialogTitle("Zapisz raport jako");
@@ -227,7 +233,7 @@ public class SupervisorWgt extends Supervisor  {
 
             } else {
                 int resp = JOptionPane.showConfirmDialog(panelMain, "Błąd podczas próby zapisu raportu, spróbować ponownie?", "Błąd", JOptionPane.YES_NO_OPTION);
-                if(resp == JOptionPane.NO_OPTION) tryToSave = false;
+                if(resp == JOptionPane.NO_OPTION) return;
             }
         }
 
@@ -341,6 +347,12 @@ public class SupervisorWgt extends Supervisor  {
                 anyPriceHasChanged = true;
             }
             newPriceListPrices.add(cellPrice);
+        }
+
+        int resp = JOptionPane.showConfirmDialog(panelMain, "Czy na pewno chcesz dodać nowy cennik?\nJeżeli zrezygnujesz zostanie załadowny poprzeni cennik.", "Potwierdź", JOptionPane.YES_NO_OPTION);
+        if(resp == JOptionPane.NO_OPTION) {
+            loadPriceList();
+            return;
         }
 
         if(anyPriceHasChanged) {

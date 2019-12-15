@@ -38,5 +38,6 @@
         <SOURCES />
       </library>
     </orderEntry>
+    <orderEntry type="library" name="org.knowm.xchart:xchart:3.5.4" level="project" />
   </component>
 </module>

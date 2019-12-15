@@ -143,7 +143,7 @@ public class SystemUser {
                         "( select distinct z2.wyciag_id from zarzadcy z2 where z2.kierownik_id = ? )\n" +
                         "and z1.od < now() and (z1.do is null or z1.do > now())\n" +
                         "group by z1.wyciag_id, w.nazwa having count(z1.id) = 1;";
-        String query2 = "select concat(imie, ' ', nazwisko, ' - ', login) as 'pracownik' from pracownicy where zawolniony = 0 and kierownik_id = ?;";
+        String query2 = "select concat(imie, ' ', nazwisko, ' - ', login) as 'pracownik' from pracownicy where zwolniony = 0 and kierownik_id = ?;";
         String query3 = "update kierownik set zwolniony = 1 where id = ?;";
         String query4 = "update zarzadcy set do=now() where kierownik_id = ?;";
 
