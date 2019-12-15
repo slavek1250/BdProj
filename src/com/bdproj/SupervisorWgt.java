@@ -120,7 +120,7 @@ public class SupervisorWgt extends Supervisor {
 
     private void loadReports() {
         ArrayList<String> skiLifts = new ArrayList<>();
-        skiLiftsList.stream().map(lift -> (lift.getKey() + ". " + lift.getValue())).forEach(skiLifts::add);
+        skiLiftsList.stream().map(lift -> (lift.get(SkiLiftsListEnum.ID) + ". " + lift.get(SkiLiftsListEnum.NAME))).forEach(skiLifts::add);
         boxLiftRepSelect.setModel(new DefaultComboBoxModel(skiLifts.toArray()));
         boxSelectEditLift.setModel(new DefaultComboBoxModel(skiLifts.toArray()));
         boxLiftRepSelect.setSelectedIndex(-1);
@@ -131,7 +131,7 @@ public class SupervisorWgt extends Supervisor {
 
     private void loadSupervisors(){
         ArrayList<String> supLists = new ArrayList<>();
-        supervisorsList.stream().map(sup->(sup.getKey()+". " +sup.getValue().getValue()+ " "+sup.getValue().getKey())).forEach(supLists::add);
+        supervisorsList.stream().map(sup->(sup.get(SupervisorsListEnum.ID)+". " +sup.get(SupervisorsListEnum.NAME)+ " "+sup.get(SupervisorsListEnum.SURNAME))).forEach(supLists::add);
         boxSupervisorSelectLift.setModel(new DefaultComboBoxModel(supLists.toArray()));
         boxSupervisorSelectLift.setSelectedIndex(-1);
     }

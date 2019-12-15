@@ -6,6 +6,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.EnumMap;
 
 public class Supervisor {
     protected SystemUser systemUser;
@@ -16,8 +17,10 @@ public class Supervisor {
 
     private String lastError;
 
-    protected ArrayList<Pair<Integer, Pair<String, String>>> supervisorsList = null;
-    protected ArrayList<Pair<Integer, String>> skiLiftsList = null;
+    protected enum SupervisorsListEnum { ID, NAME, SURNAME };
+    protected ArrayList<EnumMap<SupervisorsListEnum, String>> supervisorsList = null;
+    protected enum SkiLiftsListEnum { ID, NAME };
+    protected ArrayList<EnumMap<SkiLiftsListEnum, String>> skiLiftsList = null;
 
     public Supervisor(SystemUser user) {
         systemUser = user;
@@ -28,43 +31,43 @@ public class Supervisor {
     }
 
     protected Integer getSkiLiftId(String name) {
-        Pair<Integer, String> skiLift = skiLiftsList.stream()
-                .filter(lift -> name.equals(lift.getValue()))
+        EnumMap<SkiLiftsListEnum, String> skiLift = skiLiftsList.stream()
+                .filter(lift -> name.equals(lift.get(SkiLiftsListEnum.NAME)))
                 .findAny()
                 .orElse(null);
-        return skiLift == null ? -1 : skiLift.getKey();
+        return skiLift == null ? -1 : Integer.parseInt(skiLift.get(SkiLiftsListEnum.ID));
     }
 
     protected String getSkiLiftName(Integer id) {
-        Pair<Integer, String> skiLift = skiLiftsList.stream()
-                .filter(lift -> id.equals(lift.getKey()))
+        EnumMap<SkiLiftsListEnum, String> skiLift = skiLiftsList.stream()
+                .filter(lift -> id.toString().equals(lift.get(SkiLiftsListEnum.ID)))
                 .findAny()
                 .orElse(null);
-        return skiLift == null ? "" : skiLift.getValue();
+        return skiLift == null ? "" : skiLift.get(SkiLiftsListEnum.NAME);
     }
 
     protected Integer getSupervisorId(String name, String surname) {
-        Pair<Integer, Pair<String, String>> supervisor = supervisorsList.stream()
-                .filter(sv -> (name.equals(sv.getValue().getValue()) && surname.equals(sv.getValue().getValue())))
+        EnumMap<SupervisorsListEnum, String> supervisor = supervisorsList.stream()
+                .filter(sv -> (name.equals(sv.get(SupervisorsListEnum.NAME)) && surname.equals(sv.get(SupervisorsListEnum.SURNAME))))
                 .findAny()
                 .orElse(null);
-        return supervisor == null ? -1 : supervisor.getKey();
+        return supervisor == null ? -1 : Integer.parseInt(supervisor.get(SupervisorsListEnum.ID));
     }
 
     protected String getSupervisorName(Integer id) {
-        Pair<Integer, Pair<String, String>> supervisor = supervisorsList.stream()
-                .filter(sv -> id.equals(sv.getKey()))
+        EnumMap<SupervisorsListEnum, String> supervisor = supervisorsList.stream()
+                .filter(sv -> id.toString().equals(sv.get(SupervisorsListEnum.ID)))
                 .findAny()
                 .orElse(null);
-        return supervisor == null ? "" : supervisor.getValue().getValue();
+        return supervisor == null ? "" : supervisor.get(SupervisorsListEnum.NAME);
     }
 
     protected String getSupervisorSurname(Integer id) {
-        Pair<Integer, Pair<String, String>> supervisor = supervisorsList.stream()
-                .filter(sv -> id.equals(sv.getKey()))
+        EnumMap<SupervisorsListEnum, String> supervisor = supervisorsList.stream()
+                .filter(sv -> id.toString().equals(sv.get(SupervisorsListEnum.ID)))
                 .findAny()
                 .orElse(null);
-        return supervisor == null ? "" : supervisor.getValue().getKey();
+        return supervisor == null ? "" : supervisor.get(SupervisorsListEnum.SURNAME);
     }
 
     public String getLastError() {
@@ -72,11 +75,18 @@ public class Supervisor {
     }
 
     protected void addSkiLift(Integer id, String name) {
-        skiLiftsList.add(new Pair<>(id, name));
+        EnumMap<SkiLiftsListEnum, String> tmp = new EnumMap<>(SkiLiftsListEnum.class);
+        tmp.put(SkiLiftsListEnum.ID, id.toString());
+        tmp.put(SkiLiftsListEnum.NAME, name);
+        skiLiftsList.add(tmp);
     }
 
     protected void addSupervisor(Integer id, String name, String surname) {
-        supervisorsList.add(new Pair<>(id, new Pair<>(surname, name)));
+        EnumMap<SupervisorsListEnum, String> tmp = new EnumMap<>(SupervisorsListEnum.class);
+        tmp.put(SupervisorsListEnum.ID, id.toString());
+        tmp.put(SupervisorsListEnum.NAME, name);
+        tmp.put(SupervisorsListEnum.SURNAME, surname);
+        supervisorsList.add(tmp);
     }
 
     protected boolean fetchSupervisors() {
@@ -95,10 +105,11 @@ public class Supervisor {
             supervisorsList = new ArrayList<>();
 
             while (rs.next()) {
-                Integer id = rs.getInt("id");
-                String name = rs.getString("imie");
-                String surname = rs.getString("nazwisko");
-                supervisorsList.add(new Pair<>(id, new Pair<>(surname, name)));
+                EnumMap<SupervisorsListEnum, String> tmp = new EnumMap<>(SupervisorsListEnum.class);
+                tmp.put(SupervisorsListEnum.ID, rs.getString("id"));
+                tmp.put(SupervisorsListEnum.NAME, rs.getString("imie"));
+                tmp.put(SupervisorsListEnum.SURNAME, rs.getString("nazwisko"));
+                supervisorsList.add(tmp);
             }
             return true;
         }
@@ -128,9 +139,10 @@ public class Supervisor {
             skiLiftsList = new ArrayList<>();
 
             while (rs.next()) {
-                Integer id = rs.getInt("id");
-                String name = rs.getString("nazwa");
-                skiLiftsList.add(new Pair<>(id, name));
+                EnumMap<SkiLiftsListEnum, String> tmp = new EnumMap<>(SkiLiftsListEnum.class);
+                tmp.put(SkiLiftsListEnum.ID, rs.getString("id"));
+                tmp.put(SkiLiftsListEnum.NAME, rs.getString("nazwa"));
+                skiLiftsList.add(tmp);
             }
             return true;
         }
