@@ -1,0 +1,84 @@
+<html>
+    <head>
+        <style> 
+            body, html {
+                width: 595px;
+            }
+            img {
+                width: 500px;
+            }
+            #tab table, #tab td, #tab th {
+                border: 1px solid black;
+                padding: 3px;
+            }
+            #tab table tr td {
+                text-align: center;
+            }
+            #tab table {
+                border-collapse: collapse;
+                width: 100%;
+            }
+        </style>
+    </head>
+    <body>
+        <div>
+            <table style="margin-top: 10px;">
+                <tr>
+                    <td style="text-align: right; width: 100%;">
+                        Data generacji raportu: 
+                    </td>
+                    <td style="padding-left: 5px;">
+                        $gen_rep_timestamp
+                    </td>
+                </tr>
+                <tr>
+                    <td style="text-align: right; width: 100%;">
+                        Wygenerowano dla: 
+                    </td>
+                    <td style="padding-left: 5px;">
+                        $supervisor_name_surname
+                    </td>
+                </tr>
+            </table> 
+            <div style="text-align: center; margin-top: 20px;">
+                Raport użyć wyciągu
+            </div>
+            <div style="margin-top: 40;">
+                <p>
+                    Nazwa wyciągu: $ski_lift_name.<br/>
+                    Numer id wyciągu: $ski_lift_id.<br/>
+                    <br/>
+                    Początek okresu zawartego w raporcie: $rep_begin_date.<br/>
+                    Koniec raportowanego okresu: $rep_end_date.<br/>
+                    <br/>
+                    W tym okresie skorzystano z wyciągu: $total_use_count razy.<br/>
+                    Wyciąg zarobił: $total_points_spent punktów.<br/>
+                    Szacowana kwota: $total_amount zł.
+                </p>
+            </div>
+            <div id="tab">
+                <table style="margin-top: 40;">
+                    <thead>
+                        <th>
+                            $time_base
+                        </th>
+                        <th>
+                            Liczba użyć
+                        </th>
+                        <th>
+                            Liczba punktów
+                        </th>
+                        <th>
+                            Szacowana kwota [zł]
+                        </th>
+                    </thead>
+                    $table_1_content
+                </table>
+            </div>
+            <div style="margin-top: 40px;">
+                <p>Wykres punktów wydanych na bieżącym wyciągu, oraz przybliżone wartości kwot im odpowiadających.</p>
+                <center><img src="reports/$chart_file_name.png" /></center>
+            </div>
+        </div>
+    </body>
+</html>

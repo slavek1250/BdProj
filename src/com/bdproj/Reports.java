@@ -1,54 +1,35 @@
 package com.bdproj;
 
-
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.List;
 
+import com.itextpdf.html2pdf.ConverterProperties;
 import com.itextpdf.html2pdf.HtmlConverter;
+import com.itextpdf.html2pdf.resolver.font.DefaultFontProvider;
+import com.itextpdf.kernel.geom.PageSize;
 import com.itextpdf.kernel.pdf.PdfDocument;
 import com.itextpdf.kernel.pdf.PdfWriter;
 import com.itextpdf.layout.Document;
 import com.itextpdf.layout.element.IBlockElement;
 import com.itextpdf.layout.element.IElement;
+import com.itextpdf.layout.font.FontProvider;
 
-import java.util.Date;
 
 public class Reports {
 
-    SystemUser systemUser;
+    HtmlReport htmlReport;
 
-    // TODO: Generowanie raportow uzyc poszczegolnych wyciagow od do. Ile zarobil, ile razy uzyto, srednie dzienne, tygodniowe, itd. #Dominik#
-    // TODO: Generowanie reportow uzyc poszczegolnych biletow, ile km przejechane (przewyzszenie) ile wydano na pkt, srednie, itd. #Dominik#
+    // TODO: Generowanie raportow uzyc poszczegolnych wyciagow od do. Ile zarobil, ile razy uzyto, srednie dzienne, tygodniowe, itd. #Dominik# !!DONE!!
+    // TODO: Generowanie reportow uzyc poszczegolnych biletow, ile km przejechane (przewyzszenie) ile wydano na pkt, srednie, itd. #Dominik# !!DONE!!
 
     private String lastError;
 
-    private String html = null;
-
-    public Reports(SystemUser user) {
-        systemUser = user;
+    public Reports(HtmlReport htmlReport) {
+        this.htmlReport = htmlReport;
     }
 
     public String getLastError() {
         return lastError;
-    }
-
-    public boolean generateSkiLiftReport(Integer id, Date since, Date to) {
-
-        return true;
-    }
-
-    public boolean generateTicketUseReport(Integer ticketId) {
-
-        try {
-            html = Files.readString(Paths.get("E:\\studia_lab\\sem_V_lab\\BDProj\\JavaProgram\\src\\com\\bdproj\\test.html"));
-        }
-        catch (IOException ex) {
-            lastError = ex.getMessage();
-            return false;
-        }
-        return true;
     }
 
     public boolean saveReportToFile(String filepath) {
@@ -56,22 +37,32 @@ public class Reports {
         filepath = filepath.replaceAll("\\.+.*$", "");
         filepath += ".pdf";
 
+        String html = htmlReport.getHtmlReport();
+
         if(html.isEmpty()) {
             lastError = "Raport nie został wygenerowany.";
             return false;
         }
 
         try {
-            List<IElement> elements =
-                    HtmlConverter.convertToElements(html, null);
+            ConverterProperties converterProperties = new ConverterProperties();
+            FontProvider fontProvider = new DefaultFontProvider(false, false, false);
+            //FontProgram fontProgram = FontProgramFactory.createFont("AbhayaLibre-Regular.ttf");
+            //fontProvider.addFont(fontProgram);
+            fontProvider.addDirectory("reports/font");
+
+            converterProperties.setFontProvider(fontProvider);
+
+            List<IElement> elements = HtmlConverter.convertToElements(html, converterProperties);
             PdfDocument pdf = new PdfDocument(new PdfWriter(filepath));
+
+            pdf.setDefaultPageSize(PageSize.A4);
             Document document = new Document(pdf);
 
             for (IElement element : elements) {
                 document.add((IBlockElement)element);
             }
             document.close();
-            html = null;
             return true;
         }
         catch (IOException ex) {
