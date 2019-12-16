@@ -14,8 +14,6 @@ public class Tickets {
 
     private String lastError;
     private SystemUser systemUser;
-
-
     // TODO: Generowanie nowego biletu, generacja id. #KLAUDIA#
     // TODO: Pobieranie bierzacego cennika. #KLAUDIA#
     // TODO: Doladowywanie biletu. #KLAUDIA#
@@ -158,7 +156,6 @@ public void blockTicket (String ticketnumber){
                     PreparedStatement ps1 = MySQLConnection.getConnection().prepareStatement(query1);
                     ps1.setString(1, ticketnumber);
                     int rs1 = ps1.executeUpdate();
-                    JOptionPane.showConfirmDialog(null, "Czy na pewno chcesz zablokować bilet");
                 }
             } else {
                 JOptionPane.showMessageDialog(null, "Nie ma takiego biletu");
