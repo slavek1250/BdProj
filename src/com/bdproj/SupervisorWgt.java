@@ -34,8 +34,6 @@ public class SupervisorWgt extends Supervisor {
     private JCheckBox chechStateEditLift;
     private JButton btnDeleteLift;
     private JButton btnSaveEdtiLift;
-    private JTable tabPriceList;
-    private JButton saveNewPriceList;
     private JComboBox boxLiftRepSelect;
     private JTextField txtLiftRepSince;
     private JTextField txtLiftRepTo;
@@ -45,8 +43,6 @@ public class SupervisorWgt extends Supervisor {
     private JButton btnPrintLiftRep;
     private JLabel lblHello;
     private JButton btnPrintTicketUseRep;
-    private JLabel lblPriceListAuthor;
-    private JLabel lblPriceListSince;
     private JButton btnDelAdminPrivLift;
     private JButton btnMakeSupervisorEmpl;
     private JTextField txtSurnameSupervisor;
@@ -61,7 +57,6 @@ public class SupervisorWgt extends Supervisor {
     private JXDatePicker dateLiftRepSince;
     private JXDatePicker dateLiftRepTo;
     private JButton btnEmpNewPass;
-    private JPanel tmpdate;
 
     private MainView mainView;
 
@@ -279,7 +274,7 @@ public class SupervisorWgt extends Supervisor {
         }
     }
 
-    private void addUser() {
+   // private void addUser() {
 private void addUser(){
 
         String name = txtNameNewEmpl.getText();
