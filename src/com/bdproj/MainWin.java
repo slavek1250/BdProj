@@ -101,7 +101,7 @@ public class MainWin implements MainView {
 
         frame.setContentPane(mainWin.panelMain);
 
-        chartDesignHelper();
+       // chartDesignHelper();
 
         frame.setSize(700, 700);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

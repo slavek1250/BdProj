@@ -8,33 +8,26 @@ import java.util.ArrayList;
 
 public class EmployeeAdmin {
     private SystemUser systemUser;
-   // private String name;
-   // private String surname;
-   // private String id;
 
 
     // TODO: Dodawanie nowego pracownika.#Karol# !!DONE!!
     // TODO: Modyfikacja obecnych pracownikow.#Karol# !!DONE!!
     // TODO: Usuwanie pracownikow (ustawianie flagi).#Karol# !!DONE!!
     // TODO: Pobieranie listy przy starcie id imie nazwisko podleglych pod systemUser.getId().#Karol# !!DONE!!
+    // TODO: Awansowanie pracownika na kierownika. #Karol# !!DONE!!
+    // TODO: Przypisanie danego pracownika do innego kierownika. #Karol# !!DONE!!
+    // TODO: Zmiana hasła dla pracownika. #Karol# !!DONE!!
 
     public EmployeeAdmin(SystemUser user) {
         systemUser = user;
 
     }
-   // public String getName(){ return name;}
-   // public String getSurname(){return surname;}
-   // public String getId(){return id;}
-   // public void setName(String name){this.name=name;}
-    //public void setSurname(String surname){this.surname=surname;}
-    //public void setId(String id){this.id=id;}
 
-
-    public void addNewUser(String name, String surname,String username,String password){
+    public void addNewUser(String name, String surname, String username, String password) {
         PreparedStatement ps;
-        String query="INSERT INTO pracownicy (nazwisko,imie,login,haslo,kierownik_id) VALUES (?,?,?,MD5(?),?)";
-        int id=systemUser.getId();
-        if(MySQLConnection.prepareConnection()) {
+        String query = "INSERT INTO pracownicy (nazwisko,imie,login,haslo,kierownik_id) VALUES (?,?,?,MD5(?),?)";
+        int id = systemUser.getId();
+        if (MySQLConnection.prepareConnection()) {
             try {
                 ps = MySQLConnection.getConnection().prepareStatement(query);
                 ps.setString(1, surname);
@@ -49,12 +42,12 @@ public class EmployeeAdmin {
         }
     }
 
-    public boolean checkSameLogin(String login){
-        boolean ans=false;
+    public boolean checkSameLogin(String login) {
+        boolean ans = false;
         PreparedStatement ps;
         ResultSet rs;
-        String query="SELECT login FROM pracownicy WHERE id=?";
-        if(MySQLConnection.prepareConnection()) {
+        String query = "SELECT login FROM pracownicy WHERE id=?";
+        if (MySQLConnection.prepareConnection()) {
             try {
                 ps = MySQLConnection.getConnection().prepareStatement(query);
                 ps.setString(1, login);
@@ -71,24 +64,35 @@ public class EmployeeAdmin {
         return ans;
     }
 
-    //public void splitSelected (ArrayList<Pair<id,Pair<String name,String surname>>>){
-       // String [] splitUser=user.split("\\s+");
-       // String id= splitUser[0];
-        //String name = splitUser[1];
-       // String surname = splitUser[2];
-
-        //setName(name);
-       // setSurname(surname);
-       // setId(id);
-   // }
-
-
-    public void saveModChanges (int id,String name,String surname){
-
-        int givenLogin=id;
+    public boolean checkSameLPassword(int id, char[] password) {
+        boolean ans = false;
         PreparedStatement ps;
-        String query="UPDATE pracownicy SET imie=?, nazwisko=? WHERE id=?";
-        if(MySQLConnection.prepareConnection()) {
+        ResultSet rs;
+        String query = "SELECT * FROM pracownicy WHERE id=? AND haslo=MD5(?)";
+        if (MySQLConnection.prepareConnection()) {
+            try {
+                ps = MySQLConnection.getConnection().prepareStatement(query);
+                ps.setInt(1, id);
+                ps.setString(2, String.valueOf(password));
+                rs = ps.executeQuery();
+                if (rs.first()) {
+                    ans = true;
+                } else {
+                    ans = false;
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        return ans;
+    }
+
+    public void saveModChanges(int id, String name, String surname) {
+
+        int givenLogin = id;
+        PreparedStatement ps;
+        String query = "UPDATE pracownicy SET imie=?, nazwisko=? WHERE id=?";
+        if (MySQLConnection.prepareConnection()) {
             try {
                 ps = MySQLConnection.getConnection().prepareStatement(query);
                 ps.setString(1, name);
@@ -101,11 +105,11 @@ public class EmployeeAdmin {
         }
     }
 
-    public void deleteEmployee(int id){
+    public void deleteEmployee(int id) {
         PreparedStatement ps;
         ResultSet rs;
-        String query ="SELECT zwolniony FROM pracownicy WHERE id=?";
-        if(MySQLConnection.prepareConnection()) {
+        String query = "SELECT zwolniony FROM pracownicy WHERE id=?";
+        if (MySQLConnection.prepareConnection()) {
             try {
                 ps = MySQLConnection.getConnection().prepareStatement(query);
                 ps.setInt(1, id);
@@ -121,6 +125,7 @@ public class EmployeeAdmin {
                             PreparedStatement ps1 = MySQLConnection.getConnection().prepareStatement(query1);
                             ps1.setInt(1, id);
                             int rs1 = ps1.executeUpdate();
+
                         } else {
                             return;
                         }
@@ -132,4 +137,54 @@ public class EmployeeAdmin {
             }
         }
     }
+
+    public void promoteToSupervisor(int id) {
+        String query1 = "INSERT INTO kierownik (nazwisko,imie,login,haslo) SELECT nazwisko,imie,login,haslo FROM pracownicy WHERE id=?";
+        if (MySQLConnection.prepareConnection()) {
+            try {
+                PreparedStatement ps1 = MySQLConnection.getConnection().prepareStatement(query1);
+                ps1.setInt(1, id);
+                ps1.executeUpdate();
+                String query = "UPDATE pracownicy SET zwolniony=1 WHERE id=?";
+                PreparedStatement ps = MySQLConnection.getConnection().prepareStatement(query);
+                ps.setInt(1, id);
+                ps.executeUpdate();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+
+
+    }
+
+    public void changeEmployeeSupervisor(int empId, int supId) {
+        String query = "UPDATE pracownicy SET kierownik_id=? WHERE id=?";
+        if (MySQLConnection.prepareConnection()) {
+            try {
+                PreparedStatement ps = MySQLConnection.getConnection().prepareStatement(query);
+                ps.setInt(1, supId);
+                ps.setInt(2, empId);
+                ps.executeUpdate();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public void changeEmployeePass(int id,String pass) {
+
+        String query = "UPDATE pracownicy SET haslo=MD5(?) WHERE id=?";
+        if (MySQLConnection.prepareConnection()) {
+            try {
+                PreparedStatement ps = MySQLConnection.getConnection().prepareStatement(query);
+                ps.setString(1,pass);
+                ps.setInt(2, id);
+                ps.executeUpdate();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+    }
 }
+
+

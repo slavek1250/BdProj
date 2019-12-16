@@ -156,7 +156,6 @@ public void blockTicket (String ticketnumber){
                     PreparedStatement ps1 = MySQLConnection.getConnection().prepareStatement(query1);
                     ps1.setString(1, ticketnumber);
                     int rs1 = ps1.executeUpdate();
-                    JOptionPane.showConfirmDialog(null, "Czy na pewno chcesz zablokować bilet");
                 }
             } else {
                 JOptionPane.showMessageDialog(null, "Nie ma takiego biletu");

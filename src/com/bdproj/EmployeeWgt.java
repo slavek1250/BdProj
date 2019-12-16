@@ -41,8 +41,8 @@ public class EmployeeWgt extends Employee {
 
         btnTopUp.addActionListener(actionEvent -> topUpTicket());
         btnPrintTicket.addActionListener(actionEvent -> createNewTicket());
-        checkNewTicket.addItemListener(e -> newTicketSlot(e));
-        btnDeleteTicket.addActionListener(e ->blockTicket());
+        checkNewTicket.addItemListener(actionEvent -> newTicketSlot(actionEvent));
+        btnDeleteTicket.addActionListener(actionEvent ->blockTicket());
 
         loadPriceListItem();
     }
@@ -93,8 +93,12 @@ public class EmployeeWgt extends Employee {
             }
         }
 private void blockTicket(){
-    String ticketnumber= txtDeleteTicketNo.getText();
-    tickets.blockTicket(ticketnumber);
+    int response=JOptionPane.showConfirmDialog(null, "Czy na pewno chcesz zablokować bilet","Potwierdzenie",JOptionPane.YES_NO_OPTION);
+    if(response==JOptionPane.YES_OPTION) {
+        String ticketnumber = txtDeleteTicketNo.getText();
+        tickets.blockTicket(ticketnumber);
+    }
+    else{return;}
 }
 
     private void loadPriceListItem (){
