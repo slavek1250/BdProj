@@ -52,7 +52,7 @@ public class EmployeeWgt extends Employee {
     }
 
     private void createNewTicket() {
-        if(!validateTopUpNewTicektData()) return;
+        if(!validateTopUpNewTicketData()) return;
 
         // dodanie nowego biletu do bazy
 
@@ -60,7 +60,7 @@ public class EmployeeWgt extends Employee {
     }
 
     private void topUpTicket() {
-        if(!validateTopUpNewTicektData()) return;
+        if(!validateTopUpNewTicketData()) return;
 
         String selectedPriceListDictionary= boxSelectPriceList.getSelectedItem().toString();
         Integer priceListDictionaryId = Integer.parseInt(selectedPriceListDictionary.replaceAll("\\..*", ""));
@@ -72,7 +72,7 @@ public class EmployeeWgt extends Employee {
         // doładowanie biletu, wyświelenie kwoty itd...
     }
 
-    private boolean validateTopUpNewTicektData() {
+    private boolean validateTopUpNewTicketData() {
         // walidajca
         return true;
     }
@@ -103,8 +103,8 @@ private void blockTicket(){
 
     private void loadPriceListItem (){
 
-        ArrayList listitem = tickets.getPriceListItem();
-        boxSelectPriceList.setModel(new DefaultComboBoxModel(listitem.toArray()));
+        ArrayList listItem = tickets.getPriceListItem();
+        boxSelectPriceList.setModel(new DefaultComboBoxModel(listItem.toArray()));
         boxSelectPriceList.setSelectedIndex(-1);
     }
 }

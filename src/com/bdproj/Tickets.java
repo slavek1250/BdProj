@@ -62,7 +62,6 @@ public class Tickets {
 
 
     public ArrayList<String> getPriceListItem(){
-
         /*
         PreparedStatement ps;
         ResultSet rs;
@@ -127,7 +126,7 @@ public class Tickets {
                 rs = ps.executeQuery();
 
                 if (rs.first()) {
-                    out = (rs.getString(1));
+                    out = (rs.getString("id"));
                 } else {
                     out = "W bazie nie ma żadnych biletów";
                 }
