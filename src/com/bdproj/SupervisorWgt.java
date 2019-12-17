@@ -385,6 +385,7 @@ private void addUser(){
             return;
         }
         int id = getEmployeeId();
+        int supId=systemUser.getId();
         JPasswordField pass = new JPasswordField(8);
 
 
@@ -397,8 +398,9 @@ private void addUser(){
             String[] pot = new String[]{"Potwierdź", "Anuluj"};
             int opcja = JOptionPane.showOptionDialog(null, panel, "Potwierdzenie", JOptionPane.NO_OPTION, JOptionPane.PLAIN_MESSAGE, null, pot, pot[1]);
             if (opcja == 0) {
-                char[] password = pass.getPassword();
-                if (!employeeAdmin.checkSameLPassword(id, password)) {
+                String password= String.valueOf(pass.getPassword());
+
+                if (!employeeAdmin.checkSameLPassword(supId, password)) {
                     JOptionPane.showMessageDialog(null, "Hasło kierownika się nie zgadza");
                     return;
                 }

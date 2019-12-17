@@ -67,7 +67,7 @@ public class EmployeeWgt extends Employee {
         int id = getId();
         double price = tickets.getPrice(id);
         int priceListItemId = tickets.getPriceListItemId(id);
-        if(!points.matches(onlyNumbersRegEx)){
+        if(!points.matches(onlyNumbersRegEx)|| points.equals("")){
             JOptionPane.showMessageDialog(null,"Niedozwolone dane wejściowe. Liczba punktów powinna być liczbą!");
             return;
         }

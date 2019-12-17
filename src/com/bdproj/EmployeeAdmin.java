@@ -64,7 +64,7 @@ public class EmployeeAdmin {
         return ans;
     }
 
-    public boolean checkSameLPassword(int id, char[] password) {
+    public boolean checkSameLPassword(int id, String password) {
         boolean ans = false;
         PreparedStatement ps;
         ResultSet rs;

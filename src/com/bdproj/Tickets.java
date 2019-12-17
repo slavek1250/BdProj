@@ -170,7 +170,7 @@ public class Tickets {
                 rs = ps.executeQuery();
 
                 if (rs.first()) {
-                    out = (rs.getString("id"));
+                    out = (rs.getString(1));
                 } else {
                     out = "W bazie nie ma żadnych biletów";
                 }
