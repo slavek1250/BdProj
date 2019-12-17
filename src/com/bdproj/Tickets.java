@@ -1,5 +1,6 @@
 package com.bdproj;
 
+import com.mysql.jdbc.authentication.MysqlClearPasswordPlugin;
 import org.knowm.xchart.style.markers.Square;
 
 import javax.swing.*;
@@ -21,6 +22,8 @@ public class Tickets {
 
     private enum PriceListEnum { ID_PRICE_LIST_ITEM, ID_PRICE_LIST_DICTIONARY, NAME, PRICE };
     private ArrayList<EnumMap<PriceListEnum, String>> currentPriceList;
+
+
 
     public String getLastError() {
         return lastError;
@@ -115,6 +118,47 @@ public class Tickets {
         return (priceListItem == null ? 0 : Integer.parseInt(priceListItem.get(PriceListEnum.ID_PRICE_LIST_ITEM)));
     }
 
+    public void newTicket(String points, String ticketId, int priceListItemId){
+        PreparedStatement ps1, ps2;
+        String query1 = "INSERT INTO karnet (zablokowany) VALUES ('0')";
+        String query2 = "INSERT INTO hist_dolad (l_pkt, stempelczasowy, karnet_id, pracownicy_id, poz_cennik_id) VALUES (?,now(),?,?,?)";
+        if(MySQLConnection.prepareConnection()){
+            try{
+                ps1 = MySQLConnection.getConnection().prepareStatement(query1);
+                ps1.executeUpdate();
+                ps2 = MySQLConnection.getConnection().prepareStatement(query2);
+                ps2.setString(1,points);
+                ps2.setString(2,ticketId);
+                ps2.setInt(3,systemUser.getId());
+                ps2.setInt(4,priceListItemId);
+                ps2.executeUpdate();
+
+            }catch (SQLException e){
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public boolean checkNewerTicket(String ticketNumber){
+        String query = "SELECT * from karnet WHERE id = ?";
+        PreparedStatement ps;
+        ResultSet rs;
+        boolean tmp = false;
+        if(MySQLConnection.prepareConnection()){
+            try {
+                ps = MySQLConnection.getConnection().prepareStatement(query);
+                ps.setString(1, ticketNumber);
+                rs = ps.executeQuery();
+                if (rs.first()){
+                    tmp = true;
+                }
+                else tmp= false;
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        return tmp;
+    }
 
     public String ticketNoIncrement () {
         PreparedStatement ps;

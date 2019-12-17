@@ -65,7 +65,7 @@ public class SupervisorWgt extends Supervisor {
     private final int SURNAME_MAX_LENGTH = 50;
     private final String DATE_FORMAT = "yyyy-MM-dd";
 
-    private String onlyNumbersRegEx = "^\\d+$";
+    private String onlyNumbersRegEx = "^(?!(0))[0-9]{0,}$";
 
     // TODO: Pracownicy: ladowanie pracownikow podleglych pod kierownika, walidacja danych wejsciowych. #Karol# !!DONE!!
     // TODO: Pracownicy: Mianowanie na kierownika, powinno automatycznie usuwać z listy pracowników pod kierownikiem ( w bazie ustaiwnie flagi jako pracownik zwolniony i kopia danych do kierownika ) #Karol#
