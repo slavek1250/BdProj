@@ -54,7 +54,7 @@
                       <text value="Witaj, Jan"/>
                     </properties>
                   </component>
-                  <tabbedpane id="818ad" binding="tabbedPane1" default-binding="true">
+                  <tabbedpane id="818ad" binding="tabbedPane">
                     <constraints>
                       <grid row="1" column="0" row-span="1" col-span="4" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false">
                         <preferred-size width="200" height="200"/>
@@ -537,66 +537,6 @@
                             </constraints>
                             <properties>
                               <text value="Dodaj"/>
-                            </properties>
-                          </component>
-                        </children>
-                      </grid>
-                      <grid id="2fde4" layout-manager="GridLayoutManager" row-count="5" column-count="3" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
-                        <margin top="15" left="15" bottom="15" right="15"/>
-                        <constraints>
-                          <tabbedpane title="Cennik"/>
-                        </constraints>
-                        <properties/>
-                        <border type="none"/>
-                        <children>
-                          <component id="be459" class="javax.swing.JLabel">
-                            <constraints>
-                              <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
-                            </constraints>
-                            <properties>
-                              <text value="Tabela cennika:"/>
-                            </properties>
-                          </component>
-                          <hspacer id="a3f52">
-                            <constraints>
-                              <grid row="2" column="2" row-span="1" col-span="1" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
-                            </constraints>
-                          </hspacer>
-                          <component id="23a93" class="javax.swing.JTable" binding="tabPriceList">
-                            <constraints>
-                              <grid row="3" column="0" row-span="1" col-span="3" vsize-policy="6" hsize-policy="6" anchor="0" fill="3" indent="0" use-parent-layout="false">
-                                <preferred-size width="150" height="50"/>
-                              </grid>
-                            </constraints>
-                            <properties/>
-                          </component>
-                          <component id="70f51" class="javax.swing.JButton" binding="saveNewPriceList">
-                            <constraints>
-                              <grid row="4" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
-                            </constraints>
-                            <properties>
-                              <text value="Zapisz jako nowy cennik"/>
-                            </properties>
-                          </component>
-                          <hspacer id="b3897">
-                            <constraints>
-                              <grid row="4" column="0" row-span="1" col-span="2" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
-                            </constraints>
-                          </hspacer>
-                          <component id="3596d" class="javax.swing.JLabel" binding="lblPriceListAuthor">
-                            <constraints>
-                              <grid row="0" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
-                            </constraints>
-                            <properties>
-                              <text value=""/>
-                            </properties>
-                          </component>
-                          <component id="5e0d4" class="javax.swing.JLabel" binding="lblPriceListSince">
-                            <constraints>
-                              <grid row="1" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
-                            </constraints>
-                            <properties>
-                              <text value=""/>
                             </properties>
                           </component>
                         </children>

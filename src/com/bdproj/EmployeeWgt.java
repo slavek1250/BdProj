@@ -25,7 +25,7 @@ public class EmployeeWgt extends Employee {
 
     private MainView mainView;
     // TODO: Migracja kodu tworzenie biletow do klasy Tickets.#Karol# !!DONE!!
-
+    private String onlyNumbersRegEx = "^(?!(0))[0-9]{0,}$";
     public EmployeeWgt(MainView mainView, SystemUser user) {
         super(user);
         this.mainView = mainView;
@@ -51,16 +51,45 @@ public class EmployeeWgt extends Employee {
         return panelMain;
     }
 
+    private int getId(){
+        String selectedPriceItem = boxSelectPriceList.getSelectedItem().toString();
+        Integer priceListId = Integer.parseInt(selectedPriceItem.replaceAll("\\..*", ""));
+        return priceListId;
+    }
+
     private void createNewTicket() {
-        if(!validateTopUpNewTicketData()) return;
-
-        // dodanie nowego biletu do bazy
-
-        topUpTicket();
+        if (boxSelectPriceList.getSelectedIndex() == -1) {
+            JOptionPane.showMessageDialog(null, "Nie wybrano cennika z listy.");
+            return;
+        }
+        String points = txtTicketPoints.getText();
+        String ticketNumber = txtTicketNo.getText();
+        int id = getId();
+        double price = tickets.getPrice(id);
+        int priceListItemId = tickets.getPriceListItemId(id);
+        if(!points.matches(onlyNumbersRegEx)){
+            JOptionPane.showMessageDialog(null,"Niedozwolone dane wejściowe. Liczba punktów powinna być liczbą!");
+            return;
+        }
+        else{
+            double cost = price * Integer.parseInt(points);
+            int response= JOptionPane.showConfirmDialog(null, "Czy na pewno chcesz wydrukować bilet? \n Koszt: " + cost + " zł","Confirm",JOptionPane.YES_NO_OPTION);
+            if(response==JOptionPane.YES_OPTION) {
+               while(tickets.checkNewerTicket(ticketNumber)){
+                    ticketNumber = tickets.ticketNoIncrement();
+                }
+                tickets.newTicket(points, ticketNumber, priceListItemId);
+                JOptionPane.showMessageDialog(null, "Zakupiono bilet.");
+                txtTicketPoints.setText(null);
+                boxSelectPriceList.setSelectedIndex(-1);
+                checkNewTicket.setSelected(false);
+            }
+            else{return;}
+        }
     }
 
     private void topUpTicket() {
-        if(!validateTopUpNewTicketData()) return;
+
 
         String selectedPriceListDictionary= boxSelectPriceList.getSelectedItem().toString();
         Integer priceListDictionaryId = Integer.parseInt(selectedPriceListDictionary.replaceAll("\\..*", ""));
@@ -72,10 +101,7 @@ public class EmployeeWgt extends Employee {
         // doładowanie biletu, wyświelenie kwoty itd...
     }
 
-    private boolean validateTopUpNewTicketData() {
-        // walidajca
-        return true;
-    }
+
 
     private void newTicketSlot(ItemEvent e) {
             if(e.getStateChange()==ItemEvent.SELECTED){

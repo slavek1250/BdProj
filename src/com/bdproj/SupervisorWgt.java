@@ -5,10 +5,7 @@ import javafx.util.Pair;
 import org.jdesktop.swingx.JXDatePicker;
 
 import javax.swing.*;
-import javax.swing.event.TableModelListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
-import javax.swing.table.DefaultTableModel;
-import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
@@ -20,7 +17,7 @@ import java.util.*;
 
 public class SupervisorWgt extends Supervisor {
     private JPanel panelMain;
-    private JTabbedPane tabbedPane1;
+    private JTabbedPane tabbedPane;
     private JTextField txtNameNewEmpl;
     private JTextField txtSurnameNewEmpl;
     private JButton btnAddNewEmpl;
@@ -37,8 +34,6 @@ public class SupervisorWgt extends Supervisor {
     private JCheckBox chechStateEditLift;
     private JButton btnDeleteLift;
     private JButton btnSaveEdtiLift;
-    private JTable tabPriceList;
-    private JButton saveNewPriceList;
     private JComboBox boxLiftRepSelect;
     private JTextField txtLiftRepSince;
     private JTextField txtLiftRepTo;
@@ -48,8 +43,6 @@ public class SupervisorWgt extends Supervisor {
     private JButton btnPrintLiftRep;
     private JLabel lblHello;
     private JButton btnPrintTicketUseRep;
-    private JLabel lblPriceListAuthor;
-    private JLabel lblPriceListSince;
     private JButton btnDelAdminPrivLift;
     private JButton btnMakeSupervisorEmpl;
     private JTextField txtSurnameSupervisor;
@@ -64,7 +57,6 @@ public class SupervisorWgt extends Supervisor {
     private JXDatePicker dateLiftRepSince;
     private JXDatePicker dateLiftRepTo;
     private JButton btnEmpNewPass;
-    private JPanel tmpdate;
 
     private MainView mainView;
 
@@ -73,7 +65,7 @@ public class SupervisorWgt extends Supervisor {
     private final int SURNAME_MAX_LENGTH = 50;
     private final String DATE_FORMAT = "yyyy-MM-dd";
 
-    private String onlyNumbersRegEx = "^\\d+$";
+    private String onlyNumbersRegEx = "^(?!(0))[0-9]{0,}$";
 
     // TODO: Pracownicy: ladowanie pracownikow podleglych pod kierownika, walidacja danych wejsciowych. #Karol# !!DONE!!
     // TODO: Pracownicy: Mianowanie na kierownika, powinno automatycznie usuwać z listy pracowników pod kierownikiem ( w bazie ustaiwnie flagi jako pracownik zwolniony i kopia danych do kierownika ) #Karol#
@@ -103,7 +95,6 @@ public class SupervisorWgt extends Supervisor {
         }
 
         btnLogout.addActionListener(actionEvent -> mainView.showMainView());
-        saveNewPriceList.addActionListener(actionEvent -> savePriceList());
         btnAddNewEmpl.addActionListener(actionEvent -> addUser());
         boxSelectEditEmpl.addActionListener(actionEvent -> chooseUser());
         btnSaveEditEmpl.addActionListener(ActionEvent -> saveEmployeeMod());
@@ -117,7 +108,8 @@ public class SupervisorWgt extends Supervisor {
         btnChangeSupervisorEmpl.addActionListener(ActionEvent -> changeEmployeeSupervisor());
         btnEmpNewPass.addActionListener(actionEvent -> newEmpPassword());
 
-        loadPriceList();
+        tabbedPane.add((new PriceListWgt(systemUser)).panelMain, "Cennik", 3);
+
         loadEmployees();
         loadReports();
         loadSupervisors();
@@ -282,83 +274,8 @@ public class SupervisorWgt extends Supervisor {
         }
     }
 
-    private void loadPriceList() {
-        Integer nameColumn = 0;
-        Integer unitColumn = 2;
-
-        if (priceList.fetchPriceList()) {
-            loadPriceListDetails();
-
-            ArrayList<String> priceListNames = priceList.getPriceListNames();
-            ArrayList<Double> priceListPrices = priceList.getPriceListPrices();
-
-            DefaultTableModel tableModel = new DefaultTableModel() {
-                @Override
-                public boolean isCellEditable(int row, int column) {
-                    return (column != nameColumn && column != unitColumn);
-                }
-            };
-            tableModel.addColumn("Nazwa");
-            tableModel.addColumn("Cena");
-            tableModel.addColumn("Jednostka");
-
-            for (int i = 0; i < priceListNames.size(); i++) {
-                Vector<String> row = new Vector<String>(2);
-                row.add(priceListNames.get(i));
-                row.add(priceListPrices.get(i) != -1 ? priceListPrices.get(i).toString() : "");
-                row.add(priceList.getUnit());
-                tableModel.addRow(row);
-            }
-            tabPriceList.setModel(tableModel);
-        }
-    }
-
-    private void savePriceList() {
-        boolean anyPriceHasChanged = false;
-        String priceValidator = "[0-9]+(.[0-9]{1,2})?";
-        ArrayList<Double> priceListPrices = priceList.getPriceListPrices();
-        ArrayList<Double> newPriceListPrices = new ArrayList<Double>();
-
-        for (int i = 0; i < priceListPrices.size(); i++) {
-
-            String cellVal = (String) tabPriceList.getValueAt(i, 1); // ??
-
-            if (!cellVal.matches(priceValidator)) {
-                JOptionPane.showMessageDialog(panelMain, "Ta wartość: " + cellVal + " nie jest ceną w poprawnym formacie.");
-                return;
-            }
-            Double cellPrice = Double.parseDouble(cellVal);
-            if (!priceListPrices.get(i).equals(cellPrice)) {
-                anyPriceHasChanged = true;
-            }
-            newPriceListPrices.add(cellPrice);
-        }
-
-        int resp = JOptionPane.showConfirmDialog(panelMain, "Czy na pewno chcesz dodać nowy cennik?\nJeżeli zrezygnujesz zostanie załadowny poprzeni cennik.", "Potwierdź", JOptionPane.YES_NO_OPTION);
-        if (resp == JOptionPane.NO_OPTION) {
-            loadPriceList();
-            return;
-        }
-
-        if (anyPriceHasChanged) {
-            priceList.setPriceListPrices(newPriceListPrices);
-            if (priceList.createNewPriceList()) {
-                loadPriceListDetails();
-                JOptionPane.showMessageDialog(panelMain, "Pomyślnie dodano nowy cennik.");
-            } else {
-                JOptionPane.showMessageDialog(panelMain, priceList.getLastError());
-            }
-        } else {
-            JOptionPane.showMessageDialog(panelMain, "Nie wprowadzono żadnych zmian w cenniku.");
-        }
-    }
-
-    private void loadPriceListDetails() {
-        lblPriceListAuthor.setText("Autor cennika: " + priceList.getAuthor());
-        lblPriceListSince.setText("Ważny od: " + priceList.getValidSince());
-    }
-
-    private void addUser() {
+   // private void addUser() {
+private void addUser(){
 
         String name = txtNameNewEmpl.getText();
         String surname = txtSurnameNewEmpl.getText();
@@ -562,6 +479,8 @@ public class SupervisorWgt extends Supervisor {
             else{return;}
         }
     }
+
+
 }
 
 
