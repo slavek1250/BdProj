@@ -14,8 +14,6 @@ public class Tickets {
 
     private String lastError;
     private SystemUser systemUser;
-
-
     // TODO: Generowanie nowego biletu, generacja id. #KLAUDIA#
     // TODO: Pobieranie bierzacego cennika. #KLAUDIA#
     // TODO: Doladowywanie biletu. #KLAUDIA#
@@ -32,7 +30,7 @@ public class Tickets {
         String query =
                 "select  pc.id as 'poz_cennik_id', sc.id as 'slownik_cennik_id', sc.nazwa, pc.cena\n" +
                 "from poz_cennik pc join slownik_cennik sc on pc.slownik_cennik_id = sc.id\n" +
-                "where pc.cennik_id = (select c.id from cennik c where c.od < now() order by c.od desc limit 1);";
+                "where pc.cennik_id = (select c.id from cennik c where c.od < now() and c.odw_przed_wej=0 order by c.od desc limit 1);";
 
         if(!MySQLConnection.prepareConnection()) {
             lastError = MySQLConnection.getLastError();
@@ -158,7 +156,6 @@ public void blockTicket (String ticketnumber){
                     PreparedStatement ps1 = MySQLConnection.getConnection().prepareStatement(query1);
                     ps1.setString(1, ticketnumber);
                     int rs1 = ps1.executeUpdate();
-                    JOptionPane.showConfirmDialog(null, "Czy na pewno chcesz zablokować bilet");
                 }
             } else {
                 JOptionPane.showMessageDialog(null, "Nie ma takiego biletu");

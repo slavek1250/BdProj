@@ -1,15 +1,15 @@
 package com.bdproj;
 
+import javafx.event.Event;
 import javafx.util.Pair;
 import org.jdesktop.swingx.JXDatePicker;
 
 import javax.swing.*;
-import javax.swing.event.TableModelListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
-import javax.swing.table.DefaultTableModel;
-import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ComponentAdapter;
+import java.security.NoSuchAlgorithmException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -17,7 +17,7 @@ import java.util.*;
 
 public class SupervisorWgt extends Supervisor {
     private JPanel panelMain;
-    private JTabbedPane tabbedPane1;
+    private JTabbedPane tabbedPane;
     private JTextField txtNameNewEmpl;
     private JTextField txtSurnameNewEmpl;
     private JButton btnAddNewEmpl;
@@ -34,8 +34,6 @@ public class SupervisorWgt extends Supervisor {
     private JCheckBox chechStateEditLift;
     private JButton btnDeleteLift;
     private JButton btnSaveEdtiLift;
-    private JTable tabPriceList;
-    private JButton saveNewPriceList;
     private JComboBox boxLiftRepSelect;
     private JTextField txtLiftRepSince;
     private JTextField txtLiftRepTo;
@@ -45,8 +43,6 @@ public class SupervisorWgt extends Supervisor {
     private JButton btnPrintLiftRep;
     private JLabel lblHello;
     private JButton btnPrintTicketUseRep;
-    private JLabel lblPriceListAuthor;
-    private JLabel lblPriceListSince;
     private JButton btnDelAdminPrivLift;
     private JButton btnMakeSupervisorEmpl;
     private JTextField txtSurnameSupervisor;
@@ -60,7 +56,7 @@ public class SupervisorWgt extends Supervisor {
     private JButton btnNewAddLift;
     private JXDatePicker dateLiftRepSince;
     private JXDatePicker dateLiftRepTo;
-    private JPanel tmpdate;
+    private JButton btnEmpNewPass;
 
     private MainView mainView;
 
@@ -88,30 +84,38 @@ public class SupervisorWgt extends Supervisor {
 
         lblHello.setText("Witaj, " + systemUser.getName() + "!");
 
-        if(!fetchSkiLifts()) {
+        if (!fetchSkiLifts()) {
             JOptionPane.showMessageDialog(panelMain, getLastError());
         }
-        if(!fetchSupervisors()) {
+        if (!fetchSupervisors()) {
+            JOptionPane.showMessageDialog(panelMain, getLastError());
+        }
+        if (!fetchEmployees()) {
             JOptionPane.showMessageDialog(panelMain, getLastError());
         }
 
         btnLogout.addActionListener(actionEvent -> mainView.showMainView());
-        saveNewPriceList.addActionListener(actionEvent -> savePriceList());
         btnAddNewEmpl.addActionListener(actionEvent -> addUser());
-        boxSelectEditEmpl.addActionListener(actionEvent ->chooseUser(actionEvent));
-        btnSaveEditEmpl.addActionListener(ActionEvent ->saveEmployeeMod());
-        btnDeleteEmpl.addActionListener(ActionEvent ->deleteEmployee());
+        boxSelectEditEmpl.addActionListener(actionEvent -> chooseUser());
+        btnSaveEditEmpl.addActionListener(ActionEvent -> saveEmployeeMod());
+        btnDeleteEmpl.addActionListener(ActionEvent -> deleteEmployee());
         btnPrintLiftRep.addActionListener(ActionEvent -> generateSkiLiftReport());
         btnPrintTicketUseRep.addActionListener(ActionEvent -> generateTicketReport());
         btnSaveSupervisor.addActionListener(ActionEvent -> updateSupervisorData());
         btnQuitJobSupervisor.addActionListener(ActionEvent -> quitJobSupervisor());
         btnNewAddLift.addActionListener(ActionEvent -> addLift());
+        btnMakeSupervisorEmpl.addActionListener(ActionEvent -> promoteToSupervisor());
+        btnChangeSupervisorEmpl.addActionListener(ActionEvent -> changeEmployeeSupervisor());
+        btnEmpNewPass.addActionListener(actionEvent -> newEmpPassword());
 
-        loadPriceList();
+        tabbedPane.add((new PriceListWgt(systemUser)).panelMain, "Cennik", 3);
+
         loadEmployees();
         loadReports();
         loadSupervisors();
         loadSupervisorData();
+
+
     }
 
     public JPanel getPanel() {
@@ -123,21 +127,31 @@ public class SupervisorWgt extends Supervisor {
         skiLiftsList.stream().map(lift -> (lift.get(SkiLiftsListEnum.ID) + ". " + lift.get(SkiLiftsListEnum.NAME))).forEach(skiLifts::add);
         boxLiftRepSelect.setModel(new DefaultComboBoxModel(skiLifts.toArray()));
         boxSelectEditLift.setModel(new DefaultComboBoxModel(skiLifts.toArray()));
+
         boxLiftRepSelect.setSelectedIndex(-1);
         dateLiftRepSince.setFormats(DATE_FORMAT);
         dateLiftRepTo.setFormats(DATE_FORMAT);
         boxSelectEditLift.setSelectedIndex(-1);
     }
 
-    private void loadSupervisors(){
+    private void loadSupervisors() {
         ArrayList<String> supLists = new ArrayList<>();
-        supervisorsList.stream().map(sup->(sup.get(SupervisorsListEnum.ID)+". " +sup.get(SupervisorsListEnum.NAME)+ " "+sup.get(SupervisorsListEnum.SURNAME))).forEach(supLists::add);
+        supervisorsList.stream().map(sup -> (sup.get(SupervisorsListEnum.ID) + ". " + sup.get(SupervisorsListEnum.NAME) + " " + sup.get(SupervisorsListEnum.SURNAME))).forEach(supLists::add);
         boxSupervisorSelectLift.setModel(new DefaultComboBoxModel(supLists.toArray()));
+        boxSupervisorSelectEmpl.setModel(new DefaultComboBoxModel(supLists.toArray()));
         boxSupervisorSelectLift.setSelectedIndex(-1);
+        boxSupervisorSelectEmpl.setSelectedIndex(-1);
+    }
+
+    private void loadEmployees() {
+        ArrayList<String> employees = new ArrayList<>();
+        employeeList.stream().map(sup -> (sup.getKey() + ". " + sup.getValue().getValue() + " " + sup.getValue().getKey())).forEach(employees::add);
+        boxSelectEditEmpl.setModel(new DefaultComboBoxModel(employees.toArray()));
+        boxSelectEditEmpl.setSelectedIndex(-1);
     }
 
     private void generateSkiLiftReport() {
-        if(boxLiftRepSelect.getSelectedIndex() == -1) {
+        if (boxLiftRepSelect.getSelectedIndex() == -1) {
             JOptionPane.showMessageDialog(panelMain, "Nie wybrano żadnego wyciągu.");
             return;
         }
@@ -145,28 +159,27 @@ public class SupervisorWgt extends Supervisor {
         Integer skiLiftId = Integer.parseInt(selectedSkiLift.replaceAll("\\..*", ""));
         Date reportSince = dateLiftRepSince.getDate();
         Date reportTo = dateLiftRepTo.getDate();
-        if( !reportSince.before(reportTo) ) {
-            JOptionPane.showMessageDialog(panelMain, "Początek okresu raportu musi być przed konicem tego okersu.");
+        if (!reportSince.before(reportTo)) {
+            JOptionPane.showMessageDialog(panelMain, "Początek okresu raportu musi być przed końcem tego okresu.");
             return;
         }
-        if((new Date()).before(reportTo)) {
-            JOptionPane.showMessageDialog(panelMain, "Koniec okresu nie może być późniejszy niż " + (new SimpleDateFormat(DATE_FORMAT)).format(new Date())+ ".");
+        if ((new Date()).before(reportTo)) {
+            JOptionPane.showMessageDialog(panelMain, "Koniec okresu nie może być późniejszy niż " + (new SimpleDateFormat(DATE_FORMAT)).format(new Date()) + ".");
             return;
         }
 
         SkiLiftUseReport skiLiftUseReport = new SkiLiftUseReport(systemUser);
         boolean success = skiLiftUseReport.generateReport(skiLiftId, getSkiLiftName(skiLiftId), reportSince, reportTo);
-        if(success) {
+        if (success) {
             saveReportAs(skiLiftUseReport);
-        }
-        else {
+        } else {
             JOptionPane.showMessageDialog(panelMain, skiLiftUseReport.getLastError());
         }
     }
 
     public void generateTicketReport() {
         String ticketNo = txtTicketUseRepNo.getText();
-        if(!ticketNo.matches(onlyNumbersRegEx)) {
+        if (!ticketNo.matches(onlyNumbersRegEx)) {
             JOptionPane.showMessageDialog(panelMain, "Błędny format numeru, popraw i spróbuj ponownie.");
             return;
         }
@@ -174,10 +187,9 @@ public class SupervisorWgt extends Supervisor {
 
         TicketUseReport ticketUseReport = new TicketUseReport(systemUser);
         boolean success = ticketUseReport.generateReport(ticketId);
-        if(success) {
+        if (success) {
             saveReportAs(ticketUseReport);
-        }
-        else {
+        } else {
             JOptionPane.showMessageDialog(panelMain, ticketUseReport.getLastError());
         }
     }
@@ -201,14 +213,13 @@ public class SupervisorWgt extends Supervisor {
 
             } else {
                 int resp = JOptionPane.showConfirmDialog(panelMain, "Błąd podczas próby zapisu raportu, spróbować ponownie?", "Błąd", JOptionPane.YES_NO_OPTION);
-                if(resp == JOptionPane.NO_OPTION) return;
+                if (resp == JOptionPane.NO_OPTION) return;
             }
         }
 
-        if(success) {
-            JOptionPane.showMessageDialog(panelMain ,"Pomyślnie zapisano raport.");
-        }
-        else {
+        if (success) {
+            JOptionPane.showMessageDialog(panelMain, "Pomyślnie zapisano raport.");
+        } else {
             JOptionPane.showMessageDialog(panelMain, reports.getLastError());
         }
     }
@@ -222,209 +233,231 @@ public class SupervisorWgt extends Supervisor {
         String newName = txtNameSupervisor.getText();
         String newSurname = txtSurnameSupervisor.getText();
 
-        if(systemUser.getName().equals(newName) && systemUser.getSurname().equals(newSurname)) {
+        if (systemUser.getName().equals(newName) && systemUser.getSurname().equals(newSurname)) {
             JOptionPane.showMessageDialog(panelMain, "Dane nie uległy zmianie.");
             return;
         }
-        if(!newName.matches(NAME_REG_EX)) {
+        if (!newName.matches(NAME_REG_EX)) {
             JOptionPane.showMessageDialog(panelMain, "Podane imie jest w niepoprawnym formacie.");
             return;
         }
-        if(!newSurname.matches(SURNAME_REG_EX) || newSurname.length() >= SURNAME_MAX_LENGTH) {
+        if (!newSurname.matches(SURNAME_REG_EX) || newSurname.length() >= SURNAME_MAX_LENGTH) {
             JOptionPane.showMessageDialog(panelMain, "Podane nazwisko jest w niepoprawnym formacie.");
             return;
         }
 
         int resp = JOptionPane.showConfirmDialog(panelMain, "Czy na pewno zaktualizować dane?", "Potwierdź", JOptionPane.YES_NO_OPTION);
-        if(resp == JOptionPane.NO_OPTION) {
+        if (resp == JOptionPane.NO_OPTION) {
             return;
         }
 
         systemUser.updateName(newName);
         systemUser.updateSurname(newSurname);
-        if(systemUser.commitChanges()) {
+        if (systemUser.commitChanges()) {
             JOptionPane.showMessageDialog(panelMain, "Pomyślnie zapisano zmiany.");
-        }
-        else {
+        } else {
             JOptionPane.showMessageDialog(panelMain, systemUser.getLastError());
         }
     }
 
     private void quitJobSupervisor() {
         int resp = JOptionPane.showConfirmDialog(panelMain, "Czy na pewno chcesz zwolnić się z pracy?", "Potwierdź", JOptionPane.YES_NO_OPTION);
-        if(resp == JOptionPane.NO_OPTION) {
+        if (resp == JOptionPane.NO_OPTION) {
             return;
         }
 
-        if(systemUser.quitJob()) {
+        if (systemUser.quitJob()) {
             JOptionPane.showMessageDialog(panelMain, "Zostałeś pomyślnie zwolniony z pracy.");
             mainView.showMainView();
-        }
-        else {
+        } else {
             JOptionPane.showMessageDialog(panelMain, systemUser.getLastError());
         }
     }
 
-    private void loadPriceList() {
-        Integer nameColumn = 0;
-        Integer unitColumn = 2;
-
-        if(priceList.fetchPriceList()) {
-            loadPriceListDetails();
-
-            ArrayList<String> priceListNames = priceList.getPriceListNames();
-            ArrayList<Double> priceListPrices = priceList.getPriceListPrices();
-
-            DefaultTableModel tableModel = new DefaultTableModel() {
-                @Override
-                public boolean isCellEditable(int row, int column) {
-                    return (column != nameColumn && column != unitColumn);
-                }
-            };
-            tableModel.addColumn("Nazwa");
-            tableModel.addColumn("Cena");
-            tableModel.addColumn("Jednostka");
-
-            for (int i = 0; i < priceListNames.size(); i++) {
-                Vector<String> row = new Vector<String>(2);
-                row.add(priceListNames.get(i));
-                row.add(priceListPrices.get(i) != -1 ? priceListPrices.get(i).toString() : "");
-                row.add(priceList.getUnit());
-                tableModel.addRow(row);
-            }
-            tabPriceList.setModel(tableModel);
-        }
-    }
-
-    private void savePriceList() {
-        boolean anyPriceHasChanged = false;
-        String priceValidator = "[0-9]+(.[0-9]{1,2})?";
-        ArrayList<Double> priceListPrices = priceList.getPriceListPrices();
-        ArrayList<Double> newPriceListPrices = new ArrayList<Double>();
-
-        for(int i = 0; i < priceListPrices.size(); i++) {
-
-            String cellVal = (String) tabPriceList.getValueAt(i, 1); // ??
-
-            if(!cellVal.matches(priceValidator)) {
-                JOptionPane.showMessageDialog(panelMain, "Ta wartość: " + cellVal + " nie jest ceną w poprawnym formacie.");
-                return;
-            }
-            Double cellPrice = Double.parseDouble(cellVal);
-            if(!priceListPrices.get(i).equals(cellPrice)) {
-                anyPriceHasChanged = true;
-            }
-            newPriceListPrices.add(cellPrice);
-        }
-
-        int resp = JOptionPane.showConfirmDialog(panelMain, "Czy na pewno chcesz dodać nowy cennik?\nJeżeli zrezygnujesz zostanie załadowny poprzeni cennik.", "Potwierdź", JOptionPane.YES_NO_OPTION);
-        if(resp == JOptionPane.NO_OPTION) {
-            loadPriceList();
-            return;
-        }
-
-        if(anyPriceHasChanged) {
-            priceList.setPriceListPrices(newPriceListPrices);
-            if(priceList.createNewPriceList()) {
-                loadPriceListDetails();
-                JOptionPane.showMessageDialog(panelMain, "Pomyślnie dodano nowy cennik.");
-            }
-            else {
-                JOptionPane.showMessageDialog(panelMain, priceList.getLastError());
-            }
-        }
-        else {
-            JOptionPane.showMessageDialog(panelMain, "Nie wprowadzono żadnych zmian w cenniku.");
-        }
-    }
-
-    private void loadPriceListDetails() {
-        lblPriceListAuthor.setText("Autor cennika: " + priceList.getAuthor());
-        lblPriceListSince.setText("Ważny od: " + priceList.getValidSince());
-    }
-
+   // private void addUser() {
 private void addUser(){
 
-    String name= txtNameNewEmpl.getText();
-    String surname= txtSurnameNewEmpl.getText();
-    if(!name.matches(NAME_REG_EX)||!surname.matches(SURNAME_REG_EX) || surname.length() >= SURNAME_MAX_LENGTH){
-        JOptionPane.showMessageDialog(null,"Imie lub nazwisko zawiera niepoprawne znaki");
-        return;
-    }
-    else{
-        int response= JOptionPane.showConfirmDialog(null, "Czy na pewno chcesz dodać nowego pracownika?","Confirm",JOptionPane.YES_NO_OPTION);
-        if(response==JOptionPane.YES_OPTION) {
-            PassGen passwd = new PassGen();
-            String password = passwd.generatePassword();
-            String login = newLogin(name, surname);
-            while (employeeAdmin.checkSameLogin(login)) {
-                newLogin(name, surname);
+        String name = txtNameNewEmpl.getText();
+        String surname = txtSurnameNewEmpl.getText();
+        if (!name.matches(NAME_REG_EX) || !surname.matches(SURNAME_REG_EX) || surname.length() >= SURNAME_MAX_LENGTH) {
+            JOptionPane.showMessageDialog(null, "Imie lub nazwisko zawiera niepoprawne znaki");
+            return;
+        } else {
+            int response = JOptionPane.showConfirmDialog(null, "Czy na pewno chcesz dodać nowego pracownika?", "Confirm", JOptionPane.YES_NO_OPTION);
+            if (response == JOptionPane.YES_OPTION) {
+                PassGen passwd = new PassGen();
+                String password = passwd.generatePassword();
+                String login = newLogin(name, surname);
+                while (employeeAdmin.checkSameLogin(login)) {
+                    newLogin(name, surname);
+                }
+                employeeAdmin.addNewUser(name, surname, login, password);
+                JOptionPane.showMessageDialog(null, "Login: " + login + "\n Hasło: " + password);
+                txtNameNewEmpl.setText(null);
+                txtSurnameNewEmpl.setText(null);
+                loadEmployees();
+            } else {
+                return;
             }
-            employeeAdmin.addNewUser(name, surname, login, password);
-            JOptionPane.showMessageDialog(null, "Login: " + login + "\n Hasło: " + password);
-            txtNameNewEmpl.setText(null);
-            txtSurnameNewEmpl.setText(null);
+        }
+    }
+
+    private String newLogin(String name, String surname) {
+        Random rand = new Random();
+        String randNumber = String.format("%04d", rand.nextInt(10000));
+        String name1 = name.toLowerCase();
+        String surname1 = surname.toLowerCase();
+        String login = (name1.substring(0, 3) + surname1.substring(0, 3) + randNumber);
+        return login;
+    }
+
+    private void chooseUser() {
+        if (boxSelectEditEmpl.getSelectedIndex() == -1) {
+            return;
+        }
+        int id = getEmployeeId();
+        txtNameEditEmpl.setText(getEmployeeName(id));
+        txtSurnameEditEmpl.setText(getEmployeeSurname(id));
+    }
+
+    private Integer getEmployeeId() {
+        String selectedEmp = boxSelectEditEmpl.getSelectedItem().toString(); // Id. nazwisko imie
+        Integer employeeId = Integer.parseInt(selectedEmp.replaceAll("\\..*", ""));
+        return employeeId;
+    }
+
+    private Integer getSupervisorId() {
+        String selectedEmp = boxSupervisorSelectEmpl.getSelectedItem().toString(); // Id. nazwisko imie
+        Integer supervisorId = Integer.parseInt(selectedEmp.replaceAll("\\..*", ""));
+        return supervisorId;
+    }
+
+    private void saveEmployeeMod() {
+        if (boxSelectEditEmpl.getSelectedIndex() == -1) {
+            JOptionPane.showMessageDialog(null, "Nie wybrano żadnego pracownika z listy.");
+            return;
+        }
+        String name = txtNameEditEmpl.getText();
+        String surname = txtSurnameEditEmpl.getText();
+        int id = getEmployeeId();
+        String givenName = getEmployeeName(id);
+        String givenSurname = getEmployeeSurname(id);
+        String loginRegEx = "^[A-ZĄĆĘŁŃÓŚŹŻ]{1}[a-ząćęłńóśźż]{1,50}$";
+        if (!name.matches(loginRegEx) || !surname.matches(loginRegEx)) {
+            JOptionPane.showMessageDialog(null, "Imie lub nazwisko zawiera niepoprawne znaki");
+            return;
+        } else {
+            if (name.equals(givenName) && surname.equals(givenSurname)) {
+                JOptionPane.showMessageDialog(null, "Dane użytkowinika się nie zmieniły");
+            } else {
+
+                int response = JOptionPane.showConfirmDialog(null, "Czy na pewno chcesz zmodyfikować dane pracownika?", "Confirm", JOptionPane.YES_NO_OPTION);
+                if (response == JOptionPane.YES_OPTION) {
+                    employeeAdmin.saveModChanges(id, name, surname);
+                    fetchEmployees();
+                    loadEmployees();
+                    txtNameEditEmpl.setText(null);
+                    txtSurnameEditEmpl.setText(null);
+                } else {
+                    return;
+                }
+            }
+
+        }
+    }
+
+    private void deleteEmployee() {
+        if (boxSelectEditEmpl.getSelectedIndex() == -1) {
+            JOptionPane.showMessageDialog(null, "Nie wybrano żadnego pracownika z listy.");
+            return;
+        }
+        int id = getEmployeeId();
+        employeeAdmin.deleteEmployee(id);
+        txtNameEditEmpl.setText(null);
+        txtSurnameEditEmpl.setText(null);
+        fetchEmployees();
+        loadEmployees();
+    }
+
+    private void promoteToSupervisor() {
+        if (boxSelectEditEmpl.getSelectedIndex() == -1) {
+            JOptionPane.showMessageDialog(null, "Nie wybrano żadnego pracownika z listy.");
+            return;
+        }
+        int id = getEmployeeId();
+        JPasswordField pass = new JPasswordField(8);
+
+
+        int response = JOptionPane.showConfirmDialog(null, "Czy na pewno chcesz awansować " + getEmployeeName(id) + " " + getEmployeeSurname(id) + " na kierownika?", "Potwierdzenie", JOptionPane.YES_NO_OPTION);
+        if (response == JOptionPane.YES_OPTION) {
+            JPanel panel = new JPanel();
+            JLabel label = new JLabel("Potwierdź hasłem:");
+            panel.add(label);
+            panel.add(pass);
+            String[] pot = new String[]{"Potwierdź", "Anuluj"};
+            int opcja = JOptionPane.showOptionDialog(null, panel, "Potwierdzenie", JOptionPane.NO_OPTION, JOptionPane.PLAIN_MESSAGE, null, pot, pot[1]);
+            if (opcja == 0) {
+                char[] password = pass.getPassword();
+                if (!employeeAdmin.checkSameLPassword(id, password)) {
+                    JOptionPane.showMessageDialog(null, "Hasło kierownika się nie zgadza");
+                    return;
+                }
+                employeeAdmin.promoteToSupervisor(id);
+                JOptionPane.showMessageDialog(null, getEmployeeName(id) + " " + getEmployeeSurname(id) + " jest teraz kierownikiem.");
+                fetchEmployees();
+                fetchSupervisors();
+                loadEmployees();
+                loadSupervisors();
+                txtSurnameEditEmpl.setText(null);
+                txtNameEditEmpl.setText(null);
+            } else {
+                return;
+            }
+        }
+    }
+
+    private void changeEmployeeSupervisor() {
+        if (boxSelectEditEmpl.getSelectedIndex() == -1) {
+            JOptionPane.showMessageDialog(null, "Nie wybrano żadnego pracownika z listy.");
+            return;
+        }
+        if (boxSupervisorSelectEmpl.getSelectedIndex() == -1) {
+            JOptionPane.showMessageDialog(null, "Nie wybrano żadnego kierownika z listy.");
+            return;
+        }
+        int empId = getEmployeeId();
+        int supId = getSupervisorId();
+        int response = JOptionPane.showConfirmDialog(null,
+                "Czy na pewno chcesz przypisać " + getEmployeeName(empId) + " " + getEmployeeSurname(empId) + " do: \n" + getSupervisorName(supId) + " " + getSupervisorSurname(supId) + "?", "Potwierdzenie", JOptionPane.YES_NO_OPTION);
+        if (response == JOptionPane.YES_OPTION) {
+            employeeAdmin.changeEmployeeSupervisor(empId, supId);
+            JOptionPane.showMessageDialog(null, "Nowym kierownikiem " + getEmployeeName(empId) + " " + getEmployeeSurname(empId) + " jest: " + getSupervisorName(supId) + " " + getSupervisorSurname(supId));
+            fetchEmployees();
             loadEmployees();
+            txtSurnameEditEmpl.setText(null);
+            txtNameEditEmpl.setText(null);
+        } else {
+            return;
+        }
+    }
+
+    private void newEmpPassword() {
+        if (boxSelectEditEmpl.getSelectedIndex() == -1) {
+            JOptionPane.showMessageDialog(null, "Nie wybrano żadnego pracownika z listy.");
+            return;
+        }
+        int id=getEmployeeId();
+        PassGen passwd = new PassGen();
+        String pass = passwd.generatePassword();
+        int response = JOptionPane.showConfirmDialog(null,"Czy na pewno chcesz zmienić hasło dla "+getEmployeeName(id)+" "+getEmployeeSurname(id)+"?","Potwierdzenie",JOptionPane.YES_NO_OPTION);
+        if (response == JOptionPane.YES_OPTION) {
+            employeeAdmin.changeEmployeePass(id,pass);
+            JOptionPane.showMessageDialog(null,"Nowe hasło pracownika "+getEmployeeName(id)+" "+getEmployeeSurname(id)+" to: \n"+pass);
         }
         else{return;}
     }
-}
 
-private String newLogin (String name, String surname){
-    Random rand=new Random();
-    String randNumber=String.format("%04d", rand.nextInt(10000));
-    String name1=name.toLowerCase();
-    String surname1=surname.toLowerCase();
-    String login= (name1.substring(0,3)+surname1.substring(0,3)+randNumber);
-    return login;
-}
 
-private void loadEmployees (){
-
-       ArrayList employees= employeeAdmin.getEmployees();
-       boxSelectEditEmpl.setModel(new DefaultComboBoxModel(employees.toArray()));
-}
-
-private void chooseUser(ActionEvent e){
-        JComboBox comboBox=(JComboBox) e.getSource();
-    String user= (String)boxSelectEditEmpl.getSelectedItem();
-    employeeAdmin.splitSelected(user);
-    txtNameEditEmpl.setText(employeeAdmin.getName());
-    txtSurnameEditEmpl.setText(employeeAdmin.getSurname());
-    }
-
-    private void saveEmployeeMod(){
-    String name=txtNameEditEmpl.getText();
-    String surname=txtSurnameEditEmpl.getText();
-    String givenName=employeeAdmin.getName();
-    String givenSurname=employeeAdmin.getSurname();
-    String loginRegEx ="^[A-ZĄĆĘŁŃÓŚŹŻ]{1}[a-ząćęłńóśźż]{1,50}$";
-    if(!name.matches(loginRegEx)||!surname.matches(loginRegEx)) {
-        JOptionPane.showMessageDialog(null,"Imie lub nazwisko zawiera niepoprawne znaki");
-        return;
-    }
-    else {
-        if (name.equals(givenName) && surname.equals(givenSurname)) {
-            JOptionPane.showMessageDialog(null,"Dane użytkowinika się nie zmieniły");
-        }
-        else{
-
-            int response=JOptionPane.showConfirmDialog(null,"Czy na pewno chcesz znowdyfikować dane pracownika?","Confirm",JOptionPane.YES_NO_OPTION);
-            if (response==JOptionPane.YES_OPTION) {
-                employeeAdmin.saveModChanges(name, surname);
-                loadEmployees();
-            }
-            else{return;}
-        }
-
-    }
-    }
-
-    private void deleteEmployee(){
-        String name=txtNameEditEmpl.getText();
-        String surname=txtSurnameEditEmpl.getText();
-        employeeAdmin.deleteEmployee();
-}
 
     private void addLift(){
         String name = txtNameNewLift.getText();
@@ -446,6 +479,8 @@ private void chooseUser(ActionEvent e){
             else{return;}
         }
     }
+
+
 }
 
 

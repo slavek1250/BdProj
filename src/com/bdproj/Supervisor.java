@@ -21,6 +21,7 @@ public class Supervisor {
     protected ArrayList<EnumMap<SupervisorsListEnum, String>> supervisorsList = null;
     protected enum SkiLiftsListEnum { ID, NAME };
     protected ArrayList<EnumMap<SkiLiftsListEnum, String>> skiLiftsList = null;
+    protected ArrayList<Pair<Integer,Pair<String,String>>> employeeList=null;
 
     public Supervisor(SystemUser user) {
         systemUser = user;
@@ -90,7 +91,7 @@ public class Supervisor {
     }
 
     protected boolean fetchSupervisors() {
-        String query = "select id, nazwisko, imie from kierownik where zwolniony = 0 and id!=?;";
+        String query = "select id, nazwisko, imie from kierownik where zwolniony = 0 AND id!=?;";
 
         if(!MySQLConnection.prepareConnection()) {
             lastError = MySQLConnection.getLastError();
@@ -148,6 +149,48 @@ public class Supervisor {
         }
         catch (SQLException ex) {
             lastError = ex.getMessage();
+        }
+        return false;
+    }
+    protected String getEmployeeName(Integer id) {
+        Pair<Integer, Pair<String, String>> supervisor = employeeList.stream()
+                .filter(sv -> id.equals(sv.getKey()))
+                .findAny()
+                .orElse(null);
+        return supervisor == null ? "" : supervisor.getValue().getValue();
+    }
+
+    protected String getEmployeeSurname(Integer id) {
+        Pair<Integer, Pair<String, String>> supervisor = employeeList.stream()
+                .filter(sv -> id.equals(sv.getKey()))
+                .findAny()
+                .orElse(null);
+        return supervisor == null ? "" : supervisor.getValue().getKey();
+    }
+    public boolean fetchEmployees(){
+
+        String query="select id, nazwisko, imie from pracownicy where zwolniony = 0 and kierownik_id=? ";
+        if(!MySQLConnection.prepareConnection()) {
+            lastError = MySQLConnection.getLastError();
+            return false;
+        }
+
+        if(MySQLConnection.prepareConnection()) {
+            try {
+               PreparedStatement ps = MySQLConnection.getConnection().prepareStatement(query);
+                ps.setInt(1,systemUser.getId());
+               ResultSet rs = ps.executeQuery();
+                employeeList =new ArrayList<>();
+                while (rs.next()) {
+                    int id=rs.getInt("id");
+                    String surname=rs.getString("nazwisko");
+                    String name=rs.getString("imie");
+                    employeeList.add(new Pair<>(id, new Pair<>(surname, name)));
+                }
+                return true;
+            } catch (SQLException e) {
+                lastError=e.getMessage();
+            }
         }
         return false;
     }
