@@ -20,10 +20,10 @@ public class PriceList {
     protected final String DATE_FORMAT = "yyyy-MM-dd";
 
     private String selectedPriceListId = null;
-    protected enum PriceListEnum { PRICE_LIST_DICTIONARY_ID, NAME, PRICE };
+    public enum PriceListEnum { PRICE_LIST_DICTIONARY_ID, NAME, PRICE };
     protected ArrayList<EnumMap<PriceListEnum, String>> selectedPriceList;
 
-    protected enum PriceListsHeadersEnum { NAME, ID, SINCE, SUPERVISOR_ID, SUPERVISOR_NAME };
+    public enum PriceListsHeadersEnum { NAME, ID, SINCE, SUPERVISOR_ID, SUPERVISOR_NAME };
     protected ArrayList<EnumMap<PriceListsHeadersEnum, String>> priceListsHeadersList;
 
     PriceList(SystemUser user) {
@@ -87,7 +87,7 @@ public class PriceList {
                     "from slownik_cennik sc where sc.id > 0/?;";
         }
         else {
-            query = "select pc.slownik_cennik_id, sc.nazwa, pc.cena\n" +
+            query = "select pc.slownik_cennik_id, sc.nazwa, round(pc.cena, 2) as cena\n" +
                     "from poz_cennik pc join slownik_cennik sc on pc.slownik_cennik_id = sc.id\n" +
                     "where pc.cennik_id = ?;";
         }
@@ -177,6 +177,20 @@ public class PriceList {
     public String getValidSince() {
         EnumMap<PriceListsHeadersEnum, String> currentHeader = getCurrentHeader();
         return currentHeader == null ? "" : currentHeader.get(PriceListsHeadersEnum.SINCE);
+    }
+
+    public String getValidTo() {
+       EnumMap<PriceListsHeadersEnum, String> validTo = priceListsHeadersList.stream().filter(item -> {
+            try {
+                Date validSince = (new SimpleDateFormat(DATE_FORMAT)).parse(getValidSince());
+                return (new SimpleDateFormat(DATE_FORMAT)).parse(item.get(PriceListsHeadersEnum.SINCE)).after(validSince);
+            } catch (ParseException e) {
+                e.printStackTrace();
+                return false;
+            }
+        }).findFirst().orElse(null);
+
+       return validTo == null ? "-" : validTo.get(PriceListsHeadersEnum.SINCE);
     }
 
     public String getCurrentName() {

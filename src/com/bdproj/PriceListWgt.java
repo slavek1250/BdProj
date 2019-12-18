@@ -3,6 +3,7 @@ package com.bdproj;
 import org.jdesktop.swingx.JXDatePicker;
 
 import javax.swing.*;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.table.DefaultTableModel;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -20,6 +21,7 @@ public class PriceListWgt extends PriceList {
     private JButton btnDeletePriceList;
     public JPanel panelMain;
     private JXDatePicker dateValidSince;
+    private JButton btnPrintPriceList;
 
     private final String PRICE_VALIDATOR = "[0-9]+(.[0-9]{1,2})?";
     private final int PRICE_COLUMN = 2;
@@ -31,11 +33,19 @@ public class PriceListWgt extends PriceList {
 
         btnSaveNewPriceList.addActionListener(actionEvent -> savePriceList());
         btnDeletePriceList.addActionListener(actionEvent -> deletePriceList());
+        btnPrintPriceList.addActionListener(actionEvent -> printPriceList());
         boxSelectPriceList.addActionListener(actionEvent -> priceListSelectionHasChanged());
 
         boxSelectPriceList.setSelectedIndex(boxSelectPriceList.getModel().getSize() > 0 ? 0 : -1);
         dateValidSince.setFormats(DATE_FORMAT);
     };
+
+    public void refresh() {
+        String currentPriceList = boxSelectPriceList.getSelectedItem().toString();
+        loadHeaders();
+        boxSelectPriceList.setSelectedItem(currentPriceList);
+        loadPriceList();
+    }
 
     private void loadHeaders() {
         if(!super.fetchPriceListsHeaders()) {
@@ -201,4 +211,39 @@ public class PriceListWgt extends PriceList {
             JOptionPane.showMessageDialog(panelMain, super.getLastError());
         }
     }
+
+    private void printPriceList() {
+        String currentPriceList = boxSelectPriceList.getSelectedItem().toString();
+        loadHeaders();
+        boxSelectPriceList.setSelectedItem(currentPriceList);
+
+        String validSince = super.getValidSince();
+        String validTo = super.getValidTo();
+        ArrayList<EnumMap<PriceListEnum, String>> priceListItems = super.selectedPriceList;
+
+        JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setDialogTitle("Zapisz cennik jako");
+        fileChooser.setAcceptAllFileFilterUsed(false);
+        fileChooser.addChoosableFileFilter(new FileNameExtensionFilter("Plik PDF", "pdf"));
+
+        int returnValue = fileChooser.showSaveDialog(panelMain);
+        if (returnValue != JFileChooser.APPROVE_OPTION) {
+            return;
+        }
+
+        PriceListPrint priceListPrint = new PriceListPrint(validSince, validTo, priceListItems);
+        if(!priceListPrint.generatePriceListHtml()) {
+            JOptionPane.showMessageDialog(panelMain, priceListPrint.getLastError());
+            return;
+        }
+
+        Reports reports = new Reports(priceListPrint);
+        if(reports.saveReportToFile(fileChooser.getSelectedFile().getAbsolutePath())) {
+            JOptionPane.showMessageDialog(panelMain, "Pomyślnie zapisano cennik.");
+        }
+        else {
+            JOptionPane.showMessageDialog(panelMain,reports.getLastError());
+        }
+    }
 }
+
