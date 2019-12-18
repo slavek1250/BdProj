@@ -24,7 +24,7 @@ public class SkiLiftAdmin {
         String query = "select w.id, w.nazwa, wd.koszt_pkt, wd.stan\n" +
                 "from wyciag w join wyciag_dane wd on w.id = wd.wyciag_id join zarzadcy z on w.id = z.wyciag_id\n" +
                 "where wd.id = ( select wd2.id from wyciag_dane wd2 where wd2.wyciag_id = w.id order by wd2.od desc limit 1)\n" +
-                "and wd.nieistniejacy = 0 and z.kierownik_id = ?;";
+                "and z.do is null and wd.nieistniejacy = 0 and z.kierownik_id = ?";
 
         if(!MySQLConnection.prepareConnection()) {
             lastError = MySQLConnection.getLastError();
