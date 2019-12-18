@@ -3,12 +3,15 @@ package com.bdproj;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.sql.SQLException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.EnumMap;
 
 public class PriceListPrint implements HtmlReport {
 
     private final String HTML_TEMPLATE_PATH = "reports/templates/PriceListTable.html";
+    private final String TIMESTAMP_FORMAT = "yyyy-MM-dd HH:mm:ss";
     private String htmlPriceList;
     private String lastError;
 
@@ -31,6 +34,16 @@ public class PriceListPrint implements HtmlReport {
             return false;
         }
 
+        String generationTimestamp;
+        try {
+            generationTimestamp = (new SimpleDateFormat(TIMESTAMP_FORMAT)).format(MySQLConnection.getServerTimestamp());
+        }
+        catch (SQLException ex) {
+            lastError = ex.getMessage();
+            return false;
+        }
+
+        htmlPriceList = htmlPriceList.replace("$timestamp", generationTimestamp);
         htmlPriceList = htmlPriceList.replace("$valid_since", validSince);
         htmlPriceList = htmlPriceList.replace("$valid_to", validTo);
 

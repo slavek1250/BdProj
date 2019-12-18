@@ -3,9 +3,10 @@ package com.bdproj;
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
-import java.sql.DriverManager;
-import java.sql.Connection;
-import java.sql.SQLException;
+import java.sql.*;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class MySQLConnection {
 
@@ -41,5 +42,25 @@ public class MySQLConnection {
 
     public static String getLastError() {
         return lastError;
+    }
+
+    public static Date getServerTimestamp() throws SQLException {
+        String sqlDateFormat = "%Y-%m-%d %H:%i:%s.%f";
+        String javaDateFormat = "yyyy-MM-dd HH:mm:ss.SSS";
+
+        String query = "select DATE_FORMAT(now(), ?);";
+        PreparedStatement ps = getConnection().prepareStatement(query);
+        ps.setString(1, sqlDateFormat);
+        ResultSet rs = ps.executeQuery();
+
+        if(rs.next()) {
+            try {
+                return (new SimpleDateFormat(javaDateFormat)).parse(rs.getString(1));
+            }
+            catch (ParseException ex) {
+                throw  new SQLException(ex.getMessage());
+            }
+        }
+        throw new SQLException("Could not get server time.");
     }
 }
