@@ -57,6 +57,7 @@ public class SupervisorWgt extends Supervisor {
     private JXDatePicker dateLiftRepSince;
     private JXDatePicker dateLiftRepTo;
     private JButton btnEmpNewPass;
+    private JLabel lblUpTime;
 
     private MainView mainView;
 
@@ -66,6 +67,7 @@ public class SupervisorWgt extends Supervisor {
     private final String DATE_FORMAT = "yyyy-MM-dd";
 
     private String onlyNumbersRegEx = "^(?!(0))[0-9]{0,}$";
+    private Uptime uptime;
 
     // TODO: Pracownicy: ladowanie pracownikow podleglych pod kierownika, walidacja danych wejsciowych. #Karol# !!DONE!!
     // TODO: Pracownicy: Mianowanie na kierownika, powinno automatycznie usuwać z listy pracowników pod kierownikiem ( w bazie ustaiwnie flagi jako pracownik zwolniony i kopia danych do kierownika ) #Karol#
@@ -109,6 +111,8 @@ public class SupervisorWgt extends Supervisor {
         btnEmpNewPass.addActionListener(actionEvent -> newEmpPassword());
 
         tabbedPane.add((new PriceListWgt(systemUser)).panelMain, "Cennik", 3);
+        uptime = new Uptime();
+        uptime.setLabelToUpdate(lblUpTime);
 
         loadEmployees();
         loadReports();
