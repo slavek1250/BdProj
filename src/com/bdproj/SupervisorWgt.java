@@ -86,7 +86,7 @@ public class SupervisorWgt extends Supervisor {
 
         lblHello.setText("Witaj, " + systemUser.getName() + "!");
 
-        if (!fetchSkiLifts()) {
+        if (!skiLiftAdmin.fetchSkiLifts()) {
             JOptionPane.showMessageDialog(panelMain, getLastError());
         }
         if (!fetchSupervisors()) {
@@ -128,7 +128,7 @@ public class SupervisorWgt extends Supervisor {
 
     private void loadReports() {
         ArrayList<String> skiLifts = new ArrayList<>();
-        skiLiftsList.stream().map(lift -> (lift.get(SkiLiftsListEnum.ID) + ". " + lift.get(SkiLiftsListEnum.NAME))).forEach(skiLifts::add);
+        skiLiftAdmin.skiLiftsList.stream().map(lift -> (lift.get(SkiLiftAdmin.SkiLiftsListEnum.ID) + ". " + lift.get(SkiLiftAdmin.SkiLiftsListEnum.NAME))).forEach(skiLifts::add);
         boxLiftRepSelect.setModel(new DefaultComboBoxModel(skiLifts.toArray()));
         boxSelectEditLift.setModel(new DefaultComboBoxModel(skiLifts.toArray()));
 
@@ -173,7 +173,7 @@ public class SupervisorWgt extends Supervisor {
         }
 
         SkiLiftUseReport skiLiftUseReport = new SkiLiftUseReport(systemUser);
-        boolean success = skiLiftUseReport.generateReport(skiLiftId, getSkiLiftName(skiLiftId), reportSince, reportTo);
+        boolean success = skiLiftUseReport.generateReport(skiLiftId, skiLiftAdmin.getSkiLiftName(skiLiftId), reportSince, reportTo);
         if (success) {
             saveReportAs(skiLiftUseReport);
         } else {
