@@ -3,8 +3,8 @@ package com.bdproj;
 import org.jdesktop.swingx.JXDatePicker;
 
 import javax.swing.*;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.table.DefaultTableModel;
-import java.awt.event.ActionEvent;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -21,8 +21,8 @@ public class PriceListWgt extends PriceList {
     private JButton btnDeletePriceList;
     public JPanel panelMain;
     private JXDatePicker dateValidSince;
+    private JButton btnPrintPriceList;
 
-    private final String DATE_FORMAT = "yyyy-MM-dd";
     private final String PRICE_VALIDATOR = "[0-9]+(.[0-9]{1,2})?";
     private final int PRICE_COLUMN = 2;
 
@@ -32,11 +32,20 @@ public class PriceListWgt extends PriceList {
         loadHeaders();
 
         btnSaveNewPriceList.addActionListener(actionEvent -> savePriceList());
-        boxSelectPriceList.addActionListener(actionEvent -> loadPriceList());
+        btnDeletePriceList.addActionListener(actionEvent -> deletePriceList());
+        btnPrintPriceList.addActionListener(actionEvent -> printPriceList());
+        boxSelectPriceList.addActionListener(actionEvent -> priceListSelectionHasChanged());
 
         boxSelectPriceList.setSelectedIndex(boxSelectPriceList.getModel().getSize() > 0 ? 0 : -1);
         dateValidSince.setFormats(DATE_FORMAT);
     };
+
+    public void refresh() {
+        String currentPriceList = boxSelectPriceList.getSelectedItem().toString();
+        loadHeaders();
+        boxSelectPriceList.setSelectedItem(currentPriceList);
+        loadPriceList();
+    }
 
     private void loadHeaders() {
         if(!super.fetchPriceListsHeaders()) {
@@ -51,14 +60,18 @@ public class PriceListWgt extends PriceList {
         boxSelectPriceList.setModel(new DefaultComboBoxModel(names.toArray()));
     }
 
-    private void loadPriceList() {
-
+    private void priceListSelectionHasChanged() {
         String selectedPriceListName = boxSelectPriceList.getSelectedItem().toString();
         if(boxSelectPriceList.getSelectedIndex() == -1 || selectedPriceListName.equals(super.getCurrentName())) {
             return;
         }
-
         super.setSelectedPriceList(selectedPriceListName);
+
+        loadPriceList();
+    }
+
+    private void loadPriceList() {
+
         if(!super.fetchSinglePriceList()) {
             JOptionPane.showMessageDialog(panelMain, super.getLastError());
             return;
@@ -66,7 +79,7 @@ public class PriceListWgt extends PriceList {
 
         boolean canEdit = super.hasModifyPrivileges();
 
-        DefaultTableModel tableModel = new DefaultTableModel() {
+        DefaultTableModel  tableModel = new DefaultTableModel() {
             @Override
             public boolean isCellEditable(int row, int column) {
                 return (canEdit && column == PRICE_COLUMN);
@@ -118,7 +131,7 @@ public class PriceListWgt extends PriceList {
 
         boolean anyPriceHasChanged = false;
         Date validSince = dateValidSince.getDate();
-        ArrayList<String> newPrices = new ArrayList<>();
+        ArrayList<EnumMap<PriceListEnum, String>> newPriceListItems = new ArrayList<>();
         for(int i = 0; i < super.selectedPriceList.size(); i++) {
 
             String cellPrice = (String)tabPriceList.getValueAt(i, PRICE_COLUMN);
@@ -131,63 +144,106 @@ public class PriceListWgt extends PriceList {
             if(!super.selectedPriceList.get(i).get(PriceListEnum.PRICE).equals(cellPrice)) {
                 anyPriceHasChanged = true;
             }
-            newPrices.add(cellPrice);
+            EnumMap<PriceListEnum, String> newItem = new EnumMap<>(PriceListEnum.class);
+            newItem.put(PriceListEnum.PRICE_LIST_DICTIONARY_ID, super.selectedPriceList.get(i).get(PriceListEnum.PRICE_LIST_DICTIONARY_ID));
+            newItem.put(PriceListEnum.NAME, super.selectedPriceList.get(i).get(PriceListEnum.NAME));
+            newItem.put(PriceListEnum.PRICE, cellPrice);
+            newPriceListItems.add(newItem);
+        }
+
+        try {
+            anyPriceHasChanged |= (validSince.compareTo((new SimpleDateFormat(DATE_FORMAT)).parse(super.getValidSince())) != 0) & !super.isPresentPriceList();
+        }
+        catch (ParseException ex) {
+            JOptionPane.showMessageDialog(panelMain, ex.getMessage());
+            return;
+        }
+        if(!anyPriceHasChanged) {
+            JOptionPane.showMessageDialog(panelMain, "Nie wprowadzono żadnych zmian.");
+            return;
         }
         if(!validSince.after(new Date())) {
             JOptionPane.showMessageDialog(panelMain, "Data wprowadzenia musi być poźniejsza niż obecna.");
             return;
         }
-        if(!super.checkIfIsUniqueDate()) {
-            JOptionPane.showMessageDialog(panelMain, "Podana data istnieje już w systemie, spróbuj wybrać inną.");
+        if(!super.checkIfDateIsUnique(validSince)) {
+            JOptionPane.showMessageDialog(panelMain, super.getLastError());
             return;
         }
 
-        /*
-        boolean anyPriceHasChanged = false;
-        String priceValidator = "[0-9]+(.[0-9]{1,2})?";
-        ArrayList<Double> priceListPrices = super.getPriceListPrices();
-        ArrayList<Double> newPriceListPrices = new ArrayList<Double>();
+        int resp = JOptionPane.showConfirmDialog(panelMain, "Czy potwierdzasz chęć wykonania tej operacji?", "Potwierdź", JOptionPane.YES_NO_OPTION);
+        boolean reloadPriceListTable;
 
-        for(int i = 0; i < priceListPrices.size(); i++) {
-
-            String cellVal = (String) tabPriceList.getValueAt(i, 1); // ??
-
-            if(!cellVal.matches(priceValidator)) {
-                JOptionPane.showMessageDialog(panelMain, "Ta wartość: " + cellVal + " nie jest ceną w poprawnym formacie.");
-                return;
-            }
-            Double cellPrice = Double.parseDouble(cellVal);
-            if(!priceListPrices.get(i).equals(cellPrice)) {
-                anyPriceHasChanged = true;
-            }
-            newPriceListPrices.add(cellPrice);
-        }
-
-        int resp = JOptionPane.showConfirmDialog(panelMain, "Czy na pewno chcesz dodać nowy cennik?\nJeżeli zrezygnujesz zostanie załadowny poprzeni cennik.", "Potwierdź", JOptionPane.YES_NO_OPTION);
         if(resp == JOptionPane.NO_OPTION) {
-            //loadPriceList();
-            return;
-        }
-
-        if(anyPriceHasChanged) {
-            super.setPriceListPrices(newPriceListPrices);
-            if(super.createNewPriceList()) {
-                loadPriceListDetails();
-                JOptionPane.showMessageDialog(panelMain, "Pomyślnie dodano nowy cennik.");
-            }
-            else {
-                JOptionPane.showMessageDialog(panelMain, super.getLastError());
-            }
+            resp = JOptionPane.showConfirmDialog(panelMain, "Czy załadować niezmodyfikowny cennik?", "Zadecyduj", JOptionPane.YES_NO_OPTION);
+            reloadPriceListTable = resp == JOptionPane.YES_OPTION;
         }
         else {
-            JOptionPane.showMessageDialog(panelMain, "Nie wprowadzono żadnych zmian w cenniku.");
+            boolean success = super.isPresentPriceList() ? saveAsNewPriceList(validSince, newPriceListItems) : updateCurrentPriceList(validSince, newPriceListItems);
+
+            if (success) {
+                JOptionPane.showMessageDialog(panelMain, "Zakończono operację opwodzeniem.");
+            } else {
+                JOptionPane.showMessageDialog(panelMain, super.getLastError());
+            }
+            reloadPriceListTable = success;
         }
 
-         */
+        loadHeaders();
+        boxSelectPriceList.setSelectedItem(super.getCurrentName());
+        if(reloadPriceListTable) {
+            loadPriceList();
+        }
     }
 
-    private void loadPriceListDetails() {
-        lblPriceListAuthor.setText("Autor cennika: " + super.getAuthor());
-        lblPriceListSince.setText("Ważny od: " + super.getValidSince());
+    private void deletePriceList() {
+        int resp = JOptionPane.showConfirmDialog(panelMain, "Czy na pewno chcesz usunąć ten cennik?\nUwaga! Operacja nieodwracalna!", "Potwierdź", JOptionPane.YES_NO_OPTION);
+        if(resp == JOptionPane.NO_OPTION) {
+            return;
+        }
+
+        if(super.deleteCurrentPriceList()) {
+            JOptionPane.showMessageDialog(panelMain, "Pomyślnie usunięto cennik.");
+            loadHeaders();
+            boxSelectPriceList.setSelectedItem(boxSelectPriceList.getModel().getElementAt(0).toString());
+        }
+        else {
+            JOptionPane.showMessageDialog(panelMain, super.getLastError());
+        }
+    }
+
+    private void printPriceList() {
+        String currentPriceList = boxSelectPriceList.getSelectedItem().toString();
+        loadHeaders();
+        boxSelectPriceList.setSelectedItem(currentPriceList);
+
+        String validSince = super.getValidSince();
+        String validTo = super.getValidTo();
+        ArrayList<EnumMap<PriceListEnum, String>> priceListItems = super.selectedPriceList;
+
+        JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setDialogTitle("Zapisz cennik jako");
+        fileChooser.setAcceptAllFileFilterUsed(false);
+        fileChooser.addChoosableFileFilter(new FileNameExtensionFilter("Plik PDF", "pdf"));
+
+        int returnValue = fileChooser.showSaveDialog(panelMain);
+        if (returnValue != JFileChooser.APPROVE_OPTION) {
+            return;
+        }
+
+        PriceListPrint priceListPrint = new PriceListPrint(validSince, validTo, priceListItems);
+        if(!priceListPrint.generatePriceListHtml()) {
+            JOptionPane.showMessageDialog(panelMain, priceListPrint.getLastError());
+            return;
+        }
+
+        Reports reports = new Reports(priceListPrint);
+        if(reports.saveReportToFile(fileChooser.getSelectedFile().getAbsolutePath())) {
+            JOptionPane.showMessageDialog(panelMain, "Pomyślnie zapisano cennik.");
+        }
+        else {
+            JOptionPane.showMessageDialog(panelMain,reports.getLastError());
+        }
     }
 }
+

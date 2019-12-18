@@ -22,6 +22,8 @@ public class EmployeeWgt extends Employee {
     private JTextField txtDeleteTicketNo;
     private JButton btnDeleteTicket;
     private JLabel lblHello;
+    private JLabel lblUptime;
+    private Uptime uptime;
 
     private MainView mainView;
     // TODO: Migracja kodu tworzenie biletow do klasy Tickets.#Karol# !!DONE!!
@@ -43,6 +45,9 @@ public class EmployeeWgt extends Employee {
         btnPrintTicket.addActionListener(actionEvent -> createNewTicket());
         checkNewTicket.addItemListener(actionEvent -> newTicketSlot(actionEvent));
         btnDeleteTicket.addActionListener(actionEvent ->blockTicket());
+
+        uptime = new Uptime();
+        uptime.setLabelToUpdate(lblUptime);
 
         loadPriceListItem();
     }
@@ -129,8 +134,8 @@ private void blockTicket(){
 
     private void loadPriceListItem (){
 
-        ArrayList listitem = tickets.getPriceListItem();
-        boxSelectPriceList.setModel(new DefaultComboBoxModel(listitem.toArray()));
+        ArrayList listItem = tickets.getPriceListItem();
+        boxSelectPriceList.setModel(new DefaultComboBoxModel(listItem.toArray()));
         boxSelectPriceList.setSelectedIndex(-1);
     }
 }

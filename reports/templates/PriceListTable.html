@@ -1,0 +1,72 @@
+<html>
+    <head>
+        <style> 
+            body, html {
+                width: 595px;
+            }
+            img {
+                width: 500px;
+            }
+            #tab table, #tab td, #tab th {
+                border: 1px solid black;
+                padding: 3px;
+            }
+            #tab table tr td {
+                text-align: center;
+            }
+            #tab table {
+                border-collapse: collapse;
+                width: 100%;
+            }
+        </style>
+    </head>
+    <body>
+        <div>
+            <div style="margin-top: 10px;">
+                <p>Wydruk wygenerowano: $timestamp.</p>
+            </div>
+            <table style="margin-top: 10px;">
+                <tr>
+                    <td>
+                        Ważny od: 
+                    </td>
+                    <td style="padding-left: 5px;">
+                        $valid_since
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        Ważny do: 
+                    </td>
+                    <td style="padding-left: 5px;">
+                        $valid_to
+                    </td>
+                </tr>
+            </table> 
+            <div style="text-align: center; margin-top: 20px;">
+                Cennik
+            </div>
+            <div style="margin-top: 40;">
+                <p>
+                    Pozycje cennika:
+                </p>
+            </div>
+            <div id="tab">
+                <table style="margin-top: 40;">
+                    <thead>
+                        <th>
+                            #
+                        </th>
+                        <th>
+                            Nazwa
+                        </th>
+                        <th>
+                            Cena [zł / pkt]
+                        </th>
+                    </thead>
+                    $table_1_content
+                </table>
+            </div>
+        </div>
+    </body>
+</html>

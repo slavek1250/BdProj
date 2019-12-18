@@ -19,8 +19,6 @@ public class Supervisor {
 
     protected enum SupervisorsListEnum { ID, NAME, SURNAME };
     protected ArrayList<EnumMap<SupervisorsListEnum, String>> supervisorsList = null;
-    protected enum SkiLiftsListEnum { ID, NAME };
-    protected ArrayList<EnumMap<SkiLiftsListEnum, String>> skiLiftsList = null;
     protected ArrayList<Pair<Integer,Pair<String,String>>> employeeList=null;
 
     public Supervisor(SystemUser user) {
@@ -31,21 +29,6 @@ public class Supervisor {
         //reports = new Reports(user);
     }
 
-    protected Integer getSkiLiftId(String name) {
-        EnumMap<SkiLiftsListEnum, String> skiLift = skiLiftsList.stream()
-                .filter(lift -> name.equals(lift.get(SkiLiftsListEnum.NAME)))
-                .findAny()
-                .orElse(null);
-        return skiLift == null ? -1 : Integer.parseInt(skiLift.get(SkiLiftsListEnum.ID));
-    }
-
-    protected String getSkiLiftName(Integer id) {
-        EnumMap<SkiLiftsListEnum, String> skiLift = skiLiftsList.stream()
-                .filter(lift -> id.toString().equals(lift.get(SkiLiftsListEnum.ID)))
-                .findAny()
-                .orElse(null);
-        return skiLift == null ? "" : skiLift.get(SkiLiftsListEnum.NAME);
-    }
 
     protected Integer getSupervisorId(String name, String surname) {
         EnumMap<SupervisorsListEnum, String> supervisor = supervisorsList.stream()
@@ -75,12 +58,6 @@ public class Supervisor {
         return lastError;
     }
 
-    protected void addSkiLift(Integer id, String name) {
-        EnumMap<SkiLiftsListEnum, String> tmp = new EnumMap<>(SkiLiftsListEnum.class);
-        tmp.put(SkiLiftsListEnum.ID, id.toString());
-        tmp.put(SkiLiftsListEnum.NAME, name);
-        skiLiftsList.add(tmp);
-    }
 
     protected void addSupervisor(Integer id, String name, String surname) {
         EnumMap<SupervisorsListEnum, String> tmp = new EnumMap<>(SupervisorsListEnum.class);
@@ -120,38 +97,7 @@ public class Supervisor {
         return false;
     }
 
-    protected boolean fetchSkiLifts() {
 
-        String query = "select w.id, w.nazwa from wyciag w join zarzadcy z on w.id = z.wyciag_id\n" +
-                        "where z.kierownik_id = ? and (w.id, 0) = (\n" +
-                        "\t\tselect d.wyciag_id, sum(d.nieistniejacy) from wyciag_dane d\n" +
-                        "\t\twhere d.wyciag_id = w.id group by wyciag_id );";
-
-        if(!MySQLConnection.prepareConnection()) {
-            lastError = MySQLConnection.getLastError();
-            return false;
-        }
-
-        try {
-            PreparedStatement ps = MySQLConnection.getConnection().prepareStatement(query);
-            ps.setInt(1, systemUser.getId());
-            ResultSet rs = ps.executeQuery();
-
-            skiLiftsList = new ArrayList<>();
-
-            while (rs.next()) {
-                EnumMap<SkiLiftsListEnum, String> tmp = new EnumMap<>(SkiLiftsListEnum.class);
-                tmp.put(SkiLiftsListEnum.ID, rs.getString("id"));
-                tmp.put(SkiLiftsListEnum.NAME, rs.getString("nazwa"));
-                skiLiftsList.add(tmp);
-            }
-            return true;
-        }
-        catch (SQLException ex) {
-            lastError = ex.getMessage();
-        }
-        return false;
-    }
     protected String getEmployeeName(Integer id) {
         Pair<Integer, Pair<String, String>> supervisor = employeeList.stream()
                 .filter(sv -> id.equals(sv.getKey()))

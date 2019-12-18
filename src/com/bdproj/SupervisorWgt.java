@@ -57,6 +57,7 @@ public class SupervisorWgt extends Supervisor {
     private JXDatePicker dateLiftRepSince;
     private JXDatePicker dateLiftRepTo;
     private JButton btnEmpNewPass;
+    private JLabel lblUpTime;
 
     private MainView mainView;
 
@@ -66,6 +67,7 @@ public class SupervisorWgt extends Supervisor {
     private final String DATE_FORMAT = "yyyy-MM-dd";
 
     private String onlyNumbersRegEx = "^(?!(0))[0-9]{0,}$";
+    private Uptime uptime;
 
     // TODO: Pracownicy: ladowanie pracownikow podleglych pod kierownika, walidacja danych wejsciowych. #Karol# !!DONE!!
     // TODO: Pracownicy: Mianowanie na kierownika, powinno automatycznie usuwać z listy pracowników pod kierownikiem ( w bazie ustaiwnie flagi jako pracownik zwolniony i kopia danych do kierownika ) #Karol#
@@ -84,7 +86,7 @@ public class SupervisorWgt extends Supervisor {
 
         lblHello.setText("Witaj, " + systemUser.getName() + "!");
 
-        if (!fetchSkiLifts()) {
+        if (!skiLiftAdmin.fetchSkiLifts()) {
             JOptionPane.showMessageDialog(panelMain, getLastError());
         }
         if (!fetchSupervisors()) {
@@ -109,6 +111,8 @@ public class SupervisorWgt extends Supervisor {
         btnEmpNewPass.addActionListener(actionEvent -> newEmpPassword());
 
         tabbedPane.add((new PriceListWgt(systemUser)).panelMain, "Cennik", 3);
+        uptime = new Uptime();
+        uptime.setLabelToUpdate(lblUpTime);
 
         loadEmployees();
         loadReports();
@@ -124,7 +128,7 @@ public class SupervisorWgt extends Supervisor {
 
     private void loadReports() {
         ArrayList<String> skiLifts = new ArrayList<>();
-        skiLiftsList.stream().map(lift -> (lift.get(SkiLiftsListEnum.ID) + ". " + lift.get(SkiLiftsListEnum.NAME))).forEach(skiLifts::add);
+        skiLiftAdmin.skiLiftsList.stream().map(lift -> (lift.get(SkiLiftAdmin.SkiLiftsListEnum.ID) + ". " + lift.get(SkiLiftAdmin.SkiLiftsListEnum.NAME))).forEach(skiLifts::add);
         boxLiftRepSelect.setModel(new DefaultComboBoxModel(skiLifts.toArray()));
         boxSelectEditLift.setModel(new DefaultComboBoxModel(skiLifts.toArray()));
 
@@ -169,7 +173,7 @@ public class SupervisorWgt extends Supervisor {
         }
 
         SkiLiftUseReport skiLiftUseReport = new SkiLiftUseReport(systemUser);
-        boolean success = skiLiftUseReport.generateReport(skiLiftId, getSkiLiftName(skiLiftId), reportSince, reportTo);
+        boolean success = skiLiftUseReport.generateReport(skiLiftId, skiLiftAdmin.getSkiLiftName(skiLiftId), reportSince, reportTo);
         if (success) {
             saveReportAs(skiLiftUseReport);
         } else {
@@ -295,6 +299,7 @@ private void addUser(){
                 JOptionPane.showMessageDialog(null, "Login: " + login + "\n Hasło: " + password);
                 txtNameNewEmpl.setText(null);
                 txtSurnameNewEmpl.setText(null);
+                fetchEmployees();
                 loadEmployees();
             } else {
                 return;
@@ -385,6 +390,7 @@ private void addUser(){
             return;
         }
         int id = getEmployeeId();
+        int supId=systemUser.getId();
         JPasswordField pass = new JPasswordField(8);
 
 
@@ -397,8 +403,9 @@ private void addUser(){
             String[] pot = new String[]{"Potwierdź", "Anuluj"};
             int opcja = JOptionPane.showOptionDialog(null, panel, "Potwierdzenie", JOptionPane.NO_OPTION, JOptionPane.PLAIN_MESSAGE, null, pot, pot[1]);
             if (opcja == 0) {
-                char[] password = pass.getPassword();
-                if (!employeeAdmin.checkSameLPassword(id, password)) {
+                String password= String.valueOf(pass.getPassword());
+
+                if (!employeeAdmin.checkSameLPassword(supId, password)) {
                     JOptionPane.showMessageDialog(null, "Hasło kierownika się nie zgadza");
                     return;
                 }
@@ -457,15 +464,12 @@ private void addUser(){
         else{return;}
     }
 
-
-
     private void addLift(){
         String name = txtNameNewLift.getText();
         String height = txtHeightNewLift.getText();
         String pointsCost = txtPointsCostNewLift.getText();
         int idSup = systemUser.getId();
         boolean state = checkStateNewLift.isSelected();
-        //skiLiftAdmin.addNewLift(name, height, pointsCost, state, idSup);
         if(!height.matches(onlyNumbersRegEx) || !pointsCost.matches(onlyNumbersRegEx) ){
             JOptionPane.showMessageDialog(null,"Niedozwolone dane wejściowe. Wysokość i koszt powinny być liczbą!");
             return;
@@ -480,6 +484,14 @@ private void addUser(){
         }
     }
 
+    private void chooseLift() {
+        if (boxSelectEditLift.getSelectedIndex() == -1) {
+            return;
+        }
+        int id = getEmployeeId();
+        txtNameEditEmpl.setText(getEmployeeName(id));
+        txtSurnameEditEmpl.setText(getEmployeeSurname(id));
+    }
 
 }
 
