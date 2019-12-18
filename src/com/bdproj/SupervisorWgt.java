@@ -299,6 +299,7 @@ private void addUser(){
                 JOptionPane.showMessageDialog(null, "Login: " + login + "\n Hasło: " + password);
                 txtNameNewEmpl.setText(null);
                 txtSurnameNewEmpl.setText(null);
+                fetchEmployees();
                 loadEmployees();
             } else {
                 return;

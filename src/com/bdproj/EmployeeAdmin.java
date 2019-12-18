@@ -35,7 +35,7 @@ public class EmployeeAdmin {
                 ps.setString(3, username);
                 ps.setString(4, password);
                 ps.setInt(5, id);
-                int rs = ps.executeUpdate();
+                ps.executeUpdate();
             } catch (SQLException e) {
                 e.printStackTrace();
             }
@@ -68,7 +68,7 @@ public class EmployeeAdmin {
         boolean ans = false;
         PreparedStatement ps;
         ResultSet rs;
-        String query = "SELECT * FROM pracownicy WHERE id=? AND haslo=MD5(?)";
+        String query = "SELECT * FROM kierownik WHERE id=? AND haslo=MD5(?)";
         if (MySQLConnection.prepareConnection()) {
             try {
                 ps = MySQLConnection.getConnection().prepareStatement(query);
