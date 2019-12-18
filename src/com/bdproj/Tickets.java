@@ -65,7 +65,6 @@ public class Tickets {
 
 
     public ArrayList<String> getPriceListItem(){
-
         /*
         PreparedStatement ps;
         ResultSet rs;

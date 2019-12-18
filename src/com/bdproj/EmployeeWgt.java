@@ -67,7 +67,7 @@ public class EmployeeWgt extends Employee {
         int id = getId();
         double price = tickets.getPrice(id);
         int priceListItemId = tickets.getPriceListItemId(id);
-        if(!points.matches(onlyNumbersRegEx)){
+        if(!points.matches(onlyNumbersRegEx)|| points.equals("")){
             JOptionPane.showMessageDialog(null,"Niedozwolone dane wejściowe. Liczba punktów powinna być liczbą!");
             return;
         }
@@ -129,8 +129,8 @@ private void blockTicket(){
 
     private void loadPriceListItem (){
 
-        ArrayList listitem = tickets.getPriceListItem();
-        boxSelectPriceList.setModel(new DefaultComboBoxModel(listitem.toArray()));
+        ArrayList listItem = tickets.getPriceListItem();
+        boxSelectPriceList.setModel(new DefaultComboBoxModel(listItem.toArray()));
         boxSelectPriceList.setSelectedIndex(-1);
     }
 }
