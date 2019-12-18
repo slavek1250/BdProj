@@ -28,7 +28,7 @@ public class SkiLiftAdmin {
                 ps1 = MySQLConnection.getConnection().prepareStatement(sql_1);
                 ps1.setString(1, name);
                 ps1.setString(2, height);
-                int rs1 = ps1.executeUpdate();
+                ps1.executeUpdate();
                 ps3 = MySQLConnection.getConnection().prepareStatement(sql_3);
                 ps3.setString(1,name);
                 ps3.setString(2,height);
@@ -41,7 +41,7 @@ public class SkiLiftAdmin {
                 ps2.setBoolean(2, state);
                 ps2.setInt(3, idLift);
                 ps2.setInt(4,idSup);
-                int rs2 = ps2.executeUpdate();
+                ps2.executeUpdate();
             } catch (SQLException e) {
                 e.printStackTrace();
             }

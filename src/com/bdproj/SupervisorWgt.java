@@ -463,15 +463,12 @@ private void addUser(){
         else{return;}
     }
 
-
-
     private void addLift(){
         String name = txtNameNewLift.getText();
         String height = txtHeightNewLift.getText();
         String pointsCost = txtPointsCostNewLift.getText();
         int idSup = systemUser.getId();
         boolean state = checkStateNewLift.isSelected();
-        //skiLiftAdmin.addNewLift(name, height, pointsCost, state, idSup);
         if(!height.matches(onlyNumbersRegEx) || !pointsCost.matches(onlyNumbersRegEx) ){
             JOptionPane.showMessageDialog(null,"Niedozwolone dane wejściowe. Wysokość i koszt powinny być liczbą!");
             return;
@@ -486,6 +483,14 @@ private void addUser(){
         }
     }
 
+    private void chooseLift() {
+        if (boxSelectEditLift.getSelectedIndex() == -1) {
+            return;
+        }
+        int id = getEmployeeId();
+        txtNameEditEmpl.setText(getEmployeeName(id));
+        txtSurnameEditEmpl.setText(getEmployeeSurname(id));
+    }
 
 }
 
