@@ -309,12 +309,15 @@ private void addUser(){
             }
         }
     }
-
+//ąćęłńóśźż
     private String newLogin(String name, String surname) {
         Random rand = new Random();
         String randNumber = String.format("%04d", rand.nextInt(10000));
-        String name1 = name.toLowerCase();
-        String surname1 = surname.toLowerCase();
+        String name1 = name.toLowerCase().replace("ą","a").replace("ę","e").replace("ć","c").replace("ł","l").
+                replace("ń","n").replace("ó","o").replace("ś","s").replace("ź","z").replace("ż","z");
+        String surname1 = surname.toLowerCase().replace("ą","a").replace("ę","e").replace("ć","c").replace("ł","l").
+                replace("ń","n").replace("ó","o").replace("ś","s").replace("ź","z").replace("ż","z");;
+
         String login = (name1.substring(0, 3) + surname1.substring(0, 3) + randNumber);
         return login;
     }
