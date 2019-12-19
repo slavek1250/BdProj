@@ -7,6 +7,7 @@ import javax.swing.*;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.EnumMap;
 
@@ -117,17 +118,22 @@ public class Tickets {
         return (priceListItem == null ? 0 : Integer.parseInt(priceListItem.get(PriceListEnum.ID_PRICE_LIST_ITEM)));
     }
 
-    public void newTicket(String points, String ticketId, int priceListItemId){
+    public int newTicket(String points, int priceListItemId){
         PreparedStatement ps1, ps2;
+        int ticketNumber = 0;
         String query1 = "INSERT INTO karnet (zablokowany) VALUES ('0')";
         String query2 = "INSERT INTO hist_dolad (l_pkt, stempelczasowy, karnet_id, pracownicy_id, poz_cennik_id) VALUES (?,now(),?,?,?)";
         if(MySQLConnection.prepareConnection()){
             try{
-                ps1 = MySQLConnection.getConnection().prepareStatement(query1);
+                ps1 = MySQLConnection.getConnection().prepareStatement(query1, Statement.RETURN_GENERATED_KEYS);
                 ps1.executeUpdate();
+                ResultSet rs=ps1.getGeneratedKeys();
+                if (rs.next()){
+                    ticketNumber = rs.getInt(1);
+                }
                 ps2 = MySQLConnection.getConnection().prepareStatement(query2);
                 ps2.setString(1,points);
-                ps2.setString(2,ticketId);
+                ps2.setInt(2,ticketNumber);
                 ps2.setInt(3,systemUser.getId());
                 ps2.setInt(4,priceListItemId);
                 ps2.executeUpdate();
@@ -136,28 +142,53 @@ public class Tickets {
                 e.printStackTrace();
             }
         }
+        return ticketNumber;
     }
 
-    public boolean checkNewerTicket(String ticketNumber){
-        String query = "SELECT * from karnet WHERE id = ?";
+    public boolean checkTicketParameters(String ticketId){
         PreparedStatement ps;
+        String query="SELECT * FROM karnet WHERE id=? AND zablokowany=0";
+        try {
+            ps=MySQLConnection.getConnection().prepareStatement(query);
+            ps.setString(1,ticketId);
+            ResultSet rs1=ps.executeQuery();
+            if(rs1.first())
+            {
+               return true;
+            }else{return false;}
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return true;
+    }
+    public int newTopUpTicket(String ticketId, String points, int priceListItemId){
+        PreparedStatement ps1, ps2;
         ResultSet rs;
-        boolean tmp = false;
+        int amountOfPoints = 0;
+        String query1 = "INSERT INTO hist_dolad (l_pkt, stempelczasowy, karnet_id, pracownicy_id, poz_cennik_id) VALUES (?,now(),?,?,?)";
+        String query2 = "SELECT sum(l_pkt) as 'suma' FROM hist_dolad hd WHERE hd.karnet_id = ?";
         if(MySQLConnection.prepareConnection()){
-            try {
-                ps = MySQLConnection.getConnection().prepareStatement(query);
-                ps.setString(1, ticketNumber);
-                rs = ps.executeQuery();
-                if (rs.first()){
-                    tmp = true;
+            try{
+
+                ps1 = MySQLConnection.getConnection().prepareStatement(query1);
+                ps1.setString(1,points);
+                ps1.setString(2,ticketId);
+                ps1.setInt(3,systemUser.getId());
+                ps1.setInt(4,priceListItemId);
+                ps1.executeUpdate();
+                ps2 = MySQLConnection.getConnection().prepareStatement(query2);
+                ps2.setString(1,ticketId);
+                rs = ps2.executeQuery();
+                if(rs.first()){
+                    amountOfPoints = rs.getInt("suma");
                 }
-                else tmp= false;
-            } catch (SQLException e) {
+            }catch (SQLException e){
                 e.printStackTrace();
             }
-        }
-        return tmp;
+        }return amountOfPoints;
     }
+
 
     public String ticketNoIncrement () {
         PreparedStatement ps;
@@ -181,6 +212,9 @@ public class Tickets {
         }
         return out;
     }
+
+
+
 public void blockTicket (String ticketnumber){
     PreparedStatement ps;
     ResultSet rs;

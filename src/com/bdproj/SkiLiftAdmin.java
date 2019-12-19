@@ -3,6 +3,7 @@ import javax.swing.*;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.EnumMap;
 
@@ -95,22 +96,26 @@ public class SkiLiftAdmin {
         PreparedStatement ps3;
         ResultSet rs;
         int idLift = 0;
+
         String sql_1 = "INSERT INTO wyciag (nazwa, wysokosc) VALUES(?,?)";
         String sql_2 = "INSERT INTO wyciag_dane (od, koszt_pkt, stan, wyciag_id, kierownik_id) VALUES(now(),?,?,?,?)";
-        String sql_3 = "SELECT id FROM wyciag WHERE nazwa=? AND wysokosc =?";
+        //String sql_3 = "SELECT id FROM wyciag WHERE nazwa=? AND wysokosc =?";
+        String sql_3 = "INSERT INTO zarzadcy (od, `do`, kierownik_id, wyciag_id) VALUES (NOW(), NULL, ?,?)";
+
         if(MySQLConnection.prepareConnection()) {
             try {
-                ps1 = MySQLConnection.getConnection().prepareStatement(sql_1);
+                ps1 = MySQLConnection.getConnection().prepareStatement(sql_1, Statement.RETURN_GENERATED_KEYS);
                 ps1.setString(1, name);
                 ps1.setString(2, height);
                 ps1.executeUpdate();
-                ps3 = MySQLConnection.getConnection().prepareStatement(sql_3);
-                ps3.setString(1,name);
-                ps3.setString(2,height);
-                rs = ps3.executeQuery();
+                rs = ps1.getGeneratedKeys();
                 if(rs.first()){
-                    idLift = rs.getInt("id");
+                    idLift = rs.getInt(1);
                 }
+                ps3 = MySQLConnection.getConnection().prepareStatement(sql_3);
+                ps3.setInt(1,systemUser.getId());
+                ps3.setInt(2,idLift);
+                ps3.executeUpdate();
                 ps2 = MySQLConnection.getConnection().prepareStatement(sql_2);
                 ps2.setString(1, pointsCost);
                 ps2.setBoolean(2, state);
