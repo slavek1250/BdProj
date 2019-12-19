@@ -11,7 +11,7 @@ import java.util.Date;
 public class MySQLConnection {
 
     private static String databaseType = "jdbc:mysql";
-    private static String serverAddress = "mn16.webd.pl"; // localhost / mn16.webd.pl
+    private static String serverAddress = "localhost"; // localhost / mn16.webd.pl
     private static int serverPort = 3306;
     private static String database = "slavek_bd2";
     private static String databaseUser = "slavek_bd2_user";
@@ -23,7 +23,7 @@ public class MySQLConnection {
         try {
             if (connection == null || !connection.isValid(2)) {
                 connection = DriverManager.getConnection(
-                        (databaseType + "://" + serverAddress + ":" + serverPort + "/" + database),
+                        (databaseType + "://" + serverAddress + ":" + serverPort + "/" + database +"?useUnicode=true&characterEncoding=UTF-8"),
                         databaseUser,
                         databaseUserPass
                 );
