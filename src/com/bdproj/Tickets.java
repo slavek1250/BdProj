@@ -188,8 +188,7 @@ public class Tickets {
             }
         }return amountOfPoints;
     }
-
-
+*/
     public String ticketNoIncrement () {
         PreparedStatement ps;
         ResultSet rs;

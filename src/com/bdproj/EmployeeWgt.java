@@ -91,12 +91,10 @@ public class EmployeeWgt extends Employee {
 
     private void topUpTicket() {
 
-        //String selectedPriceListDictionary= boxSelectPriceList.getSelectedItem().toString();
-        //Integer priceListDictionaryId = Integer.parseInt(selectedPriceListDictionary.replaceAll("\\..*", ""));
-       // JOptionPane.showMessageDialog(panelMain, "Id pozycji cennika: " + tickets.getPriceListItemId(priceListDictionaryId) + " cena: " + tickets.getPrice(priceListDictionaryId));
 
-        //Double unitPrice = tickets.getPrice(priceListDictionaryId);
-        //Integer priceListItemId = tickets.getPriceListItemId(priceListDictionaryId);
+        String selectedPriceListDictionary= boxSelectPriceList.getSelectedItem().toString();
+        Integer priceListDictionaryId = Integer.parseInt(selectedPriceListDictionary.replaceAll("\\..*", ""));
+        JOptionPane.showMessageDialog(panelMain, "Id pozycji cennika: " + tickets.getPriceListItemId(priceListDictionaryId) + " cena: " + tickets.getPrice(priceListDictionaryId));
 
         if (boxSelectPriceList.getSelectedIndex() == -1) {
             JOptionPane.showMessageDialog(null, "Nie wybrano cennika z listy.");

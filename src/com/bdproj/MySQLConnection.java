@@ -23,7 +23,7 @@ public class MySQLConnection {
         try {
             if (connection == null || !connection.isValid(2)) {
                 connection = DriverManager.getConnection(
-                        (databaseType + "://" + serverAddress + ":" + serverPort + "/" + database),
+                        (databaseType + "://" + serverAddress + ":" + serverPort + "/" + database +"?useUnicode=true&characterEncoding=UTF-8"),
                         databaseUser,
                         databaseUserPass
                 );

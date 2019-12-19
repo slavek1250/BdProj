@@ -128,6 +128,99 @@ public class SkiLiftAdmin {
         }
     }
 
+    public boolean promoteNewLiftSupervisor(int supId,int liftId){
+        String query="SELECT * from zarzadcy WHERE  kierownik_id=? AND wyciag_id=? AND do IS NULL";
+        String query1="INSERT INTO zarzadcy (od,do,kierownik_id,wyciag_id) VALUES(now(),NULL,?,?)";
+        PreparedStatement ps,ps1;
+        if(!MySQLConnection.prepareConnection()) {
+            lastError = MySQLConnection.getLastError();
+            return false;
+        }
+            try{
+                ps=MySQLConnection.getConnection().prepareStatement(query);
+                ps.setInt(1,supId);
+                ps.setInt(2,liftId);
+                ResultSet rs=ps.executeQuery();
+                if(rs.first()){
+                    JOptionPane.showMessageDialog(null,"Wybrany kierownik jest już zarządzcom wyciągu '"+getSkiLiftName(liftId)+"'");
+                    return false;
+                }
+               ps1=MySQLConnection.getConnection().prepareStatement(query1);
+                ps1.setInt(1,supId);
+                ps1.setInt(2,liftId);
+                ps1.executeUpdate();
+                return true;
+            }catch (SQLException e){
+                e.printStackTrace();
+            }
+        return true;
+    }
 
+    public boolean quitManagingLift(int liftId){
+    String query="SELECT * FROM zarzadcy WHERE kierownik_id!=? AND wyciag_id=? AND do IS NULL";
+    String query1="UPDATE zarzadcy SET do=now() WHERE wyciag_id=? AND kierownik_id=? AND do IS NULL";
+    PreparedStatement ps,ps1;
+        if(!MySQLConnection.prepareConnection()) {
+            lastError = MySQLConnection.getLastError();
+            return false;
+        }
+        try{
+            ps=MySQLConnection.getConnection().prepareStatement(query);
+            ps.setInt(1,systemUser.getId());
+            ps.setInt(2,liftId);
+            ResultSet rs=ps.executeQuery();
+            if(!rs.next()){
+                JOptionPane.showMessageDialog(null,"Nie możesz usunąć swoich praw do zarządzania, ponieważ jesteś jedynym zarządzcą wyciągu: "+getSkiLiftName(liftId));
+                return false;
+            }
+            ps1=MySQLConnection.getConnection().prepareStatement(query1);
+            ps1.setInt(1,liftId);
+            ps1.setInt(2,systemUser.getId());
+            ps1.executeUpdate();
+            return true;
+        }catch(SQLException e){
+            e.printStackTrace();
+        }
+        return true;
+    }
+    public void saveSkiLiftChanges(String points,boolean state,int liftId) {
+      String query=  "INSERT INTO wyciag_dane(od, koszt_pkt, stan, nieistniejacy, wyciag_id, kierownik_id) VALUES(now(), ?,?,0,?,?)";
+        if(!MySQLConnection.prepareConnection()) {
+            lastError = MySQLConnection.getLastError();
+        }
+        try{
+            PreparedStatement ps=MySQLConnection.getConnection().prepareStatement(query);
+            ps.setString(1,points);
+            ps.setBoolean(2,state);
+            ps.setInt(3,liftId);
+            ps.setInt(4,systemUser.getId());
+            ps.executeUpdate();
+        }catch(SQLException e){
+            e.printStackTrace();
+        }
+    }
+    public void deleteSkiLift(int liftId){
+        String query=  "INSERT INTO wyciag_dane (koszt_pkt,stan,wyciag_id,kierownik_id) SELECT koszt_pkt, stan, wyciag_id,kierownik_id FROM wyciag_dane WHERE id=(select id FROM wyciag_dane WHERE wyciag_id=? \n" +
+                        "ORDER BY od DESC limit 1); ";
+        String query1="UPDATE wyciag_dane SET od=now(),nieistniejacy=1 WHERE id=?";
+        if(!MySQLConnection.prepareConnection()) {
+            lastError = MySQLConnection.getLastError();
+        }
+        int newId=0;
+        try{
+            PreparedStatement ps=MySQLConnection.getConnection().prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
+            ps.setInt(1,liftId);
+            ps.executeUpdate();
+            ResultSet rs=ps.getGeneratedKeys();
+            if(rs.first()){
+                newId=rs.getInt(1);
+            }
+            PreparedStatement ps1=MySQLConnection.getConnection().prepareStatement(query1);
+            ps1.setInt(1,newId);
+            ps1.executeUpdate();
+        }catch(SQLException e){
+            e.printStackTrace();
+        }
+    }
 }
 

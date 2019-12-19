@@ -108,8 +108,12 @@ public class SupervisorWgt extends Supervisor {
         btnNewAddLift.addActionListener(ActionEvent -> addLift());
         btnMakeSupervisorEmpl.addActionListener(ActionEvent -> promoteToSupervisor());
         btnChangeSupervisorEmpl.addActionListener(ActionEvent -> changeEmployeeSupervisor());
+        btnMakeAdminLift.addActionListener(actionEvent -> promoteNewLiftOwner());
+        btnDelAdminPrivLift.addActionListener(actionEvent -> quitManagingLift());
+        btnSaveEdtiLift.addActionListener(actionEvent -> saveLiftMod());
+        btnDeleteLift.addActionListener(actionEvent -> deleteSkiLift());
         btnEmpNewPass.addActionListener(actionEvent -> newEmpPassword());
-
+        boxSelectEditLift.addActionListener(actionEvent -> chooseLift());
         tabbedPane.add((new PriceListWgt(systemUser)).panelMain, "Cennik", 3);
         uptime = new Uptime();
         uptime.setLabelToUpdate(lblUpTime);
@@ -183,7 +187,7 @@ public class SupervisorWgt extends Supervisor {
 
     public void generateTicketReport() {
         String ticketNo = txtTicketUseRepNo.getText();
-        if (!ticketNo.matches(onlyNumbersRegEx)) {
+        if (!ticketNo.matches(onlyNumbersRegEx) || ticketNo.isEmpty()) {
             JOptionPane.showMessageDialog(panelMain, "Błędny format numeru, popraw i spróbuj ponownie.");
             return;
         }
@@ -278,7 +282,6 @@ public class SupervisorWgt extends Supervisor {
         }
     }
 
-   // private void addUser() {
 private void addUser(){
 
         String name = txtNameNewEmpl.getText();
@@ -306,12 +309,15 @@ private void addUser(){
             }
         }
     }
-
+//ąćęłńóśźż
     private String newLogin(String name, String surname) {
         Random rand = new Random();
         String randNumber = String.format("%04d", rand.nextInt(10000));
-        String name1 = name.toLowerCase();
-        String surname1 = surname.toLowerCase();
+        String name1 = name.toLowerCase().replace("ą","a").replace("ę","e").replace("ć","c").replace("ł","l").
+                replace("ń","n").replace("ó","o").replace("ś","s").replace("ź","z").replace("ż","z");
+        String surname1 = surname.toLowerCase().replace("ą","a").replace("ę","e").replace("ć","c").replace("ł","l").
+                replace("ń","n").replace("ó","o").replace("ś","s").replace("ź","z").replace("ż","z");;
+
         String login = (name1.substring(0, 3) + surname1.substring(0, 3) + randNumber);
         return login;
     }
@@ -333,6 +339,16 @@ private void addUser(){
 
     private Integer getSupervisorId() {
         String selectedEmp = boxSupervisorSelectEmpl.getSelectedItem().toString(); // Id. nazwisko imie
+        Integer supervisorId = Integer.parseInt(selectedEmp.replaceAll("\\..*", ""));
+        return supervisorId;
+    }
+    private Integer getLiftSupervisorId() {
+        String selectedEmp = boxSupervisorSelectLift.getSelectedItem().toString(); // Id. nazwisko imie
+        Integer supervisorId = Integer.parseInt(selectedEmp.replaceAll("\\..*", ""));
+        return supervisorId;
+    }
+    private Integer getLiftId() {
+        String selectedEmp = boxSelectEditLift.getSelectedItem().toString(); // Id. nazwisko imie
         Integer supervisorId = Integer.parseInt(selectedEmp.replaceAll("\\..*", ""));
         return supervisorId;
     }
@@ -405,7 +421,7 @@ private void addUser(){
             if (opcja == 0) {
                 String password= String.valueOf(pass.getPassword());
 
-                if (!employeeAdmin.checkSameLPassword(supId, password)) {
+                if (!employeeAdmin.checkSamePassword(supId, password)) {
                     JOptionPane.showMessageDialog(null, "Hasło kierownika się nie zgadza");
                     return;
                 }
@@ -488,11 +504,128 @@ private void addUser(){
         if (boxSelectEditLift.getSelectedIndex() == -1) {
             return;
         }
-        int id = getEmployeeId();
-        txtNameEditEmpl.setText(getEmployeeName(id));
-        txtSurnameEditEmpl.setText(getEmployeeSurname(id));
+       int id=getLiftId();
+        boolean state;
+        if(skiLiftAdmin.getSkiLiftState(id).matches("1")){
+            state=true;}else state=false;
+        txtPointsCostEditLift.setText(skiLiftAdmin.getSkiLiftPoints(id));
+        chechStateEditLift.setSelected(state);
     }
 
+    private void promoteNewLiftOwner() {
+        if (boxSelectEditLift.getSelectedIndex() == -1) {
+            JOptionPane.showMessageDialog(null, "Nie wybrano żadnego wyciągu z listy.");
+            return;
+        }
+        if (boxSupervisorSelectLift.getSelectedIndex() == -1) {
+            JOptionPane.showMessageDialog(null, "Nie wybrano żadnego kierownika z listy.");
+            return;
+        }
+        int supId=getLiftSupervisorId();
+        int liftId=getLiftId();
+        JPasswordField pass = new JPasswordField(8);
+        int response = JOptionPane.showConfirmDialog(null, "Czy na pewno chcesz przekazać wyciąg: " + skiLiftAdmin.getSkiLiftName(liftId) + " do kierownika \n"+getSupervisorName(supId)+" "+getSupervisorSurname(supId)+"?", "Potwierdzenie", JOptionPane.YES_NO_OPTION);
+        if (response == JOptionPane.YES_OPTION) {
+            JPanel panel = new JPanel();
+            JLabel label = new JLabel("Potwierdź hasłem:");
+            panel.add(label);
+            panel.add(pass);
+            String[] pot = new String[]{"Potwierdź", "Anuluj"};
+            int opcja = JOptionPane.showOptionDialog(null, panel, "Potwierdzenie", JOptionPane.NO_OPTION, JOptionPane.PLAIN_MESSAGE, null, pot, pot[1]);
+            if (opcja == 0) {
+                String password = String.valueOf(pass.getPassword());
+
+                if (!employeeAdmin.checkSamePassword(supId, password)) {
+                    JOptionPane.showMessageDialog(null, "Hasło kierownika się nie zgadza");
+                    return;
+                }
+                if(skiLiftAdmin.promoteNewLiftSupervisor(supId,liftId)){
+                    JOptionPane.showMessageDialog(null,getSupervisorName(supId)+" "+getSupervisorSurname(supId)+" jest zarządcą wyciągu "+ skiLiftAdmin.getSkiLiftName(liftId));
+                    boxSelectEditLift.setSelectedIndex(-1);
+                    boxSupervisorSelectLift.setSelectedIndex(-1);
+
+                }
+
+            }
+        }
+    }
+    private void quitManagingLift(){
+        if (boxSelectEditLift.getSelectedIndex() == -1) {
+            JOptionPane.showMessageDialog(null, "Nie wybrano żadnego wyciągu z listy.");
+            return;
+        }
+        int liftId=getLiftId();
+        int response = JOptionPane.showConfirmDialog(null,"Czy na pewno chcesz usunąć swoje prawo do zarządzania wyciągiem "+skiLiftAdmin.getSkiLiftName(liftId)+"?", "Potwierdzenie", JOptionPane.YES_NO_OPTION);
+        if (response == JOptionPane.YES_OPTION) {
+            if(skiLiftAdmin.quitManagingLift(liftId)){
+             JOptionPane.showMessageDialog(null,"Nie jesteś już zarzadcą wyciągu "+skiLiftAdmin.getSkiLiftName(liftId)+".");
+             skiLiftAdmin.fetchSkiLifts();
+             loadReports();
+            }else{return;}
+        }
+    }
+
+    private void saveLiftMod(){
+        if (boxSelectEditLift.getSelectedIndex() == -1) {
+            JOptionPane.showMessageDialog(null, "Nie wybrano żadnego wyciągu z listy.");
+            return;
+        }
+        int liftId=getLiftId();
+        String point=txtPointsCostEditLift.getText();
+        boolean givenState=chechStateEditLift.isSelected();
+        boolean state;
+        if(skiLiftAdmin.getSkiLiftState(liftId).matches("1")){state=true;}else{state=false;}
+
+        if(point.matches(skiLiftAdmin.getSkiLiftPoints(liftId))&&(Boolean.compare(state,givenState))==0){
+            JOptionPane.showMessageDialog(null,"Nie wprowadzono żadnych zmian");
+            return;
+
+        }
+        if(!point.matches(onlyNumbersRegEx)){
+            JOptionPane.showMessageDialog(null,"Niedozwolone dane wejściowe. Liczba punktów powinna być liczbą!");
+            return;
+        }
+        boolean pointsBool;
+        boolean stateBool;
+        String state2="Włączony",state1="Włączony";
+        if(!point.matches(skiLiftAdmin.getSkiLiftPoints(liftId))){pointsBool=true;}else{pointsBool=false;}
+        if(Boolean.compare(state,givenState)==1){
+            stateBool=true;
+            if(state==true) { state1="Włączony"; }else{state1="Wyłaczony";}
+            if (givenState==true){state2="Włączony";}else{state2="Wyłączony";}
+        }else{stateBool=false;}
+         int response = JOptionPane.showConfirmDialog(null,"Czy na pewno chcesz zmodyfikować dane wyciągu: "+skiLiftAdmin.getSkiLiftName(liftId)+"?" +
+                (pointsBool==false ? "" :"\nZmiana punktów z : "+skiLiftAdmin.getSkiLiftPoints(liftId)+" na "+point+".")+
+                (stateBool==false ? "" :"\nZmiana stanu z: "+state1+" na "+state2+"."), "Potwierdzenie", JOptionPane.YES_NO_OPTION);
+        if (response == JOptionPane.YES_OPTION) {
+            skiLiftAdmin.saveSkiLiftChanges(point, state, liftId);
+            JOptionPane.showMessageDialog(null,"Dane wyciągu zostały zmodyfikowane pomyślnie.");
+            skiLiftAdmin.fetchSkiLifts();
+            loadReports();
+            boxSupervisorSelectLift.setSelectedIndex(-1);
+            txtPointsCostEditLift.setText(null);
+            chechStateEditLift.setSelected(false);
+        }
+    }
+
+    private void deleteSkiLift(){
+        if (boxSelectEditLift.getSelectedIndex() == -1) {
+            JOptionPane.showMessageDialog(null, "Nie wybrano żadnego wyciągu z listy.");
+            return;
+        }
+        int liftId=getLiftId();
+        int response = JOptionPane.showConfirmDialog(null,"Czy na pewno chcesz usunąć wyciąg "+skiLiftAdmin.getSkiLiftName(liftId)+"?", "Potwierdzenie", JOptionPane.YES_NO_OPTION);
+        if (response == JOptionPane.YES_OPTION) {
+        skiLiftAdmin.deleteSkiLift(liftId);
+        JOptionPane.showMessageDialog(null,"Wyciąg "+skiLiftAdmin.getSkiLiftName(liftId)+" został pomyślnie usunięty.");
+        skiLiftAdmin.fetchSkiLifts();
+        loadReports();
+        txtPointsCostEditLift.setText(null);
+        chechStateEditLift.setSelected(false);
+
+        }
+
+    }
 }
 
 

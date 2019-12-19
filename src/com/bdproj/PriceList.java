@@ -19,6 +19,8 @@ public class PriceList {
     private final int PRESENT_PRICE_LIST_ID = 0;
     protected final String DATE_FORMAT = "yyyy-MM-dd";
 
+    private boolean dataBaseIsEmpty = false;
+
     private String selectedPriceListId = null;
     public enum PriceListEnum { PRICE_LIST_DICTIONARY_ID, NAME, PRICE };
     protected ArrayList<EnumMap<PriceListEnum, String>> selectedPriceList;
@@ -28,8 +30,6 @@ public class PriceList {
 
     PriceList(SystemUser user) {
         systemUser = user;
-        fetchPriceListsHeaders();
-        fetchSinglePriceList();
     }
 
     public boolean fetchPriceListsHeaders() {
@@ -58,9 +58,7 @@ public class PriceList {
                 tmp.put(PriceListsHeadersEnum.SUPERVISOR_NAME, rs.getString("kierownik"));
                 priceListsHeadersList.add(tmp);
             }
-            if(priceListsHeadersList.isEmpty()) {
-                lastError = "Brak cenników w bazie";
-            }
+            dataBaseIsEmpty = priceListsHeadersList.isEmpty();
             return true;
         }
         catch (SQLException ex) {
@@ -81,10 +79,11 @@ public class PriceList {
 
         String query = "";
 
-        if(priceListsHeadersList.isEmpty()) {
+        if(dataBaseIsEmpty) {
             // baza jest pusta.
             query = "select sc.id as slownik_cennik_id, sc.nazwa, '' as cena\n" +
-                    "from slownik_cennik sc where sc.id > 0/?;";
+                    "from slownik_cennik sc;";
+            selectedPriceListId = "0";
         }
         else {
             query = "select pc.slownik_cennik_id, sc.nazwa, round(pc.cena, 2) as cena\n" +
@@ -94,7 +93,7 @@ public class PriceList {
 
         try {
             PreparedStatement ps = MySQLConnection.getConnection().prepareStatement(query);
-            ps.setInt(1, Integer.parseInt(selectedPriceListId));
+            if(!dataBaseIsEmpty) ps.setInt(1, Integer.parseInt(selectedPriceListId));
             ResultSet rs = ps.executeQuery();
             selectedPriceList = new ArrayList<>();
             while (rs.next()) {
@@ -113,6 +112,10 @@ public class PriceList {
             lastError = ex.getMessage();
         }
         return false;
+    }
+
+    public boolean isDataBaseIsEmpty() {
+        return dataBaseIsEmpty;
     }
 
     public void setSelectedPriceList(String name) {
@@ -134,7 +137,7 @@ public class PriceList {
         if(priceListsHeadersList == null || selectedPriceList == null || selectedPriceListId == null) {  // Nie pobrano danych z bazy
             return false;
         }
-        if(priceListsHeadersList.isEmpty()) {   // potencjalnie pusta baza
+        if(dataBaseIsEmpty) {   // potencjalnie pusta baza
             return true;
         }
         if(isPresentPriceList()) {              // bieżący cennik każdy może "edytować" i zapisać jako nowy.
@@ -151,7 +154,7 @@ public class PriceList {
     }
 
     public boolean isPresentPriceList() {
-        return priceListsHeadersList.get(PRESENT_PRICE_LIST_ID).get(PriceListsHeadersEnum.ID).equals(selectedPriceListId);
+        return dataBaseIsEmpty || priceListsHeadersList.get(PRESENT_PRICE_LIST_ID).get(PriceListsHeadersEnum.ID).equals(selectedPriceListId);
     }
 
     public String getLastError() {

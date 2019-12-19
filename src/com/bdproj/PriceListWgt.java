@@ -57,17 +57,24 @@ public class PriceListWgt extends PriceList {
                 .stream()
                 .map(item -> item.get(PriceListsHeadersEnum.NAME))
                 .forEach(names::add);
-        boxSelectPriceList.setModel(new DefaultComboBoxModel(names.toArray()));
+        if(!isDataBaseIsEmpty()) {
+            boxSelectPriceList.setModel(new DefaultComboBoxModel(names.toArray()));
+        }
+        else {
+            loadPriceList();
+        }
     }
 
     private void priceListSelectionHasChanged() {
-        String selectedPriceListName = boxSelectPriceList.getSelectedItem().toString();
-        if(boxSelectPriceList.getSelectedIndex() == -1 || selectedPriceListName.equals(super.getCurrentName())) {
-            return;
-        }
-        super.setSelectedPriceList(selectedPriceListName);
+        if(boxSelectPriceList.getSelectedIndex() != -1) {
+            String selectedPriceListName = boxSelectPriceList.getSelectedItem().toString();
+            if (boxSelectPriceList.getSelectedIndex() == -1 || selectedPriceListName.equals(super.getCurrentName())) {
+                return;
+            }
+            super.setSelectedPriceList(selectedPriceListName);
 
-        loadPriceList();
+            loadPriceList();
+        }
     }
 
     private void loadPriceList() {
@@ -109,7 +116,7 @@ public class PriceListWgt extends PriceList {
         if(super.isPresentPriceList()) {
             btnSaveNewPriceList.setText("Zapisz jako nowy cennik");
             dateValidSince.setDate(new Date());
-            dateValidSince.setEditable(true);
+            dateValidSince.setEditable(!isDataBaseIsEmpty());
             btnSaveNewPriceList.setEnabled(true);
             btnDeletePriceList.setEnabled(false);
         }
@@ -152,7 +159,7 @@ public class PriceListWgt extends PriceList {
         }
 
         try {
-            anyPriceHasChanged |= (validSince.compareTo((new SimpleDateFormat(DATE_FORMAT)).parse(super.getValidSince())) != 0) & !super.isPresentPriceList();
+            anyPriceHasChanged |= isDataBaseIsEmpty() || (validSince.compareTo((new SimpleDateFormat(DATE_FORMAT)).parse(super.getValidSince())) != 0) & !super.isPresentPriceList();
         }
         catch (ParseException ex) {
             JOptionPane.showMessageDialog(panelMain, ex.getMessage());
@@ -162,7 +169,7 @@ public class PriceListWgt extends PriceList {
             JOptionPane.showMessageDialog(panelMain, "Nie wprowadzono żadnych zmian.");
             return;
         }
-        if(!validSince.after(new Date())) {
+        if(!isDataBaseIsEmpty() && !validSince.after(new Date())) {
             JOptionPane.showMessageDialog(panelMain, "Data wprowadzenia musi być poźniejsza niż obecna.");
             return;
         }
@@ -213,6 +220,8 @@ public class PriceListWgt extends PriceList {
     }
 
     private void printPriceList() {
+        if(isDataBaseIsEmpty()) return;
+
         String currentPriceList = boxSelectPriceList.getSelectedItem().toString();
         loadHeaders();
         boxSelectPriceList.setSelectedItem(currentPriceList);
