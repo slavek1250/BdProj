@@ -7,6 +7,7 @@ import javax.swing.*;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.EnumMap;
 
@@ -117,27 +118,35 @@ public class Tickets {
         return (priceListItem == null ? 0 : Integer.parseInt(priceListItem.get(PriceListEnum.ID_PRICE_LIST_ITEM)));
     }
 
-    public void newTicket(String points, String ticketId, int priceListItemId){
+    public int newTicket(String points, int priceListItemId){
+      int ticketNumber=0;
         PreparedStatement ps1, ps2;
         String query1 = "INSERT INTO karnet (zablokowany) VALUES ('0')";
         String query2 = "INSERT INTO hist_dolad (l_pkt, stempelczasowy, karnet_id, pracownicy_id, poz_cennik_id) VALUES (?,now(),?,?,?)";
         if(MySQLConnection.prepareConnection()){
             try{
-                ps1 = MySQLConnection.getConnection().prepareStatement(query1);
+                ps1 = MySQLConnection.getConnection().prepareStatement(query1, Statement.RETURN_GENERATED_KEYS);
                 ps1.executeUpdate();
+                ResultSet rs=ps1.getGeneratedKeys();
+                if(rs.next()) {
+                    ticketNumber = rs.getInt(1);
+                }
                 ps2 = MySQLConnection.getConnection().prepareStatement(query2);
                 ps2.setString(1,points);
-                ps2.setString(2,ticketId);
+                ps2.setInt(2,ticketNumber);
+
                 ps2.setInt(3,systemUser.getId());
                 ps2.setInt(4,priceListItemId);
                 ps2.executeUpdate();
+                return ticketNumber;
 
             }catch (SQLException e){
                 e.printStackTrace();
             }
         }
+        return ticketNumber;
     }
-
+/*
     public boolean checkNewerTicket(String ticketNumber){
         String query = "SELECT * from karnet WHERE id = ?";
         PreparedStatement ps;
@@ -158,7 +167,7 @@ public class Tickets {
         }
         return tmp;
     }
-
+*/
     public String ticketNoIncrement () {
         PreparedStatement ps;
         ResultSet rs;
