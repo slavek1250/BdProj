@@ -183,7 +183,7 @@ public class SupervisorWgt extends Supervisor {
 
     public void generateTicketReport() {
         String ticketNo = txtTicketUseRepNo.getText();
-        if (!ticketNo.matches(onlyNumbersRegEx)) {
+        if (!ticketNo.matches(onlyNumbersRegEx) || ticketNo.isEmpty()) {
             JOptionPane.showMessageDialog(panelMain, "Błędny format numeru, popraw i spróbuj ponownie.");
             return;
         }
