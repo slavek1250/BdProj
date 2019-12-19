@@ -64,7 +64,7 @@ public class EmployeeAdmin {
         return ans;
     }
 
-    public boolean checkSameLPassword(int id, String password) {
+    public boolean checkSamePassword(int id, String password) {
         boolean ans = false;
         PreparedStatement ps;
         ResultSet rs;
@@ -126,9 +126,7 @@ public class EmployeeAdmin {
                             ps1.setInt(1, id);
                             int rs1 = ps1.executeUpdate();
 
-                        } else {
-                            return;
-                        }
+                        } else { return;}
                     }
                 }
 

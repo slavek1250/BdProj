@@ -68,7 +68,6 @@ public class EmployeeWgt extends Employee {
             return;
         }
         String points = txtTicketPoints.getText();
-        String ticketNumber = txtTicketNo.getText();
         int id = getId();
         double price = tickets.getPrice(id);
         int priceListItemId = tickets.getPriceListItemId(id);
@@ -80,11 +79,8 @@ public class EmployeeWgt extends Employee {
             double cost = price * Integer.parseInt(points);
             int response= JOptionPane.showConfirmDialog(null, "Czy na pewno chcesz wydrukować bilet? \n Koszt: " + cost + " zł","Confirm",JOptionPane.YES_NO_OPTION);
             if(response==JOptionPane.YES_OPTION) {
-               while(tickets.checkNewerTicket(ticketNumber)){
-                    ticketNumber = tickets.ticketNoIncrement();
-                }
-                tickets.newTicket(points, ticketNumber, priceListItemId);
-                JOptionPane.showMessageDialog(null, "Zakupiono bilet.");
+                int ticketNumber=tickets.newTicket(points, priceListItemId);
+                JOptionPane.showMessageDialog(null, "Zakupiono bilet.\n"+"Numer biletu: "+ticketNumber+"\n Liczba punktów: "+points);
                 txtTicketPoints.setText(null);
                 boxSelectPriceList.setSelectedIndex(-1);
                 checkNewTicket.setSelected(false);
