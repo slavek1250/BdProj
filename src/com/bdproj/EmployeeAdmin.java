@@ -1,10 +1,9 @@
 package com.bdproj;
-import javafx.util.Pair;
 import javax.swing.*;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
+
 
 public class EmployeeAdmin {
     private SystemUser systemUser;
@@ -88,7 +87,6 @@ public class EmployeeAdmin {
     }
 
     public void saveModChanges(int id, String name, String surname) {
-
         int givenLogin = id;
         PreparedStatement ps;
         String query = "UPDATE pracownicy SET imie=?, nazwisko=? WHERE id=?";
@@ -151,8 +149,6 @@ public class EmployeeAdmin {
                 e.printStackTrace();
             }
         }
-
-
     }
 
     public void changeEmployeeSupervisor(int empId, int supId) {

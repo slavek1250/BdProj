@@ -309,7 +309,7 @@ private void addUser(){
             }
         }
     }
-//ąćęłńóśźż
+
     private String newLogin(String name, String surname) {
         Random rand = new Random();
         String randNumber = String.format("%04d", rand.nextInt(10000));
@@ -549,6 +549,7 @@ private void addUser(){
             }
         }
     }
+
     private void quitManagingLift(){
         if (boxSelectEditLift.getSelectedIndex() == -1) {
             JOptionPane.showMessageDialog(null, "Nie wybrano żadnego wyciągu z listy.");

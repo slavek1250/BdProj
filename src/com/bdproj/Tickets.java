@@ -1,8 +1,4 @@
 package com.bdproj;
-
-import com.mysql.jdbc.authentication.MysqlClearPasswordPlugin;
-import org.knowm.xchart.style.markers.Square;
-
 import javax.swing.*;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -11,14 +7,13 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.EnumMap;
 
-
 public class Tickets {
 
     private String lastError;
     private SystemUser systemUser;
-    // TODO: Generowanie nowego biletu, generacja id. #KLAUDIA#
-    // TODO: Pobieranie bierzacego cennika. #KLAUDIA#
-    // TODO: Doladowywanie biletu. #KLAUDIA#
+    // TODO: Generowanie nowego biletu, generacja id. #KLAUDIA# !!DONE!!
+    // TODO: Pobieranie bierzacego cennika. #KLAUDIA# !!DONE!!
+    // TODO: Doladowywanie biletu. #KLAUDIA# !!DONE!!
     // TODO: Blokowanie biletow (ustawienie flagi).#Karol# !!DONE!!
 
     private enum PriceListEnum { ID_PRICE_LIST_ITEM, ID_PRICE_LIST_DICTIONARY, NAME, PRICE };
@@ -58,34 +53,12 @@ public class Tickets {
             }
             else return true;
         }
-        catch (SQLException ex) {
-            lastError = ex.getMessage();
-        }
+        catch (SQLException e) {lastError = e.getMessage();}
         return false;
     }
 
 
     public ArrayList<String> getPriceListItem(){
-        /*
-        PreparedStatement ps;
-        ResultSet rs;
-        String query="SELECT CONCAT(sc.id,'. ', sc.nazwa) AS 'cennik' FROM slownik_cennik sc";
-        ArrayList<String> prc =new ArrayList<String>();
-        if(MySQLConnection.prepareConnection()) {
-            try {
-                ps = MySQLConnection.getConnection().prepareStatement(query);
-                rs = ps.executeQuery();
-                while (rs.next()) {
-                    int i = 1;
-                    prc.add(rs.getString(i));
-                    i++;
-                }
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-        }
-
-         */
         ArrayList<String> prc = new ArrayList<String>();
         currentPriceList
                 .stream()
@@ -138,9 +111,7 @@ public class Tickets {
                 ps2.setInt(4,priceListItemId);
                 ps2.executeUpdate();
 
-            }catch (SQLException e){
-                e.printStackTrace();
-            }
+            }catch (SQLException e){lastError=e.getMessage(); }
         }
         return ticketNumber;
     }
@@ -156,21 +127,19 @@ public class Tickets {
             {
                return true;
             }else{return false;}
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+        } catch (SQLException e) {lastError=e.getMessage();}
 
         return true;
     }
     public int newTopUpTicket(String ticketId, String points, int priceListItemId){
-        PreparedStatement ps1, ps2;
-        ResultSet rs;
-        int amountOfPoints = 0;
+        PreparedStatement ps1, ps2,ps3;
+        ResultSet rs,rs2;
+        int amountOfPoints = 0,currentPoints=0,lostPoints=0;
         String query1 = "INSERT INTO hist_dolad (l_pkt, stempelczasowy, karnet_id, pracownicy_id, poz_cennik_id) VALUES (?,now(),?,?,?)";
-        String query2 = "SELECT sum(l_pkt) as 'suma' FROM hist_dolad hd WHERE hd.karnet_id = ?";
+        String query2 = "(SELECT sum(l_pkt) as 'suma' FROM hist_dolad hd WHERE hd.karnet_id = ?)";
+        String query3=  "(SELECT sum(wd.koszt_pkt) FROM wyciag_dane wd JOIN uzycia_karnetu uk ON wd.id=uk.wyciag_dane_id WHERE karnet_id=?)";
         if(MySQLConnection.prepareConnection()){
             try{
-
                 ps1 = MySQLConnection.getConnection().prepareStatement(query1);
                 ps1.setString(1,points);
                 ps1.setString(2,ticketId);
@@ -181,11 +150,16 @@ public class Tickets {
                 ps2.setString(1,ticketId);
                 rs = ps2.executeQuery();
                 if(rs.first()){
-                    amountOfPoints = rs.getInt("suma");
+                    currentPoints = rs.getInt("suma");
                 }
-            }catch (SQLException e){
-                e.printStackTrace();
-            }
+                ps3=MySQLConnection.getConnection().prepareStatement(query3);
+                ps3.setString(1,ticketId);
+                rs2=ps3.executeQuery();
+                if(rs2.first()){
+                    lostPoints= rs2.getInt(1);
+                }
+            }catch (SQLException e){lastError=e.getMessage();}
+            amountOfPoints=currentPoints-lostPoints;
         }return amountOfPoints;
     }
 
@@ -205,14 +179,9 @@ public class Tickets {
                     out = "W bazie nie ma żadnych biletów";
                 }
 
-            } catch (SQLException e1) {
-                e1.printStackTrace();
-            }
-        }
-        return out;
+            } catch (SQLException e) {lastError=e.getMessage();}
+        }return out;
     }
-
-
 
 public void blockTicket (String ticketnumber){
     PreparedStatement ps;
@@ -236,12 +205,9 @@ public void blockTicket (String ticketnumber){
             } else {
                 JOptionPane.showMessageDialog(null, "Nie ma takiego biletu");
             }
-        } catch (SQLException ex) {
-            ex.printStackTrace();
-        }
+        } catch (SQLException e) { lastError=e.getMessage();}
     }
 }
-
     public Tickets(SystemUser user) {
         systemUser = user;
     }

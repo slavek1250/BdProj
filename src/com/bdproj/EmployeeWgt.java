@@ -1,13 +1,6 @@
 package com.bdproj;
-
-import javafx.event.Event;
-
 import javax.swing.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
-import java.sql.*;
 import java.util.ArrayList;
 
 public class EmployeeWgt extends Employee {
@@ -90,12 +83,6 @@ public class EmployeeWgt extends Employee {
     }
 
     private void topUpTicket() {
-
-
-        String selectedPriceListDictionary= boxSelectPriceList.getSelectedItem().toString();
-        Integer priceListDictionaryId = Integer.parseInt(selectedPriceListDictionary.replaceAll("\\..*", ""));
-        JOptionPane.showMessageDialog(panelMain, "Id pozycji cennika: " + tickets.getPriceListItemId(priceListDictionaryId) + " cena: " + tickets.getPrice(priceListDictionaryId));
-
         if (boxSelectPriceList.getSelectedIndex() == -1) {
             JOptionPane.showMessageDialog(null, "Nie wybrano cennika z listy.");
             return;
@@ -127,16 +114,8 @@ public class EmployeeWgt extends Employee {
                 boxSelectPriceList.setSelectedIndex(-1);
                 checkNewTicket.setSelected(false);
             }
-            //else{return;}
         }
-        /*tickets.newTopUpTicket(ticketNo, points, priceListItemId);
-        txtTicketPoints.setText(null);
-        boxSelectPriceList.setSelectedIndex(-1);
-        checkNewTicket.setSelected(false);*/
-
     }
-
-
 
     private void newTicketSlot(ItemEvent e) {
             if(e.getStateChange()==ItemEvent.SELECTED){
@@ -153,6 +132,7 @@ public class EmployeeWgt extends Employee {
                 btnPrintTicket.setEnabled(false);
             }
         }
+
 private void blockTicket(){
     int response=JOptionPane.showConfirmDialog(null, "Czy na pewno chcesz zablokować bilet","Potwierdzenie",JOptionPane.YES_NO_OPTION);
     if(response==JOptionPane.YES_OPTION) {

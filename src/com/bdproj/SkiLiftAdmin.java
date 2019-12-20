@@ -99,7 +99,6 @@ public class SkiLiftAdmin {
 
         String sql_1 = "INSERT INTO wyciag (nazwa, wysokosc) VALUES(?,?)";
         String sql_2 = "INSERT INTO wyciag_dane (od, koszt_pkt, stan, wyciag_id, kierownik_id) VALUES(now(),?,?,?,?)";
-        //String sql_3 = "SELECT id FROM wyciag WHERE nazwa=? AND wysokosc =?";
         String sql_3 = "INSERT INTO zarzadcy (od, `do`, kierownik_id, wyciag_id) VALUES (NOW(), NULL, ?,?)";
 
         if(MySQLConnection.prepareConnection()) {
