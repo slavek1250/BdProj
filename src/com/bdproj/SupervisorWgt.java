@@ -363,8 +363,7 @@ private void addUser(){
         int id = getEmployeeId();
         String givenName = getEmployeeName(id);
         String givenSurname = getEmployeeSurname(id);
-        String loginRegEx = "^[A-ZĄĆĘŁŃÓŚŹŻ]{1}[a-ząćęłńóśźż]{1,50}$";
-        if (!name.matches(loginRegEx) || !surname.matches(loginRegEx)) {
+        if (!name.matches(NAME_REG_EX) || !surname.matches(SURNAME_REG_EX)) {
             JOptionPane.showMessageDialog(null, "Imie lub nazwisko zawiera niepoprawne znaki");
             return;
         } else {

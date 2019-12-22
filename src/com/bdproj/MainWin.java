@@ -7,6 +7,8 @@ import javax.swing.*;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.awt.Dimension;
+import java.awt.Toolkit;
 
 /*
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -31,12 +33,15 @@ public class MainWin implements MainView {
     private JPanel panelMain;
     private JTextField txtLogin;
     private JPasswordField txtPass;
+    static Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 
     private MainWin() {
         btnLogin.addActionListener(actionEvent -> logIn());
     }
 
     public void showMainView() {
+        frame.setSize(300, 250);
+        frame.setLocation(screenSize.width/2-frame.getSize().width/2,screenSize.height/2-frame.getSize().height/2);
         showAnotherPanel(panelMain);
         systemUser.logOut();
         txtLogin.setText("");
@@ -44,11 +49,15 @@ public class MainWin implements MainView {
     }
 
     private void showSupervisorView() {
+        frame.setSize(470, 680);
+        frame.setLocation(screenSize.width/2-frame.getSize().width/2,screenSize.height/2-frame.getSize().height/2);
         SupervisorWgt supervisorWgt = new SupervisorWgt(this, systemUser);
         showAnotherPanel(supervisorWgt.getPanel());
     }
 
     private void showEmployeeView() {
+        frame.setSize(370, 400);
+        frame.setLocation(screenSize.width/2-frame.getSize().width/2,screenSize.height/2-frame.getSize().height/2);
         EmployeeWgt employeeWgt = new EmployeeWgt(this, systemUser);
         showAnotherPanel(employeeWgt.getPanel());
     }
@@ -103,7 +112,8 @@ public class MainWin implements MainView {
 
        // chartDesignHelper();
 
-        frame.setSize(700, 700);
+        frame.setSize(300, 250);
+        frame.setLocation(screenSize.width/2-frame.getSize().width/2,screenSize.height/2-frame.getSize().height/2);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setVisible(true);
     }

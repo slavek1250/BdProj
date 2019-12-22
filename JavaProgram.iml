@@ -8,15 +8,6 @@
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="mysql:mysql-connector-java:5.1.40" level="project" />
-    <orderEntry type="module-library">
-      <library>
-        <CLASSES>
-          <root url="jar://F:/downloads/swingx-all-1.6.4.jar/swingx-all-1.6.4.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES />
-      </library>
-    </orderEntry>
     <orderEntry type="library" name="com.itextpdf:html2pdf:2.1.6" level="project" />
     <orderEntry type="library" name="com.itextpdf.tool:xmlworker:5.5.13.1" level="project" />
     <orderEntry type="library" name="com.itextpdf:itextpdf:5.5.13" level="project" />
@@ -24,7 +15,7 @@
     <orderEntry type="module-library" exported="">
       <library>
         <CLASSES>
-          <root url="jar://$USER_HOME$/Desktop/swingx-all-1.6.4.jar!/" />
+          <root url="jar://$USER_HOME$/Downloads/swingx-all-1.6.4.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
