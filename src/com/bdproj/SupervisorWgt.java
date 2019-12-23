@@ -35,8 +35,6 @@ public class SupervisorWgt extends Supervisor {
     private JButton btnDeleteLift;
     private JButton btnSaveEdtiLift;
     private JComboBox boxLiftRepSelect;
-    private JTextField txtLiftRepSince;
-    private JTextField txtLiftRepTo;
     private JButton btnLogout;
     private JTextField txtPointsCostNewLift;
     private JTextField txtTicketUseRepNo;
@@ -627,6 +625,3 @@ private void addUser(){
 
     }
 }
-
-
-

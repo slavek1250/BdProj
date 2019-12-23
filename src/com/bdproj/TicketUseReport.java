@@ -67,9 +67,10 @@ public class TicketUseReport implements HtmlReport {
     private enum Query4Enum { TICKET_BALANCE };
     private EnumMap<Query4Enum, String> query4Map;
     private final String QUERY_4_TICKET_BALANCE =
-            "select ( select sum(hd.l_pkt) from hist_dolad hd where hd.karnet_id = k.id)-\n" +
-                 "\t(select sum(wd.koszt_pkt) from uzycia_karnetu uk join wyciag_dane wd on uk.wyciag_dane_id = wd.id where uk.karnet_id = k.id) as 'l_pkt'\n" +
-            "from karnet k where k.id = ?;";
+            "select (case when kupione is null then 0 else kupione end) - (case when wydane is null then 0 else wydane end) as l_pkt\n" +
+                    "from ( select ( select sum(hd.l_pkt) from hist_dolad hd where hd.karnet_id = k.id) as kupione,\n" +
+                    "(select sum(wd.koszt_pkt) from uzycia_karnetu uk join wyciag_dane wd on uk.wyciag_dane_id = wd.id where uk.karnet_id = k.id) as wydane\n" +
+            "from karnet k where k.id = ? ) as tmp;";
 
     private enum Query5Enum { TOTAL_USE_COUNT, TOTAL_POINTS_SPENT, TOTAL_HEIGHT };
     private EnumMap<Query5Enum, String> query5Map;

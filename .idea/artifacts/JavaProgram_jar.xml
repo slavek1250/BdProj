@@ -17,6 +17,7 @@
       <element id="extracted-dir" path="$MAVEN_REPOSITORY$/de/erichseifert/vectorgraphics2d/VectorGraphics2D/0.13/VectorGraphics2D-0.13.jar" path-in-jar="/" />
       <element id="extracted-dir" path="F:/downloads/swingx-all-1.6.4.jar/swingx-all-1.6.4.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$MAVEN_REPOSITORY$/com/itextpdf/itextpdf/5.5.13/itextpdf-5.5.13.jar" path-in-jar="/" />
+      <element id="file-copy" path="F:/downloads/swingx-all-1.6.4.jar/swingx-all-1.6.4.jar" />
     </root>
   </artifact>
 </component>
