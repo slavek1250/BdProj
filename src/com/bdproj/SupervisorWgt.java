@@ -35,6 +35,8 @@ public class SupervisorWgt extends Supervisor {
     private JButton btnDeleteLift;
     private JButton btnSaveEdtiLift;
     private JComboBox boxLiftRepSelect;
+    private JTextField txtLiftRepSince;
+    private JTextField txtLiftRepTo;
     private JButton btnLogout;
     private JTextField txtPointsCostNewLift;
     private JTextField txtTicketUseRepNo;
@@ -361,12 +363,13 @@ private void addUser(){
         int id = getEmployeeId();
         String givenName = getEmployeeName(id);
         String givenSurname = getEmployeeSurname(id);
+
         if (!name.matches(NAME_REG_EX) || !surname.matches(SURNAME_REG_EX)) {
             JOptionPane.showMessageDialog(null, "Imie lub nazwisko zawiera niepoprawne znaki");
             return;
         } else {
             if (name.equals(givenName) && surname.equals(givenSurname)) {
-                JOptionPane.showMessageDialog(null, "Dane użytkowinika się nie zmieniły");
+                JOptionPane.showMessageDialog(null, "Dane pracownika " +getEmployeeName(id)+" "+getEmployeeSurname(id)+ " się nie zmieniły.");
             } else {
 
                 int response = JOptionPane.showConfirmDialog(null, "Czy na pewno chcesz zmodyfikować dane pracownika?", "Confirm", JOptionPane.YES_NO_OPTION);
@@ -390,11 +393,14 @@ private void addUser(){
             return;
         }
         int id = getEmployeeId();
-        employeeAdmin.deleteEmployee(id);
-        txtNameEditEmpl.setText(null);
-        txtSurnameEditEmpl.setText(null);
-        fetchEmployees();
-        loadEmployees();
+        int response = JOptionPane.showConfirmDialog(null, "Czy na pewno chcesz zwolnić pracownika "+getEmployeeName(id)+" "+getEmployeeSurname(id)+"?", "Confirm", JOptionPane.YES_NO_OPTION);
+        if (response == JOptionPane.YES_OPTION) {
+            employeeAdmin.deleteEmployee(id);
+            txtNameEditEmpl.setText(null);
+            txtSurnameEditEmpl.setText(null);
+            fetchEmployees();
+            loadEmployees();
+        }else{return;}
     }
 
     private void promoteToSupervisor() {
@@ -625,3 +631,6 @@ private void addUser(){
 
     }
 }
+
+
+
