@@ -1,7 +1,5 @@
 package com.bdproj;
 
-import javafx.util.Pair;
-
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -13,13 +11,14 @@ public class Supervisor {
     protected PriceList priceList;
     protected EmployeeAdmin employeeAdmin;
     protected SkiLiftAdmin skiLiftAdmin;
-    protected Reports reports;
 
     private String lastError;
 
     protected enum SupervisorsListEnum { ID, NAME, SURNAME };
     protected ArrayList<EnumMap<SupervisorsListEnum, String>> supervisorsList = null;
-    protected ArrayList<Pair<Integer,Pair<String,String>>> employeeList=null;
+    protected enum EmployeeListEnum { ID, NAME, SURNAME };
+    protected ArrayList<EnumMap<EmployeeListEnum, String>> employeeList=null;
+//    protected ArrayList<Pair<Integer,Pair<String,String>>> employeeList=null;
 
     public Supervisor(SystemUser user) {
         systemUser = user;
@@ -99,19 +98,21 @@ public class Supervisor {
 
 
     protected String getEmployeeName(Integer id) {
-        Pair<Integer, Pair<String, String>> supervisor = employeeList.stream()
-                .filter(sv -> id.equals(sv.getKey()))
+        return employeeList
+                .stream()
+                .filter(sv -> id.equals(Integer.parseInt(sv.get(EmployeeListEnum.ID))))
                 .findAny()
-                .orElse(null);
-        return supervisor == null ? "" : supervisor.getValue().getValue();
+                .map(sv -> sv.get(EmployeeListEnum.NAME))
+                .orElse("");
     }
 
     protected String getEmployeeSurname(Integer id) {
-        Pair<Integer, Pair<String, String>> supervisor = employeeList.stream()
-                .filter(sv -> id.equals(sv.getKey()))
+        return employeeList
+                .stream()
+                .filter(sv -> id.equals(Integer.parseInt(sv.get(EmployeeListEnum.ID))))
                 .findAny()
-                .orElse(null);
-        return supervisor == null ? "" : supervisor.getValue().getKey();
+                .map(sv -> sv.get(EmployeeListEnum.SURNAME))
+                .orElse("");
     }
     public boolean fetchEmployees(){
 
@@ -128,10 +129,11 @@ public class Supervisor {
                ResultSet rs = ps.executeQuery();
                 employeeList =new ArrayList<>();
                 while (rs.next()) {
-                    int id=rs.getInt("id");
-                    String surname=rs.getString("nazwisko");
-                    String name=rs.getString("imie");
-                    employeeList.add(new Pair<>(id, new Pair<>(surname, name)));
+                    EnumMap<EmployeeListEnum, String> tmp = new EnumMap<>(EmployeeListEnum.class);
+                    tmp.put(EmployeeListEnum.ID, rs.getString("id"));
+                    tmp.put(EmployeeListEnum.NAME, rs.getString("imie"));
+                    tmp.put(EmployeeListEnum.SURNAME, rs.getString("nazwisko"));
+                    employeeList.add(tmp);
                 }
                 return true;
             } catch (SQLException e) {

@@ -1,9 +1,11 @@
 package com.bdproj.ski_lift;
 
-import com.bdproj.MainWin;
-import com.bdproj.SystemUser;
+import com.bdproj.MySQLConnParams;
+import com.bdproj.MySQLConnection;
 
 import javax.swing.*;
+import java.awt.*;
+import java.awt.event.WindowEvent;
 import java.util.ArrayList;
 
 public class SkiLiftWin extends SkiLiftUse {
@@ -12,6 +14,8 @@ public class SkiLiftWin extends SkiLiftUse {
     private JTextField txtTicketId;
     private JComboBox boxSelectSkiLift;
     private JButton btnUseSkiLift;
+
+    static Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 
     private final String ONLY_NUMBER_REGEX = "^(?!(0))[0-9]{0,}$";
 
@@ -117,13 +121,17 @@ public class SkiLiftWin extends SkiLiftUse {
 
     public static void main(String args[]) {
         JFrame frame = new JFrame("Bramka Wyciągu");
-        SkiLiftWin skiLiftWin = new SkiLiftWin();
-
-        frame.setContentPane(skiLiftWin.panelMain);
-
         frame.setSize(300, 250);
-        //frame.setLocation(screenSize.width/2-frame.getSize().width/2,screenSize.height/2-frame.getSize().height/2);
+        frame.setLocation(screenSize.width/2-frame.getSize().width/2,screenSize.height/2-frame.getSize().height/2);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+        if(!MySQLConnection.readConnParamsFromFile()) {
+            JOptionPane.showMessageDialog(null, MySQLConnParams.getLastError());
+            frame.dispatchEvent(new WindowEvent(frame, WindowEvent.WINDOW_CLOSING));
+        }
+
+        SkiLiftWin skiLiftWin = new SkiLiftWin();
+        frame.setContentPane(skiLiftWin.panelMain);
         frame.setVisible(true);
     }
 }

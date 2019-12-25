@@ -5,14 +5,9 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-public class MySQLConnection {
+public class MySQLConnection extends MySQLConnParams {
 
     private static String databaseType = "jdbc:mysql";
-    private static String serverAddress = "mn16.webd.pl"; // localhost / mn16.webd.pl
-    private static int serverPort = 3306;
-    private static String database = "slavek_bd2";
-    private static String databaseUser = "slavek_bd2_user";
-    private static String databaseUserPass = "bd2@2020";
     private static Connection connection = null;
     private static String lastError;
 
@@ -20,9 +15,9 @@ public class MySQLConnection {
         try {
             if (connection == null || !connection.isValid(2)) {
                 connection = DriverManager.getConnection(
-                        (databaseType + "://" + serverAddress + ":" + serverPort + "/" + database +"?useUnicode=true&characterEncoding=UTF-8"),
-                        databaseUser,
-                        databaseUserPass
+                        (databaseType + "://" + getServerAddress() + ":" + getServerPort() + "/" + getDatabase() +"?useUnicode=true&characterEncoding=UTF-8"),
+                        getDatabaseUser(),
+                        getDatabaseUserPass()
                 );
             }
             return true;

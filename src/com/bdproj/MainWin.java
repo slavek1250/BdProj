@@ -4,6 +4,7 @@ package com.bdproj;
 import org.knowm.xchart.SwingWrapper;
 
 import javax.swing.*;
+import java.awt.event.WindowEvent;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -109,13 +110,17 @@ public class MainWin implements MainView {
         MainWin mainWin = new MainWin();
 
         frame.setContentPane(mainWin.panelMain);
-
-       // chartDesignHelper();
+        //chartDesignHelper();
 
         frame.setSize(300, 250);
         frame.setLocation(screenSize.width/2-frame.getSize().width/2,screenSize.height/2-frame.getSize().height/2);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setVisible(true);
+
+        if(!MySQLConnection.readConnParamsFromFile()) {
+            JOptionPane.showMessageDialog(mainWin.panelMain, MySQLConnParams.getLastError());
+            frame.dispatchEvent(new WindowEvent(frame, WindowEvent.WINDOW_CLOSING));
+        }
     }
 
     public static void chartDesignHelper() {

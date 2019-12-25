@@ -151,7 +151,7 @@ public class SupervisorWgt extends Supervisor {
 
     private void loadEmployees() {
         ArrayList<String> employees = new ArrayList<>();
-        employeeList.stream().map(sup -> (sup.getKey() + ". " + sup.getValue().getValue() + " " + sup.getValue().getKey())).forEach(employees::add);
+        employeeList.stream().map(sup -> (sup.get(EmployeeListEnum.ID) + ". " + sup.get(EmployeeListEnum.NAME) + " " + sup.get(EmployeeListEnum.SURNAME))).forEach(employees::add);
         boxSelectEditEmpl.setModel(new DefaultComboBoxModel(employees.toArray()));
         boxSelectEditEmpl.setSelectedIndex(-1);
     }
