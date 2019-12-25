@@ -124,11 +124,11 @@ public class MainWin implements MainView {
     }
 
     public static void chartDesignHelper() {
-        ReportChart ticketChart = new ReportChart("Statystyki dla wyciągów", "Nazwa wyciągu", "");
+        ReportChart ticketChart = new ReportChart("Wykres przewyższeń z podziałem na wyciągi.", "Nazwa wyciągu", "");
         ticketChart.addSeries("Przewyższenie", new ArrayList<String>(Arrays.asList("Czarny groń", "Mały")), new ArrayList<Integer>(Arrays.asList(1586, 400)));
         new SwingWrapper(ticketChart.getChart()).displayChart();
 
-        ReportChart skiLiftChart = new ReportChart("Statystyki", "Godzina", "");
+        ReportChart skiLiftChart = new ReportChart("Wykres punktów, oraz przybliżonych kwot wydanych na bieżącym wyciągu.", "Godzina", "");
         skiLiftChart.addSeries("Punkty", new ArrayList<String>(Arrays.asList("13", "14")), new ArrayList<Integer>(Arrays.asList(60, 30)));
         skiLiftChart.addSeries("Kwota [zł]", new ArrayList<String>(Arrays.asList("13", "14")), new ArrayList<Double>(Arrays.asList(27.0, 13.5)));
         new SwingWrapper(skiLiftChart.getChart()).displayChart();

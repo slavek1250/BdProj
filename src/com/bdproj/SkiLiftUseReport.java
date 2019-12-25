@@ -163,7 +163,7 @@ public class SkiLiftUseReport implements HtmlReport {
         query3ListOfMaps.stream().map(i -> Integer.parseInt(i.get(Query3Enum.POINTS_SPENT))).forEach(yData1::add);
         query3ListOfMaps.stream().map(i -> Double.parseDouble(i.get(Query3Enum.AMOUNT))).forEach(yData2::add);
 
-        ReportChart reportChart = new ReportChart("Statystyki", timeBaseNames.get(currentTimeBase), "");
+        ReportChart reportChart = new ReportChart("Wykres punktów, oraz przybliżonych kwot wydanych na bieżącym wyciągu.", timeBaseNames.get(currentTimeBase), "");
         reportChart.addSeries("Punkty", xData, yData1);
         reportChart.addSeries("Kwota [zł]", xData, yData2);
         if(!reportChart.saveAs(chartFileName)) {

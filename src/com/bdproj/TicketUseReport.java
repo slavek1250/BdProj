@@ -164,7 +164,7 @@ public class TicketUseReport implements HtmlReport {
         //query6ListOfMaps.stream().map(i -> Integer.parseInt(i.get(Query6Enum.POINTS_SPENT_SINGLE_LIFT))).forEach(yData1::add);
         query6ListOfMaps.stream().map(i -> Double.parseDouble(i.get(Query6Enum.HEIGHT_SINGLE_LIFT))).forEach(yData2::add);
 
-        ReportChart reportChart = new ReportChart("Statystyki dla wyciągów", "Nazwa wyciągu", "");
+        ReportChart reportChart = new ReportChart("\"Wykres przewyższeń z podziałem na wyciągi.", "Nazwa wyciągu", "");
         //reportChart.addSeries("Wydane punkty", xData, yData1);
         reportChart.addSeries("Przewyższenie", xData, yData2);
         if(!reportChart.saveAs(chartFileName)) {

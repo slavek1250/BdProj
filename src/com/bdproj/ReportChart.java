@@ -24,9 +24,9 @@ public class ReportChart {
                 .title(title)
                 .xAxisTitle(xAxisTitle)
                 .yAxisTitle(yAxisTitle)
-                .theme(Styler.ChartTheme.GGPlot2)
+                .theme(Styler.ChartTheme.Matlab)
                 .build();
-
+/*
         chart.getStyler().setPlotBackgroundColor(ChartColor.getAWTColor(ChartColor.GREY));
         chart.getStyler().setPlotGridLinesColor(new Color(255, 255, 255));
         chart.getStyler().setChartBackgroundColor(Color.WHITE);
@@ -45,15 +45,17 @@ public class ReportChart {
 
         chart.getStyler().setChartTitleFont(new Font(Font.MONOSPACED, Font.BOLD, 24));
         chart.getStyler().setLegendFont(new Font(Font.SERIF, Font.PLAIN, 18));
-        chart.getStyler().setLegendPosition(Styler.LegendPosition.InsideSE);
         chart.getStyler().setLegendSeriesLineLength(12);
         chart.getStyler().setAxisTitleFont(new Font(Font.SANS_SERIF, Font.ITALIC, 18));
         chart.getStyler().setAxisTickLabelsFont(new Font(Font.SERIF, Font.PLAIN, 11));
         chart.getStyler().setDatePattern("dd-MMM");
         chart.getStyler().setDecimalPattern("#0.000");
         chart.getStyler().setLocale(Locale.GERMAN);
-
+*/
+        chart.getStyler().setLegendPosition(Styler.LegendPosition.InsideNE);
         chart.getStyler().setOverlapped(true);
+
+
     }
 
     public boolean saveAs(String filename) {
