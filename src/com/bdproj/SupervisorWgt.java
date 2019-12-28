@@ -117,26 +117,25 @@ public class SupervisorWgt extends Supervisor {
         uptime.setLabelToUpdate(lblUpTime);
 
         loadEmployees();
-        loadReports();
+        loadSkiLifts();
         loadSupervisors();
         loadSupervisorData();
 
-
+        dateLiftRepSince.setFormats(DATE_FORMAT);
+        dateLiftRepTo.setFormats(DATE_FORMAT);
     }
 
     public JPanel getPanel() {
         return panelMain;
     }
 
-    private void loadReports() {
+    private void loadSkiLifts() {
         ArrayList<String> skiLifts = new ArrayList<>();
         skiLiftAdmin.skiLiftsList.stream().map(lift -> (lift.get(SkiLiftAdmin.SkiLiftsListEnum.ID) + ". " + lift.get(SkiLiftAdmin.SkiLiftsListEnum.NAME))).forEach(skiLifts::add);
         boxLiftRepSelect.setModel(new DefaultComboBoxModel(skiLifts.toArray()));
         boxSelectEditLift.setModel(new DefaultComboBoxModel(skiLifts.toArray()));
 
         boxLiftRepSelect.setSelectedIndex(-1);
-        dateLiftRepSince.setFormats(DATE_FORMAT);
-        dateLiftRepTo.setFormats(DATE_FORMAT);
         boxSelectEditLift.setSelectedIndex(-1);
     }
 
@@ -154,6 +153,11 @@ public class SupervisorWgt extends Supervisor {
         employeeList.stream().map(sup -> (sup.get(EmployeeListEnum.ID) + ". " + sup.get(EmployeeListEnum.NAME) + " " + sup.get(EmployeeListEnum.SURNAME))).forEach(employees::add);
         boxSelectEditEmpl.setModel(new DefaultComboBoxModel(employees.toArray()));
         boxSelectEditEmpl.setSelectedIndex(-1);
+    }
+
+    private void loadSupervisorData() {
+        txtNameSupervisor.setText(systemUser.getName());
+        txtSurnameSupervisor.setText(systemUser.getSurname());
     }
 
     private void generateSkiLiftReport() {
@@ -230,11 +234,6 @@ public class SupervisorWgt extends Supervisor {
         }
     }
 
-    private void loadSupervisorData() {
-        txtNameSupervisor.setText(systemUser.getName());
-        txtSurnameSupervisor.setText(systemUser.getSurname());
-    }
-
     private void updateSupervisorData() {
         String newName = txtNameSupervisor.getText();
         String newSurname = txtSurnameSupervisor.getText();
@@ -280,7 +279,7 @@ public class SupervisorWgt extends Supervisor {
         }
     }
 
-private void addUser(){
+    private void addUser(){
 
         String name = txtNameNewEmpl.getText();
         String surname = txtSurnameNewEmpl.getText();
@@ -330,25 +329,23 @@ private void addUser(){
     }
 
     private Integer getEmployeeId() {
-        String selectedEmp = boxSelectEditEmpl.getSelectedItem().toString(); // Id. nazwisko imie
-        Integer employeeId = Integer.parseInt(selectedEmp.replaceAll("\\..*", ""));
-        return employeeId;
+        return getIdFromComboBox(boxSelectEditEmpl);
     }
-
     private Integer getSupervisorId() {
-        String selectedEmp = boxSupervisorSelectEmpl.getSelectedItem().toString(); // Id. nazwisko imie
-        Integer supervisorId = Integer.parseInt(selectedEmp.replaceAll("\\..*", ""));
-        return supervisorId;
+        return getIdFromComboBox(boxSupervisorSelectEmpl);
     }
     private Integer getLiftSupervisorId() {
-        String selectedEmp = boxSupervisorSelectLift.getSelectedItem().toString(); // Id. nazwisko imie
-        Integer supervisorId = Integer.parseInt(selectedEmp.replaceAll("\\..*", ""));
-        return supervisorId;
+        return getIdFromComboBox(boxSupervisorSelectLift);
     }
     private Integer getLiftId() {
-        String selectedEmp = boxSelectEditLift.getSelectedItem().toString(); // Id. nazwisko imie
-        Integer supervisorId = Integer.parseInt(selectedEmp.replaceAll("\\..*", ""));
-        return supervisorId;
+        return getIdFromComboBox(boxSelectEditLift);
+    }
+    private Integer getIdFromComboBox(JComboBox comboBox) {
+        if(comboBox.getSelectedIndex() != -1) {
+            String selectedEmp = comboBox.getSelectedItem().toString(); // Id. nazwisko imie
+            return Integer.parseInt(selectedEmp.replaceAll("\\..*", ""));
+        }
+        return -1;
     }
 
     private void saveEmployeeMod() {
@@ -485,15 +482,18 @@ private void addUser(){
         boolean state = checkStateNewLift.isSelected();
         if(!height.matches(onlyNumbersRegEx) || !pointsCost.matches(onlyNumbersRegEx)||height.matches("") ||pointsCost.matches("") ){
             JOptionPane.showMessageDialog(null,"Niedozwolone dane wejściowe. Wysokość i koszt powinny być liczbą!");
-            return;
         }
         else{
             int response= JOptionPane.showConfirmDialog(null, "Czy na pewno chcesz dodać wyciąg?","Confirm",JOptionPane.YES_NO_OPTION);
             if(response==JOptionPane.YES_OPTION) {
                 skiLiftAdmin.addNewLift(name, height, pointsCost, state, idSup);
                 JOptionPane.showMessageDialog(null, "Dodano wyciąg");
+                if(!skiLiftAdmin.fetchSkiLifts()) {
+                    JOptionPane.showMessageDialog(panelMain, skiLiftAdmin.getLastError());
+                    return;
+                }
+                loadSkiLifts();
             }
-            else{return;}
         }
     }
 
@@ -558,7 +558,7 @@ private void addUser(){
             if(skiLiftAdmin.quitManagingLift(liftId)){
              JOptionPane.showMessageDialog(null,"Nie jesteś już zarzadcą wyciągu "+skiLiftAdmin.getSkiLiftName(liftId)+".");
              skiLiftAdmin.fetchSkiLifts();
-             loadReports();
+             loadSkiLifts();
             }else{return;}
         }
     }
@@ -586,11 +586,11 @@ private void addUser(){
         boolean pointsBool;
         boolean stateBool;
         String state2="Włączony",state1="Włączony";
-        if(!point.matches(skiLiftAdmin.getSkiLiftPoints(liftId))){pointsBool=true;}else{pointsBool=false;}
+        pointsBool = !point.matches(skiLiftAdmin.getSkiLiftPoints(liftId));
         if(Boolean.compare(state,givenState)==1){
             stateBool=true;
-            if(state==true) { state1="Włączony"; }else{state1="Wyłaczony";}
-            if (givenState==true){state2="Włączony";}else{state2="Wyłączony";}
+            state1 = state ? "Włączony" : "Wyłaczony";
+            state2 = givenState ? "Włączony" : "Wyłączony";
         }else{stateBool=false;}
          int response = JOptionPane.showConfirmDialog(null,"Czy na pewno chcesz zmodyfikować dane wyciągu: "+skiLiftAdmin.getSkiLiftName(liftId)+"?" +
                 (pointsBool==false ? "" :"\nZmiana punktów z : "+skiLiftAdmin.getSkiLiftPoints(liftId)+" na "+point+".")+
@@ -599,8 +599,7 @@ private void addUser(){
             skiLiftAdmin.saveSkiLiftChanges(point, state, liftId);
             JOptionPane.showMessageDialog(null,"Dane wyciągu zostały zmodyfikowane pomyślnie.");
             skiLiftAdmin.fetchSkiLifts();
-            loadReports();
-            boxSupervisorSelectLift.setSelectedIndex(-1);
+            loadSkiLifts();
             txtPointsCostEditLift.setText(null);
             chechStateEditLift.setSelected(false);
         }
@@ -617,7 +616,7 @@ private void addUser(){
         skiLiftAdmin.deleteSkiLift(liftId);
         JOptionPane.showMessageDialog(null,"Wyciąg "+skiLiftAdmin.getSkiLiftName(liftId)+" został pomyślnie usunięty.");
         skiLiftAdmin.fetchSkiLifts();
-        loadReports();
+        loadSkiLifts();
         txtPointsCostEditLift.setText(null);
         chechStateEditLift.setSelected(false);
 
