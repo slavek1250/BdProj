@@ -20,10 +20,8 @@ public class SkiLiftWin extends SkiLiftUse {
     private final String ONLY_NUMBER_REGEX = "^(?!(0))[0-9]{0,}$";
 
     public SkiLiftWin() {
-        if(!super.fetchSkiLifts()) {
-            JOptionPane.showMessageDialog(panelMain, super.getLastError());
-        }
-        else loadSkiLifts();
+
+        loadSkiLifts();
 
         boxSelectSkiLift.setSelectedIndex(-1);
 
@@ -55,11 +53,15 @@ public class SkiLiftWin extends SkiLiftUse {
     }
 
     private void loadSkiLifts() {
+        if(!super.fetchSkiLifts()) {
+            JOptionPane.showMessageDialog(panelMain, super.getLastError());
+            return;
+        }
         ArrayList<String> skiLifts = new ArrayList<>();
         super.skiLiftsList
                 .stream()
                 .map(
-                    lift -> (lift.get(SkiLiftsListEnum.SKI_LIFT_ID) + ". " + lift.get(SkiLiftsListEnum.NAME) + " - " + lift.get(SkiLiftsListEnum.POINTS) + "pkt")
+                    lift -> (lift.get(SkiLiftsListEnum.SKI_LIFT_ID) + ". " + lift.get(SkiLiftsListEnum.NAME))
                 )
                 .forEach(skiLifts::add);
         boxSelectSkiLift.setModel(new DefaultComboBoxModel(skiLifts.toArray()));
@@ -84,8 +86,20 @@ public class SkiLiftWin extends SkiLiftUse {
             return;
         }
 
-        Integer ticketPointAmount = getTicketPointsAmount(ticketId);
         Integer selectedSkiLiftPointsCost = super.getSkiLiftPointsCost(selectedSkiLiftId);
+        int resp = JOptionPane.showConfirmDialog(
+                panelMain,
+                "Koszt użycia tego wyciągu to " +
+                        selectedSkiLiftPointsCost + (selectedSkiLiftPointsCost == 1 ? " punkt" : " punktów") +
+                        ".\nCzy chcesz z niego skorzystać?",
+                "Potwierdź",
+                JOptionPane.YES_NO_OPTION
+        );
+        if(resp == JOptionPane.NO_OPTION) {
+            return;
+        }
+
+        Integer ticketPointAmount = getTicketPointsAmount(ticketId);
         if((ticketPointAmount - selectedSkiLiftPointsCost) < 0) {
             JOptionPane.showMessageDialog(panelMain,
                     "Posiadasz " +
