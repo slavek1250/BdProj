@@ -10,28 +10,106 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.EnumMap;
 
-
+/**
+ * Klasa odpowiedzialna za obsługę cennika.
+ */
 public class PriceList {
+    /**
+     * Obiekt obecnie zalogowanego użytkownika systemu.
+     */
     private SystemUser systemUser;
+    /**
+     * Opis ostatniego błędu.
+     */
     private String lastError;
 
+    /**
+     * Jednostka cen w cenniku.
+     */
     private final String UNIT = "zł/pkt";
+    /**
+     * Numer id obecnie obowiązującego cennika w liście nagłówków cennika.
+     */
     private final int PRESENT_PRICE_LIST_ID = 0;
+    /**
+     * Format daty.
+     */
     protected final String DATE_FORMAT = "yyyy-MM-dd";
 
+    /**
+     * Flaga ustawiana jeżeli brak cenników w bazie danych.
+     */
     private boolean dataBaseIsEmpty = false;
 
+    /**
+     * Numer id obecnie wybranego cennika.
+     */
     private String selectedPriceListId = null;
-    public enum PriceListEnum { PRICE_LIST_DICTIONARY_ID, NAME, PRICE };
+
+    /**
+     * Nazwy danych cennika przechowywanych lokalnie.
+     */
+    public enum PriceListEnum {
+        /**
+         * Numer id pozycji cennika w słowniku.
+         */
+        PRICE_LIST_DICTIONARY_ID,
+        /**
+         * Nazwa pozycji cennika.
+         */
+        NAME,
+        /**
+         * Cena definiowana przez pozycję cennika.
+         */
+        PRICE
+    };
+    /**
+     * Lista zawierająca dane obecnie wybranego cennika.
+     */
     protected ArrayList<EnumMap<PriceListEnum, String>> selectedPriceList;
 
-    public enum PriceListsHeadersEnum { NAME, ID, SINCE, SUPERVISOR_ID, SUPERVISOR_NAME };
+    /**
+     * Nazwy danych o cennikach przechowywanych lokalnie. Pierwszy cennik to obecny, kolejne w porządku rosnącym względem daty wejścia w życie.
+     */
+    public enum PriceListsHeadersEnum {
+        /**
+         * Nazwa cennika.
+         */
+        NAME,
+        /**
+         * Numer id cennika.
+         */
+        ID,
+        /**
+         * Data wejścia w życie cennika.
+         */
+        SINCE,
+        /**
+         * Numer id kierownika który stworzył cennik.
+         */
+        SUPERVISOR_ID,
+        /**
+         * Nazwa kierownika.
+         */
+        SUPERVISOR_NAME
+    };
+    /**
+     * Lista przechowywująca dane o cennikach.
+     */
     protected ArrayList<EnumMap<PriceListsHeadersEnum, String>> priceListsHeadersList;
 
+    /**
+     * Domyślny konstruktor.
+     * @param user Obiekt użytkownika systemu obecnie zalogowanego.
+     */
     PriceList(SystemUser user) {
         systemUser = user;
     }
 
+    /**
+     * Metoda pobierająca informacje o cennikach z bazy.
+     * @return Zwraca true jeżeli operacja zakońcyła się pomyślnie.
+     */
     public boolean fetchPriceListsHeaders() {
 
         String query =  "select c.id, (case when c.od < now() then 'Obecny' else concat('Ważny od ', str_to_date(c.od, '%Y-%m-%d')) end) as nazwa, DATE_FORMAT(c.od, '%Y-%m-%d %H:%i') as od, \n" +
@@ -67,6 +145,10 @@ public class PriceList {
         return false;
     }
 
+    /**
+     * Metoda pobierająca szczegóły obecnie wybranego cennika.
+     * @return Zwraca true jeżeli operacja zakońcyła się pomyślnie.
+     */
     public boolean fetchSinglePriceList() {
         if(selectedPriceListId == null && !priceListsHeadersList.isEmpty()) {
             lastError = "Nie wybrano żadnego cennika.";
@@ -114,10 +196,18 @@ public class PriceList {
         return false;
     }
 
+    /**
+     * Metoda weryfikująca czy istnieją w bazie zdefiniowane cenniki.
+     * @return Zwraca true jeżeli w bazie brak zdefiniowanych cenników.
+     */
     public boolean isDataBaseIsEmpty() {
         return dataBaseIsEmpty;
     }
 
+    /**
+     * Setter.
+     * @param name Nazwa nowo wybranego cennika.
+     */
     public void setSelectedPriceList(String name) {
         EnumMap<PriceListsHeadersEnum, String> selected = priceListsHeadersList
                 .stream()
@@ -132,6 +222,13 @@ public class PriceList {
         }
     }
 
+    /**
+     * Metoda weryfikująca czy bieżący użytkownik ma prawa do edycji obecnie wybranego cennika.
+     * @return Zwraca true jeżeli:
+     *             <li>brak w bazie jakiegokolwiek zdefiniowanego cennika.</li>
+     *             <li>wybrany cennik jest obecnie obowiązującym. Każdy kierownik może zapisać jako nowy.</li>
+     *             <li>wybrany cennik nie jest obecnie obowiązującym, ale został stworzony przez obecnie zalogowanego użytkownika systemu.</li>
+     */
     public boolean hasModifyPrivileges() {
 
         if(priceListsHeadersList == null || selectedPriceList == null || selectedPriceListId == null) {  // Nie pobrano danych z bazy
@@ -153,35 +250,69 @@ public class PriceList {
         return false;
     }
 
+    /**
+     * Metoda weryfikująca czy wybrany cennik jest obecnie obowiązującym cennikiem.
+     * @return
+     */
     public boolean isPresentPriceList() {
         return dataBaseIsEmpty || priceListsHeadersList.get(PRESENT_PRICE_LIST_ID).get(PriceListsHeadersEnum.ID).equals(selectedPriceListId);
     }
 
+    /**
+     * Getter.
+     * @return Zwraca opis ostatniego błędu.
+     */
     public String getLastError() {
         return lastError;
     }
 
+    /**
+     * Getter.
+     * @return Zwraca jednostkę cen w cenniku.
+     */
     public String getUnit() {
         return UNIT;
     }
 
+    /**
+     * Getter.
+     * @return Zwraca wszystkie lokalnie przechowywane dane o obecnie wybranym cenniku.
+     */
     public EnumMap<PriceListsHeadersEnum, String> getCurrentHeader() {
         if(priceListsHeadersList == null || selectedPriceListId == null) {
             return null;
         }
-        return priceListsHeadersList.stream().filter(item -> item.get(PriceListsHeadersEnum.ID).equals(selectedPriceListId)).findFirst().orElse(null);
+        return priceListsHeadersList
+                .stream()
+                .filter(
+                        item -> item.get(PriceListsHeadersEnum.ID).equals(selectedPriceListId)
+                )
+                .findFirst()
+                .orElse(null);
     }
 
+    /**
+     * Getter.
+     * @return Zwraca nazwę autora obecnie wybranego cennika.
+     */
     public String getAuthor() {
         EnumMap<PriceListsHeadersEnum, String> currentHeader = getCurrentHeader();
         return currentHeader == null ? "" : currentHeader.get(PriceListsHeadersEnum.SUPERVISOR_NAME);
     }
 
+    /**
+     * Getter.
+     * @return Zwraca datę od kiedy obecenie wybrany cennik obowiązuje / zacznie obowiązywać.
+     */
     public String getValidSince() {
         EnumMap<PriceListsHeadersEnum, String> currentHeader = getCurrentHeader();
         return currentHeader == null ? "" : currentHeader.get(PriceListsHeadersEnum.SINCE);
     }
 
+    /**
+     * Getter.
+     * @return Zwraca datę końca obowiązywania wybranego cennika, lub '-' jeżeli brak.
+     */
     public String getValidTo() {
        EnumMap<PriceListsHeadersEnum, String> validTo = priceListsHeadersList.stream().filter(item -> {
             try {
@@ -196,11 +327,20 @@ public class PriceList {
        return validTo == null ? "-" : validTo.get(PriceListsHeadersEnum.SINCE);
     }
 
+    /**
+     * Getter.
+     * @return Zwraca nazwę wybranego cennika.
+     */
     public String getCurrentName() {
         EnumMap<PriceListsHeadersEnum, String> currentHeader = getCurrentHeader();
         return currentHeader == null ? "" : currentHeader.get(PriceListsHeadersEnum.NAME);
     }
 
+    /**
+     * Metoda walidująca czy istnieje niewycofany cennik o dacie wejścia w życie takiej samej jak podana data.
+     * @param date Data której należy wyszukać w bazie.
+     * @return Zwraca true jeżeli brak w bazie cennika o podanej dacie.
+     */
     public boolean checkIfDateIsUnique(Date date) {
         if(!fetchPriceListsHeaders()) return false;
 
@@ -228,6 +368,12 @@ public class PriceList {
         return false;
     }
 
+    /**
+     * Metoda zapisująca nowy cennik.
+     * @param validSince Data wejścia w życie nowego cennika.
+     * @param newPriceListItems Pozycje nowego cennika.
+     * @return Zwaraca true jeżeli operacja zakończyła się pomyślnie.
+     */
     public boolean saveAsNewPriceList(Date validSince, ArrayList<EnumMap<PriceListEnum, String>> newPriceListItems) {
 
         String query1 = "insert into cennik set od=?, kierownik_id=?;";
@@ -267,6 +413,12 @@ public class PriceList {
         return false;
     }
 
+    /**
+     * Metoda aktualizująca pozycje wybranego cennika.
+     * @param validSince Nowa data wejścia w życie.
+     * @param modifiedPriceListItems Nowe pozycje cennika.
+     * @return Zwraca true jeżeli operacja zakończyła się pomyślnie.
+     */
     public boolean updateCurrentPriceList(Date validSince, ArrayList<EnumMap<PriceListEnum, String>> modifiedPriceListItems) {
 
         String query1 = "update cennik set od=? where id=?";
@@ -300,6 +452,10 @@ public class PriceList {
         return false;
     }
 
+    /**
+     * Metoda ustawiająca flagę w bazie oznaczjącą wycofanie cennika przed wejściem w życie.
+     * @return Zwraca true jeżeli operacja zakończyła się pomyślnie.
+     */
     public boolean deleteCurrentPriceList() {
         String query = "update cennik set odw_przed_wej=1 where id=?;";
 

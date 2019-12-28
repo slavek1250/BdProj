@@ -5,12 +5,28 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+/**
+ * Klasa odpowiedzialna za połączenie z bazą danych.
+ */
 public class MySQLConnection extends MySQLConnParams {
 
+    /**
+     * Typ bazy danych.
+     */
     private static String databaseType = "jdbc:mysql";
+    /**
+     * Obiekt połączenia z bazą danych.
+     */
     private static Connection connection = null;
+    /**
+     * Opis ostatniego błędu.
+     */
     private static String lastError;
 
+    /**
+     * Metoda odpowiedzialna za zestawnienie połączenia z bazą danych.
+     * @return Zwraca true jeżeli ustanowiono połączenie.
+     */
     public static boolean prepareConnection() {
         try {
             if (connection == null || !connection.isValid(2)) {
@@ -28,14 +44,27 @@ public class MySQLConnection extends MySQLConnParams {
         return false;
     }
 
+    /**
+     * Getter.
+     * @return Zwraca obiekt połącznenia z bazą danych.
+     */
     public static Connection getConnection() {
         return connection;
     }
 
+    /**
+     * Getter.
+     * @return Opis ostatniego błędu.
+     */
     public static String getLastError() {
         return lastError;
     }
 
+    /**
+     * Getter.
+     * @return Bieżący czas serwera bazy danych.
+     * @throws SQLException
+     */
     public static Date getServerTimestamp() throws SQLException {
         String sqlDateFormat = "%Y-%m-%d %H:%i:%s.%f";
         String javaDateFormat = "yyyy-MM-dd HH:mm:ss.SSS";

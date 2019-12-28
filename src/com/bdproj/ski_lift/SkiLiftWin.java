@@ -10,24 +10,45 @@ import java.util.ArrayList;
 
 public class SkiLiftWin extends SkiLiftUse {
 
+    /**
+     * Panel główny.
+     */
     private JPanel panelMain;
+    /**
+     * Pole tekstowe służące do wprowadzania numer id biletu.
+     */
     private JTextField txtTicketId;
+    /**
+     * ComboBox służący do wyboru wyciągu.
+     */
     private JComboBox boxSelectSkiLift;
+    /**
+     * Przycisk odpowiedzialny ze obsługę użycia wyciągu.
+     */
     private JButton btnUseSkiLift;
-
-    static Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-
+    /**
+     * Zmienna przechowywująca wymiary okna.
+     */
+    private static Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+    /**
+     * Wyrażenie regularne do walidacji formatu wprowadzonego numeru id biletu.
+     */
     private final String ONLY_NUMBER_REGEX = "^(?!(0))[0-9]{0,}$";
 
-    public SkiLiftWin() {
+    /**
+     * Domyślny konstruktor.
+     */
+    private SkiLiftWin() {
 
         loadSkiLifts();
-
         boxSelectSkiLift.setSelectedIndex(-1);
-
         btnUseSkiLift.addActionListener(actionEvent -> useSelectedSkiLift());
     }
 
+    /**
+     * Metoda zwracająca obecnie wybrany z listy wyciąg.
+     * @return Numer id obecnie wybranego wyciągu. Jeżeli żaden wyciąg nie zaostał wybrany zwraca -1.
+     */
     private Integer getSelectedSkiLiftId() {
         if(boxSelectSkiLift.getSelectedIndex() != -1) {
             String selectedSkiLift = boxSelectSkiLift.getSelectedItem().toString();
@@ -36,6 +57,9 @@ public class SkiLiftWin extends SkiLiftUse {
         return -1;
     }
 
+    /**
+     * Metoda odświeżająca listę wyciągów.
+     */
     private void reloadSkiLifts() {
         Integer selectedSkiLiftId = getSelectedSkiLiftId();
         loadSkiLifts();
@@ -52,6 +76,9 @@ public class SkiLiftWin extends SkiLiftUse {
         }
     }
 
+    /**
+     * Metoda pobierająca najnowszą listę wyciągów do listy w ComboBox.
+     */
     private void loadSkiLifts() {
         if(!super.fetchSkiLifts()) {
             JOptionPane.showMessageDialog(panelMain, super.getLastError());
@@ -67,6 +94,13 @@ public class SkiLiftWin extends SkiLiftUse {
         boxSelectSkiLift.setModel(new DefaultComboBoxModel(skiLifts.toArray()));
     }
 
+    /**
+     * Metoda odpowiedzialna za obsługę użycia wyciągu.
+     * Waliduje:
+     *      <li>Poprawność wprowadzonego numeru biletu.</li>
+     *      <li>Istnienie biletu w bazie.</li>
+     *      <li>Czy bilet posiada wystarczającą liczbę punktów do skorzystania z wyciągu.</li>
+     */
     private void useSelectedSkiLift() {
         reloadSkiLifts();
         if(boxSelectSkiLift.getSelectedIndex() == -1) {
@@ -133,6 +167,10 @@ public class SkiLiftWin extends SkiLiftUse {
         txtTicketId.setText("");
     }
 
+    /**
+     * Punkt wejściowy programu, statyczna metoda main. Inicalizuje program.
+     * @param args Argumenty uruchomieniowe programu.
+     */
     public static void main(String args[]) {
         JFrame frame = new JFrame("Bramka Wyciągu");
         frame.setSize(300, 250);

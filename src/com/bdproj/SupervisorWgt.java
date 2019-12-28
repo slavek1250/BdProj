@@ -1,16 +1,9 @@
 package com.bdproj;
 
-import javafx.event.Event;
-import javafx.util.Pair;
 import org.jdesktop.swingx.JXDatePicker;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.ComponentAdapter;
-import java.security.NoSuchAlgorithmException;
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -619,8 +612,6 @@ public class SupervisorWgt extends Supervisor {
         loadSkiLifts();
         txtPointsCostEditLift.setText(null);
         chechStateEditLift.setSelected(false);
-
         }
-
     }
 }
