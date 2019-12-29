@@ -12,6 +12,9 @@ import java.util.ArrayList;
 import java.util.EnumMap;
 
 /**
+ * Klasa służąca do generacji raportu użyć biletu.
+ * Raport zawiera:
+ *
  *                                                                  Data generacji raportu: yyyy-MM-dd hh:mm:ss
  *                                                                        Wygenerowano dla: Imie Nazwisko
  *
@@ -84,7 +87,7 @@ public class TicketUseReport implements HtmlReport {
     private final String QUERY_6_USE_COUNT_POINTS_SPEND_HEIGHT_BY_SKI_LIFT =
             "select w.id, w.nazwa, count(*) as 'l_zjad', sum(wd.koszt_pkt) as 'wydane_pkt', sum(w.wysokosc) as 'przewyz'\n" +
             "from uzycia_karnetu uk join wyciag_dane wd on uk.wyciag_dane_id = wd.id join wyciag w on wd.wyciag_id = w.id\n" +
-            "where uk.karnet_id = ? group by w.id, w.nazwa order by sum(w.wysokosc);";
+            "where uk.karnet_id = ? group by w.id, w.nazwa order by sum(w.wysokosc) desc;";
 
 
     public TicketUseReport(SystemUser user) {

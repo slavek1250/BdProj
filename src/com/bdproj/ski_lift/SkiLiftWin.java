@@ -8,28 +8,38 @@ import java.awt.*;
 import java.awt.event.WindowEvent;
 import java.util.ArrayList;
 
+/**
+ * Klasa GUI służącego do rejestracji użyć wyciągów.
+ */
 public class SkiLiftWin extends SkiLiftUse {
 
-    private JPanel panelMain;
-    private JTextField txtTicketId;
-    private JComboBox boxSelectSkiLift;
-    private JButton btnUseSkiLift;
-
-    static Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-
+    private JPanel panelMain;           /**< Panel główny. */
+    private JTextField txtTicketId;     /**< Pole tekstowe służące do wprowadzania numer id biletu. */
+    private JComboBox boxSelectSkiLift; /**< ComboBox służący do wyboru wyciągu. */
+    private JButton btnUseSkiLift;      /**< Przycisk odpowiedzialny ze obsługę użycia wyciągu. */
+    /**
+     * Zmienna przechowywująca wymiary okna.
+     */
+    private static Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+    /**
+     * Wyrażenie regularne do walidacji formatu wprowadzonego numeru id biletu.
+     */
     private final String ONLY_NUMBER_REGEX = "^(?!(0))[0-9]{0,}$";
 
-    public SkiLiftWin() {
-        if(!super.fetchSkiLifts()) {
-            JOptionPane.showMessageDialog(panelMain, super.getLastError());
-        }
-        else loadSkiLifts();
+    /**
+     * Domyślny konstruktor.
+     */
+    private SkiLiftWin() {
 
+        loadSkiLifts();
         boxSelectSkiLift.setSelectedIndex(-1);
-
         btnUseSkiLift.addActionListener(actionEvent -> useSelectedSkiLift());
     }
 
+    /**
+     * Metoda zwracająca obecnie wybrany z listy wyciąg.
+     * @return Numer id obecnie wybranego wyciągu. Jeżeli żaden wyciąg nie zaostał wybrany zwraca -1.
+     */
     private Integer getSelectedSkiLiftId() {
         if(boxSelectSkiLift.getSelectedIndex() != -1) {
             String selectedSkiLift = boxSelectSkiLift.getSelectedItem().toString();
@@ -38,6 +48,9 @@ public class SkiLiftWin extends SkiLiftUse {
         return -1;
     }
 
+    /**
+     * Metoda odświeżająca listę wyciągów.
+     */
     private void reloadSkiLifts() {
         Integer selectedSkiLiftId = getSelectedSkiLiftId();
         loadSkiLifts();
@@ -54,17 +67,31 @@ public class SkiLiftWin extends SkiLiftUse {
         }
     }
 
+    /**
+     * Metoda pobierająca najnowszą listę wyciągów do listy w ComboBox.
+     */
     private void loadSkiLifts() {
+        if(!super.fetchSkiLifts()) {
+            JOptionPane.showMessageDialog(panelMain, super.getLastError());
+            return;
+        }
         ArrayList<String> skiLifts = new ArrayList<>();
         super.skiLiftsList
                 .stream()
                 .map(
-                    lift -> (lift.get(SkiLiftsListEnum.SKI_LIFT_ID) + ". " + lift.get(SkiLiftsListEnum.NAME) + " - " + lift.get(SkiLiftsListEnum.POINTS) + "pkt")
+                    lift -> (lift.get(SkiLiftsListEnum.SKI_LIFT_ID) + ". " + lift.get(SkiLiftsListEnum.NAME))
                 )
                 .forEach(skiLifts::add);
         boxSelectSkiLift.setModel(new DefaultComboBoxModel(skiLifts.toArray()));
     }
 
+    /**
+     * Metoda odpowiedzialna za obsługę użycia wyciągu.
+     * Waliduje:
+     *      - Poprawność wprowadzonego numeru biletu.
+     *      - Istnienie biletu w bazie.
+     *      - Czy bilet posiada wystarczającą liczbę punktów do skorzystania z wyciągu.
+     */
     private void useSelectedSkiLift() {
         reloadSkiLifts();
         if(boxSelectSkiLift.getSelectedIndex() == -1) {
@@ -84,8 +111,20 @@ public class SkiLiftWin extends SkiLiftUse {
             return;
         }
 
-        Integer ticketPointAmount = getTicketPointsAmount(ticketId);
         Integer selectedSkiLiftPointsCost = super.getSkiLiftPointsCost(selectedSkiLiftId);
+        int resp = JOptionPane.showConfirmDialog(
+                panelMain,
+                "Koszt użycia tego wyciągu to " +
+                        selectedSkiLiftPointsCost + (selectedSkiLiftPointsCost == 1 ? " punkt" : " punktów") +
+                        ".\nCzy chcesz z niego skorzystać?",
+                "Potwierdź",
+                JOptionPane.YES_NO_OPTION
+        );
+        if(resp == JOptionPane.NO_OPTION) {
+            return;
+        }
+
+        Integer ticketPointAmount = getTicketPointsAmount(ticketId);
         if((ticketPointAmount - selectedSkiLiftPointsCost) < 0) {
             JOptionPane.showMessageDialog(panelMain,
                     "Posiadasz " +
@@ -119,6 +158,10 @@ public class SkiLiftWin extends SkiLiftUse {
         txtTicketId.setText("");
     }
 
+    /**
+     * Punkt wejściowy programu, statyczna metoda main. Inicalizuje program.
+     * @param args Argumenty uruchomieniowe programu.
+     */
     public static void main(String args[]) {
         JFrame frame = new JFrame("Bramka Wyciągu");
         frame.setSize(300, 250);

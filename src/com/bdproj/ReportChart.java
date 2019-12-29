@@ -2,20 +2,28 @@ package com.bdproj;
 
 import org.knowm.xchart.*;
 import org.knowm.xchart.style.Styler;
-import org.knowm.xchart.style.colors.ChartColor;
 
-import java.awt.*;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Locale;
 
-// https://knowm.org/open-source/xchart/xchart-example-code/
+//
+
+/**
+ * Klasa odpowiedzialna za generowanie wykresów słupkowych.
+ * @see [XChart Example Code](<https://knowm.org/open-source/xchart/xchart-example-code/>)
+ */
 public class ReportChart {
 
-    private final String PATH_TO_SAVE = "reports/";
-    private String lastError;
-    private CategoryChart chart;
+    private final String PATH_TO_SAVE = "reports/"; /**< Ścieżka katalogu do zapisu wykresu jako plik .png. */
+    private String lastError;                       /**< Opis ostatniego błędu. */
+    private CategoryChart chart;                    /**< Obiekt wykresu. */
 
+    /**
+     * Domyślny konstruktor.
+     * @param title Tytuł wykresu.
+     * @param xAxisTitle Nazwa osi X.
+     * @param yAxisTitle Nazwa osi Y.
+     */
     ReportChart(String title, String xAxisTitle, String yAxisTitle) {
 
         chart = new CategoryChartBuilder()
@@ -26,38 +34,16 @@ public class ReportChart {
                 .yAxisTitle(yAxisTitle)
                 .theme(Styler.ChartTheme.Matlab)
                 .build();
-/*
-        chart.getStyler().setPlotBackgroundColor(ChartColor.getAWTColor(ChartColor.GREY));
-        chart.getStyler().setPlotGridLinesColor(new Color(255, 255, 255));
-        chart.getStyler().setChartBackgroundColor(Color.WHITE);
-        chart.getStyler().setLegendBackgroundColor(Color.PINK);
-        chart.getStyler().setChartFontColor(Color.MAGENTA);
-        chart.getStyler().setChartTitleBoxBackgroundColor(new Color(0, 222, 0));
-        chart.getStyler().setChartTitleBoxVisible(true);
-        chart.getStyler().setChartTitleBoxBorderColor(Color.BLACK);
-        chart.getStyler().setPlotGridLinesVisible(false);
 
-        chart.getStyler().setAxisTickPadding(20);
-
-        chart.getStyler().setAxisTickMarkLength(15);
-
-        chart.getStyler().setPlotMargin(20);
-
-        chart.getStyler().setChartTitleFont(new Font(Font.MONOSPACED, Font.BOLD, 24));
-        chart.getStyler().setLegendFont(new Font(Font.SERIF, Font.PLAIN, 18));
-        chart.getStyler().setLegendSeriesLineLength(12);
-        chart.getStyler().setAxisTitleFont(new Font(Font.SANS_SERIF, Font.ITALIC, 18));
-        chart.getStyler().setAxisTickLabelsFont(new Font(Font.SERIF, Font.PLAIN, 11));
-        chart.getStyler().setDatePattern("dd-MMM");
-        chart.getStyler().setDecimalPattern("#0.000");
-        chart.getStyler().setLocale(Locale.GERMAN);
-*/
         chart.getStyler().setLegendPosition(Styler.LegendPosition.InsideNE);
         chart.getStyler().setOverlapped(true);
-
-
     }
 
+    /**
+     * Metoda służąca do zapisu wygenerowanego wykresu jako plik .png.
+     * @param filename Nazwa nowo tworzonego pliku.
+     * @return Zwraca true jeżeli zakończono operację pomyślnie.
+     */
     public boolean saveAs(String filename) {
         try {
             BitmapEncoder.saveBitmapWithDPI(chart, (PATH_TO_SAVE + "/" + filename), BitmapEncoder.BitmapFormat.PNG, 300);
@@ -69,14 +55,28 @@ public class ReportChart {
         return false;
     }
 
+    /**
+     * Metoda dodająca serię danych do wykresu.
+     * @param seriesName Nazwa serii danych.
+     * @param xData Wartości osi poziomej serii danych.
+     * @param yData Wartości osi pionowej serii danych.
+     */
     public void addSeries(String seriesName, ArrayList<?> xData, ArrayList<? extends Number> yData) {
         chart.addSeries(seriesName, xData, yData);
     }
 
+    /**
+     * Getter.
+     * @return Zwraca opis ostatniego błędu.
+     */
     public String getLastError(){
         return lastError;
     }
 
+    /**
+     * Getter.
+     * @return Zwraca obiekt utworzonego wykresu.
+     */
     public CategoryChart getChart() {
         return chart;
     }
