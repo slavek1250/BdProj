@@ -476,7 +476,7 @@ public class SupervisorWgt extends Supervisor {
         if(!height.matches(onlyNumbersRegEx) || !pointsCost.matches(onlyNumbersRegEx)||height.matches("") ||pointsCost.matches("") ){
             JOptionPane.showMessageDialog(null,"Niedozwolone dane wejściowe. Wysokość i koszt powinny być liczbą!");
         }
-        else{
+        else {
             int response= JOptionPane.showConfirmDialog(null, "Czy na pewno chcesz dodać wyciąg?","Confirm",JOptionPane.YES_NO_OPTION);
             if(response==JOptionPane.YES_OPTION) {
                 skiLiftAdmin.addNewLift(name, height, pointsCost, state, idSup);
