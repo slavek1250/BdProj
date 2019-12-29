@@ -8,18 +8,8 @@ import java.sql.SQLException;
 public class EmployeeAdmin {
     private SystemUser systemUser;
 
-
-    // TODO: Dodawanie nowego pracownika.#Karol# !!DONE!!
-    // TODO: Modyfikacja obecnych pracownikow.#Karol# !!DONE!!
-    // TODO: Usuwanie pracownikow (ustawianie flagi).#Karol# !!DONE!!
-    // TODO: Pobieranie listy przy starcie id imie nazwisko podleglych pod systemUser.getId().#Karol# !!DONE!!
-    // TODO: Awansowanie pracownika na kierownika. #Karol# !!DONE!!
-    // TODO: Przypisanie danego pracownika do innego kierownika. #Karol# !!DONE!!
-    // TODO: Zmiana hasła dla pracownika. #Karol# !!DONE!!
-
     public EmployeeAdmin(SystemUser user) {
         systemUser = user;
-
     }
 
     public void addNewUser(String name, String surname, String username, String password) {

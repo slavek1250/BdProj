@@ -14,24 +14,38 @@ import com.itextpdf.layout.element.IBlockElement;
 import com.itextpdf.layout.element.IElement;
 import com.itextpdf.layout.font.FontProvider;
 
-
+/**
+ * Klasa zapisująca raporty sformatowane w HTML do pliku .pdf.
+ * @see [iText Library Examples](<https://itextpdf.com/en/resources/examples>)
+ */
 public class Reports {
 
-    HtmlReport htmlReport;
+    private final String FONT_DIR_PATH = "reports/font";    /**< Ścieżka do katalogu zawierającego fonty. */
 
-    // TODO: Generowanie raportow uzyc poszczegolnych wyciagow od do. Ile zarobil, ile razy uzyto, srednie dzienne, tygodniowe, itd. #Dominik# !!DONE!!
-    // TODO: Generowanie reportow uzyc poszczegolnych biletow, ile km przejechane (przewyzszenie) ile wydano na pkt, srednie, itd. #Dominik# !!DONE!!
+    private HtmlReport htmlReport;                          /**< Obiekt raportu sformatowanego w HTML. */
+    private String lastError;                               /**< Opis ostatniego błędu. */
 
-    private String lastError;
-
+    /**
+     * Domyślny konstruktor.
+     * @param htmlReport Raport sformatowany w HTML.
+     */
     public Reports(HtmlReport htmlReport) {
         this.htmlReport = htmlReport;
     }
 
+    /**
+     * Getter.
+     * @return Zwraca opis ostatniego błędu.
+     */
     public String getLastError() {
         return lastError;
     }
 
+    /**
+     * Metoda zapisująca raport do pliku .pdf.
+     * @param filepath Nazwa i ścieżka do tworzonego pliku .pdf.
+     * @return Zwraca true jeżeli operacja zakończyła się sukcesem.
+     */
     public boolean saveReportToFile(String filepath) {
 
         filepath = filepath.replaceAll("\\.+.*$", "");
@@ -47,9 +61,7 @@ public class Reports {
         try {
             ConverterProperties converterProperties = new ConverterProperties();
             FontProvider fontProvider = new DefaultFontProvider(false, false, false);
-            //FontProgram fontProgram = FontProgramFactory.createFont("AbhayaLibre-Regular.ttf");
-            //fontProvider.addFont(fontProgram);
-            fontProvider.addDirectory("reports/font");
+            fontProvider.addDirectory(FONT_DIR_PATH);
 
             converterProperties.setFontProvider(fontProvider);
 

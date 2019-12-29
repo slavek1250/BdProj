@@ -10,18 +10,9 @@ import java.util.Date;
  */
 public class MySQLConnection extends MySQLConnParams {
 
-    /**
-     * Typ bazy danych.
-     */
-    private static String databaseType = "jdbc:mysql";
-    /**
-     * Obiekt połączenia z bazą danych.
-     */
-    private static Connection connection = null;
-    /**
-     * Opis ostatniego błędu.
-     */
-    private static String lastError;
+    private static String databaseType = "jdbc:mysql";  /**< Typ bazy danych. */
+    private static Connection connection = null;        /**< Obiekt połączenia z bazą danych. */
+    private static String lastError;                    /**< Opis ostatniego błędu. */
 
     /**
      * Metoda odpowiedzialna za zestawnienie połączenia z bazą danych.
@@ -47,6 +38,7 @@ public class MySQLConnection extends MySQLConnParams {
     /**
      * Getter.
      * @return Zwraca obiekt połącznenia z bazą danych.
+     * @see prepareConnection()
      */
     public static Connection getConnection() {
         return connection;

@@ -24,9 +24,9 @@ public class SupervisorWgt extends Supervisor {
     private JCheckBox checkStateNewLift;
     private JComboBox boxSelectEditLift;
     private JTextField txtPointsCostEditLift;
-    private JCheckBox chechStateEditLift;
+    private JCheckBox checkStateEditLift;
     private JButton btnDeleteLift;
-    private JButton btnSaveEdtiLift;
+    private JButton btnSaveEditLift;
     private JComboBox boxLiftRepSelect;
     private JButton btnLogout;
     private JTextField txtPointsCostNewLift;
@@ -78,7 +78,7 @@ public class SupervisorWgt extends Supervisor {
         lblHello.setText("Witaj, " + systemUser.getName() + "!");
 
         if (!skiLiftAdmin.fetchSkiLifts()) {
-            JOptionPane.showMessageDialog(panelMain, getLastError());
+            JOptionPane.showMessageDialog(panelMain, skiLiftAdmin.getLastError());
         }
         if (!fetchSupervisors()) {
             JOptionPane.showMessageDialog(panelMain, getLastError());
@@ -101,7 +101,7 @@ public class SupervisorWgt extends Supervisor {
         btnChangeSupervisorEmpl.addActionListener(ActionEvent -> changeEmployeeSupervisor());
         btnMakeAdminLift.addActionListener(actionEvent -> promoteNewLiftOwner());
         btnDelAdminPrivLift.addActionListener(actionEvent -> quitManagingLift());
-        btnSaveEdtiLift.addActionListener(actionEvent -> saveLiftMod());
+        btnSaveEditLift.addActionListener(actionEvent -> saveLiftMod());
         btnDeleteLift.addActionListener(actionEvent -> deleteSkiLift());
         btnEmpNewPass.addActionListener(actionEvent -> newEmpPassword());
         boxSelectEditLift.addActionListener(actionEvent -> chooseLift());
@@ -499,7 +499,7 @@ public class SupervisorWgt extends Supervisor {
         if(skiLiftAdmin.getSkiLiftState(id).matches("1")){
             state=true;}else state=false;
         txtPointsCostEditLift.setText(skiLiftAdmin.getSkiLiftPoints(id));
-        chechStateEditLift.setSelected(state);
+        checkStateEditLift.setSelected(state);
     }
 
     private void promoteNewLiftOwner() {
@@ -563,7 +563,7 @@ public class SupervisorWgt extends Supervisor {
         }
         int liftId=getLiftId();
         String point=txtPointsCostEditLift.getText();
-        boolean givenState=chechStateEditLift.isSelected();
+        boolean givenState= checkStateEditLift.isSelected();
         boolean state;
         if(skiLiftAdmin.getSkiLiftState(liftId).matches("1")){state=true;}else{state=false;}
 
@@ -594,7 +594,7 @@ public class SupervisorWgt extends Supervisor {
             skiLiftAdmin.fetchSkiLifts();
             loadSkiLifts();
             txtPointsCostEditLift.setText(null);
-            chechStateEditLift.setSelected(false);
+            checkStateEditLift.setSelected(false);
         }
     }
 
@@ -611,7 +611,7 @@ public class SupervisorWgt extends Supervisor {
         skiLiftAdmin.fetchSkiLifts();
         loadSkiLifts();
         txtPointsCostEditLift.setText(null);
-        chechStateEditLift.setSelected(false);
+        checkStateEditLift.setSelected(false);
         }
     }
 }

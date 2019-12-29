@@ -17,32 +17,17 @@ public class SkiLiftUse {
      * Informacje o wyciągu przechowywane lokalnie.
      */
     protected enum SkiLiftsListEnum {
-        /**
-         * Numer id wyciągu.
-         */
-        SKI_LIFT_ID,
-        /**
-         * Numer id najnowszych danych wyciągu.
-         */
-        SKI_LIFT_DATA_ID,
-        /**
-         * Nazwa wyciągu.
-         */
-        NAME,
-        /**
-         * Koszt punktowy wyciągu.
-         */
-        POINTS
+        SKI_LIFT_ID,        /**< Numer id wyciągu. */
+        SKI_LIFT_DATA_ID,   /**< Numer id najnowszych danych wyciągu. */
+        NAME,               /**< Nazwa wyciągu. */
+        POINTS              /**< Koszt punktowy wyciągu. */
     };
     /**
      * Lista wszystkich aktywnych wyciągów.
      */
     protected ArrayList<EnumMap<SkiLiftsListEnum, String>> skiLiftsList;
 
-    /**
-     * Zmienna przechowywująca opis ostatniego błędu.
-     */
-    private String lastError;
+    private String lastError;   /**< Zmienna przechowywująca opis ostatniego błędu. */
 
     /**
      * Metoda pobierająca listę wszystkich aktywnych wyciągów.

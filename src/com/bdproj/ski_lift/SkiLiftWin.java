@@ -8,24 +8,15 @@ import java.awt.*;
 import java.awt.event.WindowEvent;
 import java.util.ArrayList;
 
+/**
+ * Klasa GUI służącego do rejestracji użyć wyciągów.
+ */
 public class SkiLiftWin extends SkiLiftUse {
 
-    /**
-     * Panel główny.
-     */
-    private JPanel panelMain;
-    /**
-     * Pole tekstowe służące do wprowadzania numer id biletu.
-     */
-    private JTextField txtTicketId;
-    /**
-     * ComboBox służący do wyboru wyciągu.
-     */
-    private JComboBox boxSelectSkiLift;
-    /**
-     * Przycisk odpowiedzialny ze obsługę użycia wyciągu.
-     */
-    private JButton btnUseSkiLift;
+    private JPanel panelMain;           /**< Panel główny. */
+    private JTextField txtTicketId;     /**< Pole tekstowe służące do wprowadzania numer id biletu. */
+    private JComboBox boxSelectSkiLift; /**< ComboBox służący do wyboru wyciągu. */
+    private JButton btnUseSkiLift;      /**< Przycisk odpowiedzialny ze obsługę użycia wyciągu. */
     /**
      * Zmienna przechowywująca wymiary okna.
      */
@@ -97,9 +88,9 @@ public class SkiLiftWin extends SkiLiftUse {
     /**
      * Metoda odpowiedzialna za obsługę użycia wyciągu.
      * Waliduje:
-     *      <li>Poprawność wprowadzonego numeru biletu.</li>
-     *      <li>Istnienie biletu w bazie.</li>
-     *      <li>Czy bilet posiada wystarczającą liczbę punktów do skorzystania z wyciągu.</li>
+     *      - Poprawność wprowadzonego numeru biletu.
+     *      - Istnienie biletu w bazie.
+     *      - Czy bilet posiada wystarczającą liczbę punktów do skorzystania z wyciągu.
      */
     private void useSelectedSkiLift() {
         reloadSkiLifts();
