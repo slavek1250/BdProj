@@ -182,7 +182,7 @@ public class SkiLiftAdmin {
         }
         return true;
     }
-    public void saveSkiLiftChanges(String points,boolean state,int liftId) {
+    public void saveSkiLiftChanges(String points,String state,int liftId) {
       String query=  "INSERT INTO wyciag_dane(od, koszt_pkt, stan, nieistniejacy, wyciag_id, kierownik_id) VALUES(now(), ?,?,0,?,?)";
         if(!MySQLConnection.prepareConnection()) {
             lastError = MySQLConnection.getLastError();
@@ -190,7 +190,7 @@ public class SkiLiftAdmin {
         try{
             PreparedStatement ps=MySQLConnection.getConnection().prepareStatement(query);
             ps.setString(1,points);
-            ps.setBoolean(2,state);
+            ps.setString(2,state);
             ps.setInt(3,liftId);
             ps.setInt(4,systemUser.getId());
             ps.executeUpdate();

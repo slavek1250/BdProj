@@ -28,6 +28,8 @@ public class SupervisorWgt extends Supervisor {
     private JButton btnDeleteLift;
     private JButton btnSaveEditLift;
     private JComboBox boxLiftRepSelect;
+    private JTextField txtLiftRepSince;
+    private JTextField txtLiftRepTo;
     private JButton btnLogout;
     private JTextField txtPointsCostNewLift;
     private JTextField txtTicketUseRepNo;
@@ -356,7 +358,7 @@ public class SupervisorWgt extends Supervisor {
             return;
         } else {
             if (name.equals(givenName) && surname.equals(givenSurname)) {
-                JOptionPane.showMessageDialog(null, "Dane użytkowinika się nie zmieniły");
+                JOptionPane.showMessageDialog(null, "Dane pracownika " +getEmployeeName(id)+" "+getEmployeeSurname(id)+ " się nie zmieniły.");
             } else {
 
                 int response = JOptionPane.showConfirmDialog(null, "Czy na pewno chcesz zmodyfikować dane pracownika?", "Confirm", JOptionPane.YES_NO_OPTION);
@@ -380,11 +382,14 @@ public class SupervisorWgt extends Supervisor {
             return;
         }
         int id = getEmployeeId();
-        employeeAdmin.deleteEmployee(id);
-        txtNameEditEmpl.setText(null);
-        txtSurnameEditEmpl.setText(null);
-        fetchEmployees();
-        loadEmployees();
+        int response = JOptionPane.showConfirmDialog(null, "Czy na pewno chcesz zwolnić pracownika "+getEmployeeName(id)+" "+getEmployeeSurname(id)+"?", "Confirm", JOptionPane.YES_NO_OPTION);
+        if (response == JOptionPane.YES_OPTION) {
+            employeeAdmin.deleteEmployee(id);
+            txtNameEditEmpl.setText(null);
+            txtSurnameEditEmpl.setText(null);
+            fetchEmployees();
+            loadEmployees();
+        }else{return;}
     }
 
     private void promoteToSupervisor() {
@@ -473,6 +478,7 @@ public class SupervisorWgt extends Supervisor {
         String pointsCost = txtPointsCostNewLift.getText();
         int idSup = systemUser.getId();
         boolean state = checkStateNewLift.isSelected();
+        if(!name.matches("")) {JOptionPane.showMessageDialog(null,"Nazwa wyciągu nie może być pusta!");return;}
         if(!height.matches(onlyNumbersRegEx) || !pointsCost.matches(onlyNumbersRegEx)||height.matches("") ||pointsCost.matches("") ){
             JOptionPane.showMessageDialog(null,"Niedozwolone dane wejściowe. Wysokość i koszt powinny być liczbą!");
         }
@@ -485,6 +491,8 @@ public class SupervisorWgt extends Supervisor {
                     JOptionPane.showMessageDialog(panelMain, skiLiftAdmin.getLastError());
                     return;
                 }
+                loadSkiLifts();
+                skiLiftAdmin.fetchSkiLifts();
                 loadSkiLifts();
             }
         }
@@ -525,7 +533,7 @@ public class SupervisorWgt extends Supervisor {
             if (opcja == 0) {
                 String password = String.valueOf(pass.getPassword());
 
-                if (!employeeAdmin.checkSamePassword(supId, password)) {
+                if (!employeeAdmin.checkSamePassword(systemUser.getId(), password)) {
                     JOptionPane.showMessageDialog(null, "Hasło kierownika się nie zgadza");
                     return;
                 }
@@ -556,62 +564,81 @@ public class SupervisorWgt extends Supervisor {
         }
     }
 
-    private void saveLiftMod(){
+    private void saveLiftMod() {
         if (boxSelectEditLift.getSelectedIndex() == -1) {
             JOptionPane.showMessageDialog(null, "Nie wybrano żadnego wyciągu z listy.");
             return;
         }
-        int liftId=getLiftId();
-        String point=txtPointsCostEditLift.getText();
-        boolean givenState= checkStateEditLift.isSelected();
+        int liftId = getLiftId();
+        String point = txtPointsCostEditLift.getText();
+        boolean givenState = checkStateEditLift.isSelected();
         boolean state;
-        if(skiLiftAdmin.getSkiLiftState(liftId).matches("1")){state=true;}else{state=false;}
+        if (skiLiftAdmin.getSkiLiftState(liftId).matches("1")) {
+            state = true;
+        } else {
+            state = false;
+        }
 
-        if(point.matches(skiLiftAdmin.getSkiLiftPoints(liftId))&&(Boolean.compare(state,givenState))==0){
-            JOptionPane.showMessageDialog(null,"Nie wprowadzono żadnych zmian");
+        if (point.matches(skiLiftAdmin.getSkiLiftPoints(liftId)) && (Boolean.compare(state, givenState)) == 0) {
+            JOptionPane.showMessageDialog(null, "Nie wprowadzono żadnych zmian");
             return;
 
         }
-        if(!point.matches(onlyNumbersRegEx)){
-            JOptionPane.showMessageDialog(null,"Niedozwolone dane wejściowe. Liczba punktów powinna być liczbą!");
+        if (!point.matches(onlyNumbersRegEx)) {
+            JOptionPane.showMessageDialog(null, "Niedozwolone dane wejściowe. Liczba punktów powinna być liczbą!");
             return;
         }
         boolean pointsBool;
         boolean stateBool;
-        String state2="Włączony",state1="Włączony";
-        pointsBool = !point.matches(skiLiftAdmin.getSkiLiftPoints(liftId));
-        if(Boolean.compare(state,givenState)==1){
-            stateBool=true;
-            state1 = state ? "Włączony" : "Wyłaczony";
-            state2 = givenState ? "Włączony" : "Wyłączony";
-        }else{stateBool=false;}
-         int response = JOptionPane.showConfirmDialog(null,"Czy na pewno chcesz zmodyfikować dane wyciągu: "+skiLiftAdmin.getSkiLiftName(liftId)+"?" +
-                (pointsBool==false ? "" :"\nZmiana punktów z : "+skiLiftAdmin.getSkiLiftPoints(liftId)+" na "+point+".")+
-                (stateBool==false ? "" :"\nZmiana stanu z: "+state1+" na "+state2+"."), "Potwierdzenie", JOptionPane.YES_NO_OPTION);
-        if (response == JOptionPane.YES_OPTION) {
-            skiLiftAdmin.saveSkiLiftChanges(point, state, liftId);
-            JOptionPane.showMessageDialog(null,"Dane wyciągu zostały zmodyfikowane pomyślnie.");
-            skiLiftAdmin.fetchSkiLifts();
-            loadSkiLifts();
-            txtPointsCostEditLift.setText(null);
-            checkStateEditLift.setSelected(false);
+        String state2 = "Włączony", state1 = "Włączony";
+        if (!point.matches(skiLiftAdmin.getSkiLiftPoints(liftId))) {
+            pointsBool = true;
+        } else {
+            pointsBool = false;
+        }
+        if (!(Boolean.compare(state, givenState) == 0)) {
+            pointsBool = !point.matches(skiLiftAdmin.getSkiLiftPoints(liftId));
+            if (Boolean.compare(state, givenState) == 1) {
+                stateBool = true;
+                state1 = state ? "Włączony" : "Wyłaczony";
+                state2 = givenState ? "Włączony" : "Wyłączony";
+            } else {
+                stateBool = false;
+            }
+            int response = JOptionPane.showConfirmDialog(null, "Czy na pewno chcesz zmodyfikować dane wyciągu: " + skiLiftAdmin.getSkiLiftName(liftId) + "?" +
+                    (pointsBool == false ? "" : "\nZmiana punktów z : " + skiLiftAdmin.getSkiLiftPoints(liftId) + " na " + point + ".") +
+                    (stateBool == false ? "" : "\nZmiana stanu z: " + state1 + " na " + state2 + "."), "Potwierdzenie", JOptionPane.YES_NO_OPTION);
+            if (response == JOptionPane.YES_OPTION) {
+                String setState;
+                if (givenState == true) {
+                    setState = "1";
+                } else {
+                    setState = "0";
+                }
+                skiLiftAdmin.saveSkiLiftChanges(point, setState, liftId);
+                JOptionPane.showMessageDialog(null, "Dane wyciągu zostały zmodyfikowane pomyślnie.");
+                skiLiftAdmin.fetchSkiLifts();
+                loadSkiLifts();
+                txtPointsCostEditLift.setText(null);
+                checkStateEditLift.setSelected(false);
+            }
         }
     }
 
-    private void deleteSkiLift(){
-        if (boxSelectEditLift.getSelectedIndex() == -1) {
-            JOptionPane.showMessageDialog(null, "Nie wybrano żadnego wyciągu z listy.");
-            return;
-        }
-        int liftId=getLiftId();
-        int response = JOptionPane.showConfirmDialog(null,"Czy na pewno chcesz usunąć wyciąg "+skiLiftAdmin.getSkiLiftName(liftId)+"?", "Potwierdzenie", JOptionPane.YES_NO_OPTION);
-        if (response == JOptionPane.YES_OPTION) {
-        skiLiftAdmin.deleteSkiLift(liftId);
-        JOptionPane.showMessageDialog(null,"Wyciąg "+skiLiftAdmin.getSkiLiftName(liftId)+" został pomyślnie usunięty.");
-        skiLiftAdmin.fetchSkiLifts();
-        loadSkiLifts();
-        txtPointsCostEditLift.setText(null);
-        checkStateEditLift.setSelected(false);
+        private void deleteSkiLift () {
+            if (boxSelectEditLift.getSelectedIndex() == -1) {
+                JOptionPane.showMessageDialog(null, "Nie wybrano żadnego wyciągu z listy.");
+                return;
+            }
+            int liftId = getLiftId();
+            int response = JOptionPane.showConfirmDialog(null, "Czy na pewno chcesz usunąć wyciąg " + skiLiftAdmin.getSkiLiftName(liftId) + "?", "Potwierdzenie", JOptionPane.YES_NO_OPTION);
+            if (response == JOptionPane.YES_OPTION) {
+                skiLiftAdmin.deleteSkiLift(liftId);
+                JOptionPane.showMessageDialog(null, "Wyciąg " + skiLiftAdmin.getSkiLiftName(liftId) + " został pomyślnie usunięty.");
+                skiLiftAdmin.fetchSkiLifts();
+                loadSkiLifts();
+                txtPointsCostEditLift.setText(null);
+                checkStateEditLift.setSelected(false);
+            }
         }
     }
-}
