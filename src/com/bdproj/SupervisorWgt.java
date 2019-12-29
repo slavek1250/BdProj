@@ -489,6 +489,7 @@ private void addUser(){
         String pointsCost = txtPointsCostNewLift.getText();
         int idSup = systemUser.getId();
         boolean state = checkStateNewLift.isSelected();
+        if(!name.matches("")) {JOptionPane.showMessageDialog(null,"Nazwa wyciągu nie może być pusta!");return;}
         if(!height.matches(onlyNumbersRegEx) || !pointsCost.matches(onlyNumbersRegEx)||height.matches("") ||pointsCost.matches("") ){
             JOptionPane.showMessageDialog(null,"Niedozwolone dane wejściowe. Wysokość i koszt powinny być liczbą!");
             return;
@@ -498,6 +499,8 @@ private void addUser(){
             if(response==JOptionPane.YES_OPTION) {
                 skiLiftAdmin.addNewLift(name, height, pointsCost, state, idSup);
                 JOptionPane.showMessageDialog(null, "Dodano wyciąg");
+                skiLiftAdmin.fetchSkiLifts();
+                loadReports();
             }
             else{return;}
         }
@@ -538,7 +541,7 @@ private void addUser(){
             if (opcja == 0) {
                 String password = String.valueOf(pass.getPassword());
 
-                if (!employeeAdmin.checkSamePassword(supId, password)) {
+                if (!employeeAdmin.checkSamePassword(systemUser.getId(), password)) {
                     JOptionPane.showMessageDialog(null, "Hasło kierownika się nie zgadza");
                     return;
                 }
@@ -593,7 +596,7 @@ private void addUser(){
         boolean stateBool;
         String state2="Włączony",state1="Włączony";
         if(!point.matches(skiLiftAdmin.getSkiLiftPoints(liftId))){pointsBool=true;}else{pointsBool=false;}
-        if(Boolean.compare(state,givenState)==1){
+        if(!(Boolean.compare(state,givenState) ==0)){
             stateBool=true;
             if(state==true) { state1="Włączony"; }else{state1="Wyłaczony";}
             if (givenState==true){state2="Włączony";}else{state2="Wyłączony";}
@@ -602,7 +605,9 @@ private void addUser(){
                 (pointsBool==false ? "" :"\nZmiana punktów z : "+skiLiftAdmin.getSkiLiftPoints(liftId)+" na "+point+".")+
                 (stateBool==false ? "" :"\nZmiana stanu z: "+state1+" na "+state2+"."), "Potwierdzenie", JOptionPane.YES_NO_OPTION);
         if (response == JOptionPane.YES_OPTION) {
-            skiLiftAdmin.saveSkiLiftChanges(point, state, liftId);
+            String setState;
+            if(givenState==true){setState="1";}else{setState="0";}
+            skiLiftAdmin.saveSkiLiftChanges(point, setState, liftId);
             JOptionPane.showMessageDialog(null,"Dane wyciągu zostały zmodyfikowane pomyślnie.");
             skiLiftAdmin.fetchSkiLifts();
             loadReports();
