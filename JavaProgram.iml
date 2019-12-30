@@ -7,19 +7,14 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" name="mysql:mysql-connector-java:5.1.40" level="project" />
+    <orderEntry type="library" name="com.exec8:com.xianghy.itextpdf:1.8" level="project" />
     <orderEntry type="library" name="com.itextpdf:html2pdf:2.1.6" level="project" />
-    <orderEntry type="library" name="com.itextpdf.tool:xmlworker:5.5.13.1" level="project" />
     <orderEntry type="library" name="com.itextpdf:itextpdf:5.5.13" level="project" />
+    <orderEntry type="library" name="mysql:mysql-connector-java:5.1.40" level="project" />
     <orderEntry type="library" name="org.knowm.xchart:xchart:3.5.4" level="project" />
-    <orderEntry type="module-library" exported="">
-      <library>
-        <CLASSES>
-          <root url="jar://$USER_HOME$/Downloads/swingx-all-1.6.4.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES />
-      </library>
-    </orderEntry>
+    <orderEntry type="library" name="org.apache.servicemix.bundles:org.apache.servicemix.bundles.bcprov-jdk15on:1.55_2" level="project" />
+    <orderEntry type="library" name="com.itextpdf.tool:xmlworker:5.5.13.1" level="project" />
+    <orderEntry type="library" name="com.itextpdf:itext-pdfa:5.5.13" level="project" />
+    <orderEntry type="library" name="org.swinglabs.swingx:swingx-all:1.6.4" level="project" />
   </component>
 </module>

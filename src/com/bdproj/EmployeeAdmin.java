@@ -11,7 +11,6 @@ public class EmployeeAdmin {
 
     public EmployeeAdmin(SystemUser user) {
         systemUser = user;
-
     }
 
     public void addNewUser(String name, String surname, String username, String password) {
@@ -109,14 +108,11 @@ public class EmployeeAdmin {
                     if (zab == 1) {
                         JOptionPane.showMessageDialog(null, "Ten pracownik jest już zwolniony!");
                     } else {
-                        int response = JOptionPane.showConfirmDialog(null, "Czy na pewno chcesz zwolnić pracownika?", "Confirm", JOptionPane.YES_NO_OPTION);
-                        if (response == JOptionPane.YES_OPTION) {
                             String query1 = "UPDATE pracownicy SET zwolniony=1 WHERE id=?";
                             PreparedStatement ps1 = MySQLConnection.getConnection().prepareStatement(query1);
                             ps1.setInt(1, id);
                             int rs1 = ps1.executeUpdate();
 
-                        } else { return;}
                     }
                 }
 

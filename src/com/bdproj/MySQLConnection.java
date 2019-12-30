@@ -1,31 +1,31 @@
 package com.bdproj;
 
-import javax.naming.Context;
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
 import java.sql.*;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-public class MySQLConnection {
+/**
+ * Klasa odpowiedzialna za połączenie z bazą danych.
+ * @see MySQLConnParams
+ */
+public class MySQLConnection extends MySQLConnParams {
 
-    private static String databaseType = "jdbc:mysql";
-    private static String serverAddress = "mn16.webd.pl"; // localhost / mn16.webd.pl
-    private static int serverPort = 3306;
-    private static String database = "slavek_bd2";
-    private static String databaseUser = "slavek_bd2_user";
-    private static String databaseUserPass = "bd2@2020";
-    private static Connection connection = null;
-    private static String lastError;
+    private static String databaseType = "jdbc:mysql";  /**< Typ bazy danych. */
+    private static Connection connection = null;        /**< Obiekt połączenia z bazą danych. */
+    private static String lastError;                    /**< Opis ostatniego błędu. */
 
+    /**
+     * Metoda odpowiedzialna za zestawnienie połączenia z bazą danych.
+     * @return Zwraca true jeżeli ustanowiono połączenie.
+     */
     public static boolean prepareConnection() {
         try {
             if (connection == null || !connection.isValid(2)) {
                 connection = DriverManager.getConnection(
-                        (databaseType + "://" + serverAddress + ":" + serverPort + "/" + database +"?useUnicode=true&characterEncoding=UTF-8"),
-                        databaseUser,
-                        databaseUserPass
+                        (databaseType + "://" + getServerAddress() + ":" + getServerPort() + "/" + getDatabase() +"?useUnicode=true&characterEncoding=UTF-8"),
+                        getDatabaseUser(),
+                        getDatabaseUserPass()
                 );
             }
             return true;
@@ -36,14 +36,28 @@ public class MySQLConnection {
         return false;
     }
 
+    /**
+     * Getter.
+     * @return Zwraca obiekt połącznenia z bazą danych.
+     * @see prepareConnection()
+     */
     public static Connection getConnection() {
         return connection;
     }
 
+    /**
+     * Getter.
+     * @return Opis ostatniego błędu.
+     */
     public static String getLastError() {
         return lastError;
     }
 
+    /**
+     * Getter.
+     * @return Bieżący czas serwera bazy danych.
+     * @throws SQLException
+     */
     public static Date getServerTimestamp() throws SQLException {
         String sqlDateFormat = "%Y-%m-%d %H:%i:%s.%f";
         String javaDateFormat = "yyyy-MM-dd HH:mm:ss.SSS";

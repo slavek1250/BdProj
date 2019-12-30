@@ -12,6 +12,9 @@ import java.util.ArrayList;
 import java.util.EnumMap;
 
 /**
+ * Klasa służąca do generacji raportu użyć biletu.
+ * Raport zawiera:
+ *
  *                                                                  Data generacji raportu: yyyy-MM-dd hh:mm:ss
  *                                                                        Wygenerowano dla: Imie Nazwisko
  *
@@ -29,76 +32,138 @@ import java.util.EnumMap;
  *
  *      Przewyższenie całkowite: r metrów.
  *
- *      // sortowane malejąco,
- *      Wykres: wydane punkty, przewyższenie, z podzialem na wyciągi.
- *      Tabelka zawierająca dane z wykresu
+ *      Wyciąg          |   Wydane punkty   |   Przewyższenie
+ *      Wykres z przewyższeniami.
+ *
+ * @see HtmlReport
  */
 
 public class TicketUseReport implements HtmlReport {
 
+    /**
+     * Ścieżka do pliku z szablonem w HTML.
+     */
     private final String HTML_TEMPLATE_PATH = "reports/templates/TicketUseTemplate.html";
 
-    private SystemUser systemUser;
-    private Integer ticketId;
-    private String htmlReport = null;
-    private String lastError = null;
+    private SystemUser systemUser;      /**< Obiekt użytkownika systemu. */
+    private Integer ticketId;           /**< Numer id biletu. */
+    private String htmlReport = null;   /**< Raport sformatowany zgodnie z szablonem HTML. */
+    private String lastError = null;    /**< Opis ostatniego błędu. */
 
-    private final Integer ID_PARAM_POSITION = 1;
+    private final Integer ID_PARAM_POSITION = 1;    /**< Pozycja paramteru (numeru id biletu) w zapytaniach SQL. */
 
-    private enum Query1Enum { TIMESTAMP };
-    private EnumMap<Query1Enum, String> query1Map;
-    private final String QUERY_1_GENERATION_TIME_STAMP =
+    /**
+     * Nazwy atrybutów zwracanych przez zapytanie numer 1.
+     */
+    private enum Query1Enum {
+        TIMESTAMP   /**< Stempelczasowy generacji raportu. */
+    };
+    private EnumMap<Query1Enum, String> query1Map;          /**< Wyniki zapytania nr. 1. */
+    private final String QUERY_1_GENERATION_TIME_STAMP =    /**< Treść zapytania nr. 1. */
             "select DATE_FORMAT(now(), '%Y-%m-%d %H:%i:%s') as 'stempelczasowy';";
 
-
-    private enum Query2Enum { FIRST_TOP_UP, LAST_TOP_UP };
-    private EnumMap<Query2Enum, String> query2Map;
-    private final String QUERY_2_FIRST_LAST_TOP_UP =
+    /**
+     * Nazwy atrybutów zwracanych przez zapytanie numer 2.
+     */
+    private enum Query2Enum {
+        FIRST_TOP_UP,   /**< Data pierwszego doładowania. */
+        LAST_TOP_UP     /**< Data ostatniego doładowania. */
+    };
+    private EnumMap<Query2Enum, String> query2Map;          /**< Wyniki zapytania nr. 2. */
+    private final String QUERY_2_FIRST_LAST_TOP_UP =        /**< Treść zapytania nr. 2. */
             "select DATE_FORMAT(min(stempelczasowy), '%Y-%m-%d %H:%i:%s') as 'zakup_biletu', DATE_FORMAT(max(stempelczasowy), '%Y-%m-%d %H:%i:%s') as 'ost_dolad'\n" +
             "from hist_dolad h where h.karnet_id = ? group by h.karnet_id;";
 
-    private enum Query3Enum { PRICE_LIST_POSITION_ID, PRICE_LIST_POSITION_NAME, UNIT_PRICE, TOP_UPS_NUMBER, POINTS_COUNT, AMOUNT };
-    private ArrayList<EnumMap<Query3Enum, String>> query3ListOfMaps;
-    private final String QUERY_3_TOP_UPS_BY_PRICE_LIST_POSITION =
+    /**
+     * Nazwy atrybutów zwracanych przez zapytanie numer 3.
+     */
+    private enum Query3Enum {
+        PRICE_LIST_POSITION_ID,     /**< Numer id pozycji cennika. */
+        PRICE_LIST_POSITION_NAME,   /**< Nazwa pozycji cennika. */
+        UNIT_PRICE,                 /**< Cena jednostkowa. */
+        TOP_UPS_NUMBER,             /**< Liczba doładowań. */
+        POINTS_COUNT,               /**< Suma zakupionych punktów. */
+        AMOUNT                      /**< Wydana kwota pieniędzy. */
+    };
+    private ArrayList<EnumMap<Query3Enum, String>> query3ListOfMaps;    /**< Wyniki zapytania nr. 3. */
+    private final String QUERY_3_TOP_UPS_BY_PRICE_LIST_POSITION =       /**< Treść zapytania nr. 3. */
             "select h.poz_cennik_id, sc.nazwa, c.cena as 'cena_jedn', count(*) as 'l_dolad', sum(h.l_pkt) as 'suma_pkt', sum(c.cena * h.l_pkt) as 'kwota'\n" +
             "from hist_dolad h join poz_cennik c on h.poz_cennik_id = c.id join slownik_cennik sc on c.slownik_cennik_id = sc.id\n" +
             "where h.karnet_id = ? group by h.poz_cennik_id, sc.nazwa, c.cena;";
 
-    private enum Query4Enum { TICKET_BALANCE };
-    private EnumMap<Query4Enum, String> query4Map;
-    private final String QUERY_4_TICKET_BALANCE =
-            "select ( select sum(hd.l_pkt) from hist_dolad hd where hd.karnet_id = k.id)-\n" +
-                 "\t(select sum(wd.koszt_pkt) from uzycia_karnetu uk join wyciag_dane wd on uk.wyciag_dane_id = wd.id where uk.karnet_id = k.id) as 'l_pkt'\n" +
-            "from karnet k where k.id = ?;";
+    /**
+     * Nazwy atrybutów zwracanych przez zapytanie numer 4.
+     */
+    private enum Query4Enum {
+        TICKET_BALANCE          /**< Stan punktów biletu. */
+    };
+    private EnumMap<Query4Enum, String> query4Map;          /**< Wyniki zapytania nr. 4. */
+    private final String QUERY_4_TICKET_BALANCE =           /**< Treść zapytania nr. 4. */
+            "select (case when kupione is null then 0 else kupione end) - (case when wydane is null then 0 else wydane end) as l_pkt\n" +
+                    "from ( select ( select sum(hd.l_pkt) from hist_dolad hd where hd.karnet_id = k.id) as kupione,\n" +
+                    "(select sum(wd.koszt_pkt) from uzycia_karnetu uk join wyciag_dane wd on uk.wyciag_dane_id = wd.id where uk.karnet_id = k.id) as wydane\n" +
+            "from karnet k where k.id = ? ) as tmp;";
 
-    private enum Query5Enum { TOTAL_USE_COUNT, TOTAL_POINTS_SPENT, TOTAL_HEIGHT };
-    private EnumMap<Query5Enum, String> query5Map;
-    private final String QUERY_5_TOTAL_USE_COUNT_POINTS_SPEND_HEIGHT =
+    /**
+     * Nazwy atrybutów zwracanych przez zapytanie numer 5.
+     */
+    private enum Query5Enum {
+        TOTAL_USE_COUNT,        /**< Całkowita liczba użyć biletu. */
+        TOTAL_POINTS_SPENT,     /**< Całkowita libcza wydanych punktów. */
+        TOTAL_HEIGHT            /**< Całkowite przewyższenie. */
+    };
+    private EnumMap<Query5Enum, String> query5Map;                      /**< Wyniki zapytania nr. 5. */
+    private final String QUERY_5_TOTAL_USE_COUNT_POINTS_SPEND_HEIGHT =  /**< Treść zapytania nr. 5. */
             "select count(uk.id) as 'l_uzyc', sum(wd.koszt_pkt) as 'wydane_pkt', sum(w.wysokosc) as 'przewyz_calk'\n" +
             "from uzycia_karnetu uk join wyciag_dane wd on uk.wyciag_dane_id = wd.id join wyciag w on wd.wyciag_id = w.id\n" +
             "where uk.karnet_id = ? group by uk.karnet_id;";
 
-    private enum Query6Enum { SKI_LIFT_ID, SKI_LIFT_NAME, USE_COUNT_SINGLE_LIFT, POINTS_SPENT_SINGLE_LIFT, HEIGHT_SINGLE_LIFT };
-    private ArrayList<EnumMap<Query6Enum, String>> query6ListOfMaps;
-    private final String QUERY_6_USE_COUNT_POINTS_SPEND_HEIGHT_BY_SKI_LIFT =
+    /**
+     * Nazwy atrybutów zwracanych przez zapytanie numer 6.
+     */
+    private enum Query6Enum {
+        SKI_LIFT_ID,                /**< Numer id wyciągu. */
+        SKI_LIFT_NAME,              /**< Nazwa wyciągu. */
+        USE_COUNT_SINGLE_LIFT,      /**< Libcza użyć wyciągu. */
+        POINTS_SPENT_SINGLE_LIFT,   /**< Punkty wydane na wyciągu. */
+        HEIGHT_SINGLE_LIFT          /**< Całkowite przewyższenie na wyciągu. */
+    };
+    private ArrayList<EnumMap<Query6Enum, String>> query6ListOfMaps;            /**< Wyniki zapytania nr. 6. */
+    private final String QUERY_6_USE_COUNT_POINTS_SPEND_HEIGHT_BY_SKI_LIFT =    /**< Treść zapytania nr. 6. */
             "select w.id, w.nazwa, count(*) as 'l_zjad', sum(wd.koszt_pkt) as 'wydane_pkt', sum(w.wysokosc) as 'przewyz'\n" +
             "from uzycia_karnetu uk join wyciag_dane wd on uk.wyciag_dane_id = wd.id join wyciag w on wd.wyciag_id = w.id\n" +
-            "where uk.karnet_id = ? group by w.id, w.nazwa order by sum(w.wysokosc);";
+            "where uk.karnet_id = ? group by w.id, w.nazwa order by sum(w.wysokosc) desc;";
 
-
+    /**
+     * Domyślny konstruktor.
+     * @param user Obiekt użytkownika systemu.
+     */
     public TicketUseReport(SystemUser user) {
         systemUser = user;
     }
 
+    /**
+     * Getter.
+     * @return Zwraca raport sformatowany zgodnie z szablonem HTML.
+     */
     @Override
     public String getHtmlReport() {
         return htmlReport;
     }
 
+    /**
+     * Getter.
+     * @return Zwraca opis ostatniego błędu.
+     */
     public String getLastError() {
         return lastError;
     }
 
+    /**
+     * Metoda odpowiedzialna za generację raportu.
+     * @param ticketId Numer id biletu.
+     * @return Zwraca true jeżeli operacja zakończyła się pomyślnie.
+     */
     public boolean generateReport(Integer ticketId) {
 
         this.ticketId = ticketId;
@@ -163,7 +228,7 @@ public class TicketUseReport implements HtmlReport {
         //query6ListOfMaps.stream().map(i -> Integer.parseInt(i.get(Query6Enum.POINTS_SPENT_SINGLE_LIFT))).forEach(yData1::add);
         query6ListOfMaps.stream().map(i -> Double.parseDouble(i.get(Query6Enum.HEIGHT_SINGLE_LIFT))).forEach(yData2::add);
 
-        ReportChart reportChart = new ReportChart("Statystyki dla wyciągów", "Nazwa wyciągu", "");
+        ReportChart reportChart = new ReportChart("\"Wykres przewyższeń z podziałem na wyciągi.", "Nazwa wyciągu", "");
         //reportChart.addSeries("Wydane punkty", xData, yData1);
         reportChart.addSeries("Przewyższenie", xData, yData2);
         if(!reportChart.saveAs(chartFileName)) {
@@ -175,6 +240,10 @@ public class TicketUseReport implements HtmlReport {
         return true;
     }
 
+    /**
+     * Metoda walidująca czy numer id biletu istnieje w bazie.
+     * @return Zwraca true jeżeli istnieje bilet o podanym numerze id.
+     */
     private boolean isExistingId() {
         if(!MySQLConnection.prepareConnection()) {
             lastError = MySQLConnection.getLastError();
@@ -197,6 +266,10 @@ public class TicketUseReport implements HtmlReport {
         return false;
     }
 
+    /**
+     * Metoda odpowiedzialna za pobranie wszystkich danych potrzebych do raportu z bazy.
+     * @return Zwraca true jeżeli operacja zakończyła się pomyślnie.
+     */
     private boolean fetchAllData() {
 
         if(!MySQLConnection.prepareConnection()) {

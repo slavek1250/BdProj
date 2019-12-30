@@ -1,13 +1,5 @@
 package com.bdproj;
 
-import javafx.util.Pair;
-import org.knowm.xchart.*;
-import org.knowm.xchart.style.Styler;
-import org.knowm.xchart.style.colors.ChartColor;
-
-import javax.swing.*;
-import javax.swing.text.Document;
-import java.awt.*;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -20,90 +12,154 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.EnumMap;
-import java.util.Locale;
 
 /**
+ * Klasa służąca do generacji raportu użyć wyciągów.
+ * Raport zawiera:
+ *
  *                                                                  Data generacji raportu: yyyy-MM-dd hh:mm:ss
  *                                                                        Wygenerowano dla: Imie Nazwisko
  *
  *
- *                                                    Raport użyć biletu
+ *                                                    Raport użyć wyciągu
  *
  *      Nazwa wyciągu: nazwa.
  *      Numer id wyciągu: id.
- *      Początek okresu zawartego w raporcie: yyyy-MM-dd hh:mm:ss [początek istnienia]
+ *      Początek okresu zawartego w raporcie: yyyy-MM-dd hh:mm:ss
  *      Koniec raportowanego okresu: yyyy-MM-dd hh:mm:ss
  *
  *      W tym okresie skorzystano z wyciągu: n raz[y].
- *      Wyciąg zarobił: n pkt.
- *      Szacowana kwota: m zł.
+ *      Wyciąg zarobił: m pkt.
+ *      Szacowana kwota: o zł.
  *
  *      Czas    |   Liczba użyć     |   Liczba punktów     |   Szacowana kwota
  *
- *
+ * @see HtmlReport
  */
-
 public class SkiLiftUseReport implements HtmlReport {
 
+    /**
+     * Format daty.
+     */
     private final DateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
-    private final Pair<String, String> GROUP_BY_HOUR = new Pair<>("%H", "Godzina");
-    private final Pair<String, String> GROUP_BY_DAY = new Pair<>("%Y-%m-%d", "Dzień");
-    private final Pair<String, String> GROUP_BY_MONTH = new Pair<>("%Y-%m", "Miesiąc");
-    private final Pair<String, String> GROUP_BY_YEAR = new Pair<>("%Y", "Rok");
 
-    // by hour
-    private final long MORE_THAN_A_DAY = 24 * 60 * 60 * 1000; // by day
-    private final long MORE_THAN_A_MONTH = MORE_THAN_A_DAY * 31; // by month
-    private final long MORE_THAN_AN_YEAR = MORE_THAN_A_DAY * 365; // by year
+    /**
+     * Generowany raport zawiera dane grupowane względem podstaw czasowych wybieranych zależnie od okresu jakiego dotyczy raport.
+     */
+    enum TimeBaseEnum {
+        HOUR,   /**< Grupowanie względem godzin jeżeli raport dotyczy konkretnego dnia. */
+        DAY,    /**< Grupowanie względem dni jeżeli raportowany okres jest krótszy niż 30 dni. */
+        MONTH,  /**< Grupowanie względem miesięcy jeżeli raportowany okres jest dłuższy niż 30 dni i krótszy niż rok. */
+        YEAR    /**< Grupowanie względem lat jeżeli raportowany okres jest dłuższy niż 365 dni. */
+    };
+    EnumMap<TimeBaseEnum, String> timeBaseNames;    /**< Nazwy podstaw czasowych. */
+    EnumMap<TimeBaseEnum, String> timeBaseGroupBy;  /**< Wartości podstaw czasowych do grupowania w zapytaniu SQL. */
 
+    private final long MORE_THAN_A_DAY = 24 * 60 * 60 * 1000;       /**< Liczba milisekund w jednym dniu. */
+    private final long MORE_THAN_A_MONTH = MORE_THAN_A_DAY * 30;    /**< Liczba milisekund w jednym miesiącu. */
+    private final long MORE_THAN_AN_YEAR = MORE_THAN_A_DAY * 365;   /**< Liczba milisekund w jednym roku. */
+
+    /**
+     * Ścieżka do szblonu raportu w HTML.
+     */
     private final String HTML_TEMPLATE_PATH = "reports/templates/SkiLiftUseTemplate.html";
 
-    private enum Query1Enum { TIMESTAMP };
-    private EnumMap<Query1Enum, String> query1Map;
-    private final String QUERY_1_TIMESTAMP =
+    /**
+     * Dane zwracane przez zapytanie pierwsze.
+     */
+    private enum Query1Enum {
+        TIMESTAMP   /**< Stempelczasowy generacji raportu. */
+    };
+    private EnumMap<Query1Enum, String> query1Map;                              /**< Wyniki zapytania pierwszego. */
+    private final String QUERY_1_TIMESTAMP =                                    /**< Treść zapytania pierwszego. */
             "select DATE_FORMAT(now(), '%Y-%m-%d %H:%i:%s') as 'stempelczasowy';";
 
-    private enum Query2Enum { TOTAL_USE_COUNT, TOTAL_POINTS_SPENT, TOTAL_AMOUNT };
-    private EnumMap<Query2Enum, String> query2Map;
-    private final String QUERY_2_TOTAL_USE_COUNT_POINTS_SPENT_AMOUNT =
-            "select count(*) as l_uzyc, sum(wd.koszt_pkt) as wydano_pkt, (sum(wd.koszt_pkt) * (select sum(pc.cena * hd.l_pkt) / sum(hd.l_pkt) from hist_dolad hd join poz_cennik pc on hd.poz_cennik_id = pc.id)) as kwota\n" +
+    /**
+     * Dane zwracane przez zapytanie drugie.
+     */
+    private enum Query2Enum {
+        TOTAL_USE_COUNT,        /**< Całkowita liczba użyć wyciągu. */
+        TOTAL_POINTS_SPENT,     /**< Całkowita liczba wydanych punktów. */
+        TOTAL_AMOUNT            /**< Całkowita szacowana kwota zarobionych pieniędzy. */
+    };
+    private EnumMap<Query2Enum, String> query2Map;                              /**< Wyniki zapytania drugiego. */
+    private final String QUERY_2_TOTAL_USE_COUNT_POINTS_SPENT_AMOUNT =          /**< Treść zapytania drugiego. */
+            "select count(*) as l_uzyc, sum(wd.koszt_pkt) as wydano_pkt, round((sum(wd.koszt_pkt) * (select sum(pc.cena * hd.l_pkt) / sum(hd.l_pkt) from hist_dolad hd join poz_cennik pc on hd.poz_cennik_id = pc.id)), 2) as kwota\n" +
             "from wyciag_dane wd join uzycia_karnetu uk on wd.id = uk.wyciag_dane_id\n" +
             "where wd.wyciag_id = ? and uk.stempelczasowy >= ? and uk.stempelczasowy < ?;";
 
-    private String query3GroupBy = null;
-    private enum Query3Enum { TIME, USE_COUNT, POINTS_SPENT, AMOUNT }
-    private ArrayList<EnumMap<Query3Enum, String>> query3ListOfMaps;
-    private final String QUERY_3_USE_COUNT_POINTS_SPENT_AMOUNT_BY_SKI_LIFT =
+    /**
+     * Dane zwracane przez zapytanie trzecie.
+     */
+    private enum Query3Enum {
+        TIME,                   /**< Czas zgrupowanych danych. */
+        USE_COUNT,              /**< Liczba użyć. */
+        POINTS_SPENT,           /**< Liczba wydanych punktów. */
+        AMOUNT                  /**< Szacowana zarobiona kwota. */
+    }
+    private ArrayList<EnumMap<Query3Enum, String>> query3ListOfMaps;            /**< Wyniki zapytania trzeciego. */
+    private String query3GroupBy = null;                                        /**< Podstawa czasowa do grupowania danych. */
+    private final String QUERY_3_USE_COUNT_POINTS_SPENT_AMOUNT_BY_SKI_LIFT =    /**< Treść zapytania trzeciego. */
             "select DATE_FORMAT(uk.stempelczasowy, ?) as okres,\n" +
-            "count(*) as l_uzyc, sum(wd.koszt_pkt) as wydano_pkt, (sum(wd.koszt_pkt) * (select sum(pc.cena * hd.l_pkt) / sum(hd.l_pkt) from hist_dolad hd join poz_cennik pc on hd.poz_cennik_id = pc.id)) as kwota\n" +
+            "count(*) as l_uzyc, sum(wd.koszt_pkt) as wydano_pkt, round((sum(wd.koszt_pkt) * (select sum(pc.cena * hd.l_pkt) / sum(hd.l_pkt) from hist_dolad hd join poz_cennik pc on hd.poz_cennik_id = pc.id)), 2) as kwota\n" +
             "from wyciag_dane wd join uzycia_karnetu uk on wd.id = uk.wyciag_dane_id\n" +
             "where wd.wyciag_id = ? and uk.stempelczasowy >= ? and uk.stempelczasowy < ? group by okres order by okres;";
 
-    private Integer skiLiftId;
-    private String timeBegin;
-    private String timeEnd;
+    private Integer skiLiftId;      /**< Numer id wyciągu. */
+    private String timeBegin;       /**< Data początku raportowanego okresu. */
+    private String timeEnd;         /**< Data końca raportowanego okersu. */
 
-    private SystemUser systemUser;
-    private String htmlReport = null;
-    private String lastError;
+    private SystemUser systemUser;  /**< Obiekt obecnie zalogowanego użytkownika systemu. */
+    private String htmlReport = null;   /**< Raport sformatowany w HTML. */
+    private String lastError;           /**< Opis ostatniego błędu. */
 
+    /**
+     * Domyślny konstruktor.
+     * @param user Obiekt obecnie zalogowanego użytkownika.
+     */
     SkiLiftUseReport(SystemUser user) {
         systemUser = user;
+        timeBaseNames = new EnumMap<>(TimeBaseEnum.class);
+        timeBaseGroupBy = new EnumMap<>(TimeBaseEnum.class);
+        timeBaseNames.put(TimeBaseEnum.HOUR, "Godzina");
+        timeBaseGroupBy.put(TimeBaseEnum.HOUR, "%H");
+        timeBaseNames.put(TimeBaseEnum.DAY, "Dzień");
+        timeBaseGroupBy.put(TimeBaseEnum.DAY, "%Y-%m-%d");
+        timeBaseNames.put(TimeBaseEnum.MONTH, "Miesiąc");
+        timeBaseGroupBy.put(TimeBaseEnum.MONTH, "%Y-%m");
+        timeBaseNames.put(TimeBaseEnum.YEAR, "Rok");
+        timeBaseGroupBy.put(TimeBaseEnum.YEAR, "%Y");
     }
 
+    /**
+     * Getter.
+     * @return Zwraca wygenerowany raport sformatowany w HTML.
+     */
     @Override
     public String getHtmlReport() {
         return htmlReport;
     }
 
+    /**
+     * Getter.
+     * @return Zwraca opis ostatniego błędu.
+     */
     public String getLastError() {
         return lastError;
     }
 
+    /**
+     * Metoda generująca raport w HTML.
+     * @param skiLiftId Numer id wyciągu.
+     * @param skiLiftName Nazwa wyciągu.
+     * @param begin Data początku raportowanego okresu.
+     * @param end Data końca raportowanego okersu.
+     * @return Zwraca true jeżeli operacja zakończyła się sukcesem.
+     */
     public boolean generateReport(Integer skiLiftId, String skiLiftName, Date begin, Date end) {
 
-        Pair<String, String> currentTimeBase = getTimeUnitToGroupBy(begin, end);
-        query3GroupBy = currentTimeBase.getKey();
+        TimeBaseEnum currentTimeBase = getTimeUnitToGroupBy(begin, end);
+        query3GroupBy = timeBaseGroupBy.get(currentTimeBase);
         timeBegin = DATE_FORMAT.format(begin);
         timeEnd = DATE_FORMAT.format(end);
         this.skiLiftId = skiLiftId;
@@ -147,7 +203,7 @@ public class SkiLiftUseReport implements HtmlReport {
                 ))
                 .forEach(sb::append);
 
-        htmlReport = htmlReport.replace("$time_base", currentTimeBase.getValue());
+        htmlReport = htmlReport.replace("$time_base", timeBaseNames.get(currentTimeBase));
         htmlReport = htmlReport.replace("$table_1_content", sb.toString());
 
         // wykres
@@ -160,7 +216,7 @@ public class SkiLiftUseReport implements HtmlReport {
         query3ListOfMaps.stream().map(i -> Integer.parseInt(i.get(Query3Enum.POINTS_SPENT))).forEach(yData1::add);
         query3ListOfMaps.stream().map(i -> Double.parseDouble(i.get(Query3Enum.AMOUNT))).forEach(yData2::add);
 
-        ReportChart reportChart = new ReportChart("Statystyki", currentTimeBase.getValue(), "");
+        ReportChart reportChart = new ReportChart("Wykres punktów, oraz przybliżonych kwot wydanych na bieżącym wyciągu.", timeBaseNames.get(currentTimeBase), "");
         reportChart.addSeries("Punkty", xData, yData1);
         reportChart.addSeries("Kwota [zł]", xData, yData2);
         if(!reportChart.saveAs(chartFileName)) {
@@ -172,7 +228,10 @@ public class SkiLiftUseReport implements HtmlReport {
         return true;
     }
 
-
+    /**
+     * Metoda pobierająca z bazy danych wszystkie dane potrzebne do stworzenia raportu.
+     * @return Zwraca true jeżeli operacja zakończyła się sukcesem.
+     */
     private boolean fetchAllData() {
 
         if(!MySQLConnection.prepareConnection()) {
@@ -225,17 +284,23 @@ public class SkiLiftUseReport implements HtmlReport {
         return false;
     }
 
-    private Pair<String, String> getTimeUnitToGroupBy(Date begin, Date end) {
+    /**
+     * Metoda ustalająca podstawę czasową raportu.
+     * @param begin Data początku raportowanego okresu.
+     * @param end Data końca raportowanego okersu.
+     * @return Numer id podstawy czasowej.
+     */
+    private TimeBaseEnum getTimeUnitToGroupBy(Date begin, Date end) {
         long difference = end.getTime() - begin.getTime();
         if(difference > MORE_THAN_AN_YEAR) {
-            return GROUP_BY_YEAR;
+            return TimeBaseEnum.YEAR;
         }
         else if (difference > MORE_THAN_A_MONTH) {
-            return GROUP_BY_MONTH;
+            return TimeBaseEnum.MONTH;
         }
         else if(difference > MORE_THAN_A_DAY) {
-            return GROUP_BY_DAY;
+            return TimeBaseEnum.DAY;
         }
-        return GROUP_BY_HOUR;
+        return TimeBaseEnum.HOUR;
     }
 }

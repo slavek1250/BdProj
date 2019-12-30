@@ -4,42 +4,75 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+/**
+ * Klasa użytkownika systemu.
+ */
 public class SystemUser {
 
-    // TODO: Sprawdzanie czy pracownik nie zostal zawolniony #Karol# !!DONE!!
-
+    /**
+     * Typ użytkownika systemu.
+     */
     public enum UserType {
-        UNREGISTERED,
-        EMPLOYEE,
-        SUPERVISOR
+        UNREGISTERED,   /**< Uzytkownik niezarejestrowany. */
+        EMPLOYEE,       /**< Zwykły pracownik. */
+        SUPERVISOR      /**< Kierownik. */
     }
 
-    private String lastError;
-    private String name, surname;
-    private String newName, newSurname;
-    private int id = -1;
-    private UserType userType = UserType.UNREGISTERED;
+    private String lastError;                           /**< Opis ostatniego błędu. */
+    private String name, surname;                       /**< Imię i nazwisko użytkownika systemu. */
+    private String newName, newSurname;                 /**< Zmodyfikowane imię i nazwisko. */
+    private int id = -1;                                /**< Numer id użytkownika systemu. */
+    private UserType userType = UserType.UNREGISTERED;  /**< Typ użytkownika systemu. */
 
+    /**
+     * Getter.
+     * @return Zwraca imię użytkownika systemu.
+     */
     public String getName() {
         return name;
     }
 
+    /**
+     * Getter.
+     * @return Zwraca nazwisko użytkownika systemu.
+     */
     public String getSurname() {
         return surname;
     }
 
+    /**
+     * Getter.
+     * @return Zwraca numer id użytkownika systemu.
+     */
     public int getId() {
         return id;
     }
 
+    /**
+     * Getter.
+     * @return Zwraca opis ostatniego błędu.
+     */
     public String getLastError() {
         return lastError;
     }
 
+    /**
+     * Getter.
+     * @return Zwraca typ użytkownika systemu.
+     */
     public UserType getUserType() {
         return userType;
     }
 
+    /**
+     * Metoda logowania.
+     *  - Sprawdza czy użytkownik o podanym loginie i haśle istnieje w systemie i jest niezwolniony.
+     *  - Jeżeli istnieje użytkownik w bazie to ustala czy jest on kierownikiem czy pracownikiem.
+     * @param login Login użytkownika.
+     * @param password Hasło użytkownika.
+     * @return Typ użytkownika systemu.
+     * @see logOut()
+     */
     public UserType logIn(String login, String password) {
 
         PreparedStatement ps;
@@ -85,6 +118,10 @@ public class SystemUser {
         return userType;
     }
 
+    /**
+     * Metoda wylogowywująca użytkownika.
+     * @see logIn()
+     */
     public void logOut() {
         id = -1;
         name = "";
@@ -92,14 +129,29 @@ public class SystemUser {
         userType = UserType.UNREGISTERED;
     }
 
+    /**
+     * Metoda aktualizująca imię użytkownika.
+     * @param name Nowe imie.
+     * @see commitChanges()
+     */
     public void updateName(String name) {
         newName = name;
     }
 
+    /**
+     * Metoda aktualizująca nazwisko użytkownika.
+     * @param surname Nowe nazwisko.
+     * @see commitChanges()
+     */
     public void updateSurname(String surname) {
         newSurname = surname;
     }
 
+    /**
+     * Metoda zapisująca do bazy danych zmienione dane użytkownika.
+     * Prawo do aktualizacji sowich danych posiadają użytkownicy należący do grupy kierowników.
+     * @return Zwraca true jeżeli operacja zakończyła się sukcesem.
+     */
     public boolean commitChanges() {
 
         if(newName.isEmpty() && newSurname.isEmpty()) {
@@ -135,6 +187,14 @@ public class SystemUser {
         return false;
     }
 
+    /**
+     * Metoda odpowiedzialna za ustawinie flagi w bazie że kierownik się zwolnił z pracy.
+     * Prawo do wykonania tej metody posiadają użytkownicy należący do grupy kierowników.
+     * Przed ustawnienim flagi sprawdzane jest czy:
+     *  - kierownik ma pod sobą jakiegokolwiek pracownika, jeżeli tak anuluje operację.
+     *  - kierownik jest jedynym zarzadcą jakiegokolwiek wyciągu, jeżeli tak anuluje operację.
+     * @return Zwraca true jeżeli wykonywanie operacji zakończyło się sukecesem.
+     */
     public boolean quitJob() {
 
         String query1 = "select z1.wyciag_id, w.nazwa\n" +

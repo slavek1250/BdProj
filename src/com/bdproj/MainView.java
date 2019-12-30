@@ -1,7 +1,11 @@
 package com.bdproj;
 
-import javax.swing.*;
-
+/**
+ * Interfejs widoku głównego programu.
+ */
 public interface MainView {
+    /**
+     * Metoda odpowiedzialna za wyświetlanie widoku głównego programu.
+     */
     void showMainView();
 }
