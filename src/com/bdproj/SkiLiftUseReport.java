@@ -33,6 +33,8 @@ import java.util.EnumMap;
  *      Szacowana kwota: o zł.
  *
  *      Czas    |   Liczba użyć     |   Liczba punktów     |   Szacowana kwota
+ *
+ * @see HtmlReport
  */
 public class SkiLiftUseReport implements HtmlReport {
 

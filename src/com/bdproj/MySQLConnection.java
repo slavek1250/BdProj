@@ -7,6 +7,7 @@ import java.util.Date;
 
 /**
  * Klasa odpowiedzialna za połączenie z bazą danych.
+ * @see MySQLConnParams
  */
 public class MySQLConnection extends MySQLConnParams {
 

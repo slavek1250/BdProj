@@ -28,8 +28,6 @@ public class SupervisorWgt extends Supervisor {
     private JButton btnDeleteLift;
     private JButton btnSaveEditLift;
     private JComboBox boxLiftRepSelect;
-    private JTextField txtLiftRepSince;
-    private JTextField txtLiftRepTo;
     private JButton btnLogout;
     private JTextField txtPointsCostNewLift;
     private JTextField txtTicketUseRepNo;

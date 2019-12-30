@@ -10,6 +10,7 @@ import java.util.EnumMap;
 
 /**
  * Klasa generująca wydruk cennika sformatowanego zgodnie z szablonem HTML.
+ * @see HtmlReport
  */
 public class PriceListPrint implements HtmlReport {
 

@@ -5,20 +5,35 @@ import java.awt.event.WindowEvent;
 import java.awt.Dimension;
 import java.awt.Toolkit;
 
+/**
+ * Klasa główna GUI.
+ * @see MainView
+ */
 public class MainWin implements MainView {
 
-    private static JFrame frame;
-    private static SystemUser systemUser;
-    private JButton btnLogin;
-    private JPanel panelMain;
-    private JTextField txtLogin;
-    private JPasswordField txtPass;
+    private static JFrame frame;            /**< Ramka do wyświetlania GUI. */
+    private JPanel panelMain;               /**< Panel główny. */
+    private JTextField txtLogin;            /**< Pole tekstowe loginu. */
+    private JPasswordField txtPass;         /**< Pole tekstowa hasła. */
+    private JButton btnLogin;               /**< Przycisk logowania. */
+    private static SystemUser systemUser;   /**< Obiekt użytkownika systemu. */
+    /**
+     * Wymiary okna.
+     */
     static Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 
+    /**
+     * Domyślny konstruktor.
+     */
     private MainWin() {
         btnLogin.addActionListener(actionEvent -> logIn());
     }
 
+    /**
+     * Metoda służąca do wyświetlania widoku głównego (ekranu logowania).
+     * @see MainView
+     */
+    @Override
     public void showMainView() {
         frame.setSize(300, 250);
         frame.setLocation(screenSize.width/2-frame.getSize().width/2,screenSize.height/2-frame.getSize().height/2);
@@ -28,6 +43,9 @@ public class MainWin implements MainView {
         txtPass.setText("");
     }
 
+    /**
+     * Metoda wyświetlająca widok kierownika.
+     */
     private void showSupervisorView() {
         frame.setSize(470, 680);
         frame.setLocation(screenSize.width/2-frame.getSize().width/2,screenSize.height/2-frame.getSize().height/2);
@@ -35,6 +53,9 @@ public class MainWin implements MainView {
         showAnotherPanel(supervisorWgt.getPanel());
     }
 
+    /**
+     * Metoda wyświetlająca widok pracownika.
+     */
     private void showEmployeeView() {
         frame.setSize(370, 400);
         frame.setLocation(screenSize.width/2-frame.getSize().width/2,screenSize.height/2-frame.getSize().height/2);
@@ -42,12 +63,21 @@ public class MainWin implements MainView {
         showAnotherPanel(employeeWgt.getPanel());
     }
 
+    /**
+     * Metoda wyświelająca zadany panel.
+     * @param toShow Panel do wyświetlenia w ramce.
+     */
     private static void showAnotherPanel(JPanel toShow) {
         frame.remove(frame.getContentPane());
         frame.setContentPane(toShow);
         toShow.updateUI();
     }
 
+    /**
+     * Metoda odpowiedzialna za logowanie.
+     *  - Sprawdza czy użytkownik istnieje.
+     *  - Wyświetla odpowiedni widok w zależności do której grupy należy użytkownik.
+     */
     private void logIn(){
         String loginRegEx = "^[a-z]{6}[0-9]{4}$";
         String login= txtLogin.getText();
@@ -75,6 +105,10 @@ public class MainWin implements MainView {
         }
     }
 
+    /**
+     * Główna metoda programu. Punkt wejściowy.
+     * @param args Argumenty uruchomieniowe programu.
+     */
     public static void main(String[] args) {
         frame = new JFrame("Wyciąg Narciarski u Skoczka");
         systemUser = new SystemUser();

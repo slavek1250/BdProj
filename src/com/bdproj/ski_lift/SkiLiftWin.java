@@ -10,6 +10,7 @@ import java.util.ArrayList;
 
 /**
  * Klasa GUI służącego do rejestracji użyć wyciągów.
+ * @see SkiLiftUse
  */
 public class SkiLiftWin extends SkiLiftUse {
 
