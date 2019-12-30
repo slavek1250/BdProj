@@ -70,7 +70,7 @@ public class Supervisor {
 
     /**
      * Getter.
-     * @param id Numer id kieronika.
+     * @param id Numer id kierownika.
      * @return Nazwisko kierownika, jeżeli brak kierownika o podanym numerze id zwraca "".
      * @see fetchSupervisors()
      */

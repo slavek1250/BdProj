@@ -7,20 +7,21 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.EnumMap;
 
+/**
+ * Klasa odpowiedzialna za obsługę biletów.
+ */
 public class Tickets {
 
-    private String lastError;
-    private SystemUser systemUser;
-    // TODO: Generowanie nowego biletu, generacja id. #KLAUDIA# !!DONE!!
-    // TODO: Pobieranie bierzacego cennika. #KLAUDIA# !!DONE!!
-    // TODO: Doladowywanie biletu. #KLAUDIA# !!DONE!!
-    // TODO: Blokowanie biletow (ustawienie flagi).#Karol# !!DONE!!
+    private String lastError; /**< Opis ostatniego błędu. */
+    private SystemUser systemUser; /**< Obiekt obecnie zalogowanego użytkownika systemu. */
 
     private enum PriceListEnum { ID_PRICE_LIST_ITEM, ID_PRICE_LIST_DICTIONARY, NAME, PRICE };
     private ArrayList<EnumMap<PriceListEnum, String>> currentPriceList;
 
-
-
+    /**
+     * Getter.
+     * @return Zwraca opis ostatniego błędu.
+     */
     public String getLastError() {
         return lastError;
     }
@@ -57,7 +58,10 @@ public class Tickets {
         return false;
     }
 
-
+    /**
+     * Getter.
+     * @return Zwarca id pozycji cennika wraz z jego nazwą.
+     */
     public ArrayList<String> getPriceListItem(){
         ArrayList<String> prc = new ArrayList<String>();
         currentPriceList
@@ -69,6 +73,11 @@ public class Tickets {
         return prc;
     }
 
+    /**
+     * Getter.
+     * @param dictionaryId id pozycji słownika cennika.
+     * @return Zwaraca aktualny koszt punktowy danej pozycji cennika.
+     */
     public Double getPrice(Integer dictionaryId) {
         EnumMap<PriceListEnum, String> priceListItem = currentPriceList
                 .stream()
@@ -80,6 +89,11 @@ public class Tickets {
         return (priceListItem == null ? 0.0 : Double.parseDouble(priceListItem.get(PriceListEnum.PRICE)));
     }
 
+    /**
+     * Getter.
+     * @param dictionaryId id pozycji słownika cennika.
+     * @return Zwraca aktualne id pozycji cennika.
+     */
     public Integer getPriceListItemId(Integer dictionaryId) {
         EnumMap<PriceListEnum, String> priceListItem = currentPriceList
                 .stream()
@@ -91,6 +105,12 @@ public class Tickets {
         return (priceListItem == null ? 0 : Integer.parseInt(priceListItem.get(PriceListEnum.ID_PRICE_LIST_ITEM)));
     }
 
+    /**
+     * Metoda odpowiedzialna za wydrukowanie nowego biletu.
+     * @param points Liczba punktów zakupionego biletu.
+     * @param priceListItemId id pozycji cennika.
+     * @return id wydrukowanego biletu.
+     */
     public int newTicket(String points, int priceListItemId){
         PreparedStatement ps1, ps2;
         int ticketNumber = 0;
@@ -116,6 +136,11 @@ public class Tickets {
         return ticketNumber;
     }
 
+    /**
+     * Metoda sprawdzająca stan karnetu (czy jest zablokowany).
+     * @param ticketId id karnetu.
+     * @return Zwraca true jeżeli karnet nie jest zablokowany.
+     */
     public boolean checkTicketParameters(String ticketId){
         PreparedStatement ps;
         String query="SELECT * FROM karnet WHERE id=? AND zablokowany=0";
@@ -131,6 +156,14 @@ public class Tickets {
 
         return true;
     }
+
+    /**
+     * Metoda odpowiedzialna za doładowanie istniejącego karnetu.
+     * @param ticketId id istniejącego karnetu.
+     * @param points Liczba punktów, o jaką karnet zostanie doładowany.
+     * @param priceListItemId id pozycji cennika.
+     * @return Obecna liczba punktów na koncie klienta.
+     */
     public int newTopUpTicket(String ticketId, String points, int priceListItemId){
         PreparedStatement ps1, ps2,ps3;
         ResultSet rs,rs2;
@@ -163,6 +196,10 @@ public class Tickets {
         }return amountOfPoints;
     }
 
+    /**
+     * Metoda inkrementująca id karnetu.
+     * @return Zwraca zinkrementowaną wartość id karnetu, względem ostatniego karnetu w bazie.
+     */
     public String ticketNoIncrement () {
         PreparedStatement ps;
         ResultSet rs;
@@ -183,7 +220,11 @@ public class Tickets {
         }return out;
     }
 
-public void blockTicket (String ticketnumber){
+    /**
+     * Metoda blokująca karnet.
+     * @param ticketnumber id blokowanego karnetu.
+     */
+    public void blockTicket (String ticketnumber){
     PreparedStatement ps;
     ResultSet rs;
     String query ="SELECT zablokowany FROM karnet WHERE id=?";
@@ -208,6 +249,11 @@ public void blockTicket (String ticketnumber){
         } catch (SQLException e) { lastError=e.getMessage();}
     }
 }
+
+    /**
+     * Metoda odpowiedzialna za obsługę biletów.
+     * @param user Obiekt aktualnie zalogowanego użytkownika.
+     */
     public Tickets(SystemUser user) {
         systemUser = user;
     }
