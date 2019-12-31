@@ -60,17 +60,11 @@ public class SupervisorWgt extends Supervisor {
     private String onlyNumbersRegEx = "^(?!(0))[0-9]{0,}$";
     private Uptime uptime;
 
-    // TODO: Pracownicy: ladowanie pracownikow podleglych pod kierownika, walidacja danych wejsciowych. #Karol# !!DONE!!
-    // TODO: Pracownicy: Mianowanie na kierownika, powinno automatycznie usuwać z listy pracowników pod kierownikiem ( w bazie ustaiwnie flagi jako pracownik zwolniony i kopia danych do kierownika ) #Karol#
-    // TODO: Pracownicy: Przekazywanie kierownictwa. #Karol#
-    // TODO: Wyciagi: ladowanie wyciagow podlegajacych pod kierownika (o ile obecna data jest w zakresie `od`, `do`, najlepiej `do` niech bedzie null) kosztów punktowych i stanu, walidacja danych wejsciowych (czy różne od bieżączych w przypadku edycji).
-    // TODO: Wyciagi: ladowanie listy kieronikow, dodawanie jako zarzadce. Usuwanie swojego prawa do administorwania wyciągiem (o ile nie jest ostatnim kierownikiem mogącym zarządzać).
-    // TODO: Wyciagi: Sprawdzenie czy wybrany kierownik nie jest w bieżącej grupie zarządców wyciągu(przy dodawaniu nowego zarządcy).
-    // TODO: Cennik: Ladowanie biezacego cennika dla wszystkich pozycji ze slownika, walidacja danych wejsciowych. #Dominik# !!DONE!!
-    // TODO: Raporty: Wybieranie dat dla raportu uzyc wyciagu, walidacja danych dla raportu uzycia biletu. #Dominik# !!DONE!!
-    // TODO: Moje dane: Ladownianie obecnych danych kierownika, walidacja zmodyfikowanych. #Dominik# !!DONE!!
-
-
+    /**
+     * Domyślny konstruktor.
+     * @param mainView Obiekt głównego widoku aplikacji.
+     * @param user Obiekt zalogowanego użytkownika systemu.
+     */
     public SupervisorWgt(MainView mainView, SystemUser user) {
         super(user);
         this.mainView = mainView;
@@ -118,10 +112,18 @@ public class SupervisorWgt extends Supervisor {
         dateLiftRepTo.setFormats(DATE_FORMAT);
     }
 
+    /**
+     * Getter.
+     * @return Zwraca panel widoku.
+     */
     public JPanel getPanel() {
         return panelMain;
     }
 
+    /**
+     * Metoda ładująca listę wyciągów, których zarządcą jest obecnie zalogowany kierownik, do pól ComboBox.
+     * @see SkiLiftAdmin::fetchSkiLifts()
+     */
     private void loadSkiLifts() {
         ArrayList<String> skiLifts = new ArrayList<>();
         skiLiftAdmin.skiLiftsList.stream().map(lift -> (lift.get(SkiLiftAdmin.SkiLiftsListEnum.ID) + ". " + lift.get(SkiLiftAdmin.SkiLiftsListEnum.NAME))).forEach(skiLifts::add);
@@ -132,6 +134,10 @@ public class SupervisorWgt extends Supervisor {
         boxSelectEditLift.setSelectedIndex(-1);
     }
 
+    /**
+     * Metoda ładująca listę wszystkich niezwolnionych kierowników do pól ComboBox.
+     * @see Supervisor::fetchSupervisors()
+     */
     private void loadSupervisors() {
         ArrayList<String> supLists = new ArrayList<>();
         supervisorsList.stream().map(sup -> (sup.get(SupervisorsListEnum.ID) + ". " + sup.get(SupervisorsListEnum.NAME) + " " + sup.get(SupervisorsListEnum.SURNAME))).forEach(supLists::add);
@@ -141,6 +147,10 @@ public class SupervisorWgt extends Supervisor {
         boxSupervisorSelectEmpl.setSelectedIndex(-1);
     }
 
+    /**
+     * Metoda ładująca listę niezwolnionych pracowników, których kierownikiem jest obecnie zalogowany kierownik, do pól ComboBox.
+     * @see Supervisor::fetchEmployees()
+     */
     private void loadEmployees() {
         ArrayList<String> employees = new ArrayList<>();
         employeeList.stream().map(sup -> (sup.get(EmployeeListEnum.ID) + ". " + sup.get(EmployeeListEnum.NAME) + " " + sup.get(EmployeeListEnum.SURNAME))).forEach(employees::add);
@@ -148,11 +158,22 @@ public class SupervisorWgt extends Supervisor {
         boxSelectEditEmpl.setSelectedIndex(-1);
     }
 
+    /**
+     * Metoda wypełniająca pola edycji danych kierownika, danymi obecnie zalogowanego kierownika.
+     * @see SystemUser::getName()
+     * @see SystemUser::getSurname()
+     */
     private void loadSupervisorData() {
         txtNameSupervisor.setText(systemUser.getName());
         txtSurnameSupervisor.setText(systemUser.getSurname());
     }
 
+    /**
+     * Metoda odpowiedzialna za generację raportu użyć wyciągu. Sprawdza:
+     *  - czy podano prawidłowy zakres dat,
+     *  - czy wybrano jakikolwiek wyciąg.
+     * @see SkiLiftUseReport
+     */
     private void generateSkiLiftReport() {
         if (boxLiftRepSelect.getSelectedIndex() == -1) {
             JOptionPane.showMessageDialog(panelMain, "Nie wybrano żadnego wyciągu.");
@@ -180,6 +201,11 @@ public class SupervisorWgt extends Supervisor {
         }
     }
 
+    /**
+     * Metoda odpowiedzialna za generację repotu użyć biletu.
+     * Sprawdza czy podano numer id istniejącego biletu.
+     * @see TicketUseReport
+     */
     public void generateTicketReport() {
         String ticketNo = txtTicketUseRepNo.getText();
         if (!ticketNo.matches(onlyNumbersRegEx) || ticketNo.isEmpty()) {
@@ -197,6 +223,12 @@ public class SupervisorWgt extends Supervisor {
         }
     }
 
+    /**
+     * Metoda odpowiedzialna za zapis raportów do pliku.
+     * Pyta użytkownika gdzie zapisać plik.
+     * @param htmlReport Raport sformatowany zgodnie z szablonem HTML.
+     * @see Reports
+     */
     public void saveReportAs(HtmlReport htmlReport) {
         boolean success = false;
         boolean tryToSave = true;
@@ -227,6 +259,14 @@ public class SupervisorWgt extends Supervisor {
         }
     }
 
+    /**
+     * Metoda odpowiedzialna za aktualizację danych kierownika. Sprawdza:
+     *  - poprawność danych,
+     *  - czy dana uległy zmianie.
+     * @see SystemUser::updateName()
+     * @see SystemUser::updateSurname()
+     * @see SystemUser::commitChanges()
+     */
     private void updateSupervisorData() {
         String newName = txtNameSupervisor.getText();
         String newSurname = txtSurnameSupervisor.getText();
@@ -258,6 +298,10 @@ public class SupervisorWgt extends Supervisor {
         }
     }
 
+    /**
+     * Metoda odpowiedzialna za zolnienie się z pracy przez kierownika.
+     * @see SystemUser::quitJob()
+     */
     private void quitJobSupervisor() {
         int resp = JOptionPane.showConfirmDialog(panelMain, "Czy na pewno chcesz zwolnić się z pracy?", "Potwierdź", JOptionPane.YES_NO_OPTION);
         if (resp == JOptionPane.NO_OPTION) {

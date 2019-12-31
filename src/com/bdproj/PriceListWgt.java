@@ -55,6 +55,7 @@ public class PriceListWgt extends PriceList {
 
     /**
      * Metoda odświeżająca dane lokalne, danymi z bazy.
+     * @see loadHeaders()
      */
     public void refresh() {
         String currentPriceList = boxSelectPriceList.getSelectedItem().toString();
@@ -65,6 +66,7 @@ public class PriceListWgt extends PriceList {
 
     /**
      * Matoda ładująca do ComboBox nagłówki cenników.
+     * @see PriceList::fetchPriceListsHeaders()
      */
     private void loadHeaders() {
         if(!super.fetchPriceListsHeaders()) {
@@ -101,6 +103,7 @@ public class PriceListWgt extends PriceList {
 
     /**
      * Metoda uzupełniająca pola GUI pobranym lokalnie cennikiem.
+     * @see PriceList::fetchSinglePriceList()
      */
     private void loadPriceList() {
 
@@ -164,6 +167,8 @@ public class PriceListWgt extends PriceList {
      *  - wprowadzona została jakakolwiek zmiana,
      *  - wybrana data nie posiada przypisanego już cennika w bazie.
      * Jeżeli jest to aktualny cenniki to zapisuje jako nowy, jeżeli jeszcze niewszedł w życie zapisuje zmiany.
+     * @see PriceList::saveAsNewPriceList()
+     * @see PriceList::updateCurrentPriceList()
      */
     private void savePriceList() {
 
@@ -236,6 +241,7 @@ public class PriceListWgt extends PriceList {
 
     /**
      * Metoda usuwająca cennik bieżący cennik. Operacja możliwa tylko i wyłączenie jeżeli cennik jeszcze niewszedł w życie.
+     * @see PriceList::deleteCurrentPriceList()
      */
     private void deletePriceList() {
         int resp = JOptionPane.showConfirmDialog(panelMain, "Czy na pewno chcesz usunąć ten cennik?\nUwaga! Operacja nieodwracalna!", "Potwierdź", JOptionPane.YES_NO_OPTION);
@@ -255,6 +261,8 @@ public class PriceListWgt extends PriceList {
 
     /**
      * Metoda odpowiedzialna za wydruk cennika do pliku pdf.
+     * @see PriceListPrint
+     * @see Reports
      */
     private void printPriceList() {
         if(isDataBaseIsEmpty()) return;
