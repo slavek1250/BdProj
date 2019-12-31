@@ -7,16 +7,14 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.EnumMap;
 
+/**
+ * Klasa służąca do obsługi wyciągów oraz ich modyfikowania.
+ */
 public class SkiLiftAdmin {
-    private SystemUser systemUser;
-    public enum SkiLiftsListEnum { ID, NAME, POINTS, STATE };
-    public ArrayList<EnumMap<SkiLiftsListEnum, String>> skiLiftsList = null;
-    private String lastError;
-
-    // TODO: Dodawanie nowego wyciagu. #KLAUDIA# !!DONE!!
-    // TODO: Pobieranie istniejacych wyciagow bedacych pod kierownikiem systemUser.getId(). #KLAUDIA# !!DONE!!
-    // TODO: Modyfikacja wyciagow bedacych pod jurysdykcja bierzacego kierownika. #SZYMON#
-    // TODO: Usuwanie wyciagow (ustawienie flagi). #SZYMON#
+    private SystemUser systemUser;  /**< Obiekt obecnie zalogowanego użytkownika systemu. */
+    public enum SkiLiftsListEnum { ID, NAME, POINTS, STATE }; /** < Dane dotyczące wyciągu. */
+    public ArrayList<EnumMap<SkiLiftsListEnum, String>> skiLiftsList = null; /** < Obiekt do przechowywania listy wyciągów. */
+    private String lastError; /**< Opis ostatniego błędu. */
 
     public SkiLiftAdmin(SystemUser user) { systemUser = user; }
 
@@ -54,10 +52,15 @@ public class SkiLiftAdmin {
         }
         return false;
     }
+
+    /**
+     * Getter.
+     * @return Zwarca opis ostatniego błędu.
+     */
     public String getLastError() {
         return lastError;
     }
-
+// DO USUNIĘCIA????
     protected Integer getSkiLiftId(String name) {
         EnumMap<SkiLiftsListEnum, String> skiLift = skiLiftsList.stream()
                 .filter(lift -> name.equals(lift.get(SkiLiftsListEnum.NAME)))
@@ -89,7 +92,14 @@ public class SkiLiftAdmin {
         return skiLift == null ? "" : skiLift.get(SkiLiftsListEnum.STATE);
     }
 
-
+    /**
+     * Metoda dodająca nowy wyciąg.
+     * @param name Nazwa nowego wyciągu podana przez użytkownika.
+     * @param height Wysokość wyciągu.
+     * @param pointsCost Koszt punkotwy wyciągu.
+     * @param state Stan wyciągu (w użytku/zamknięty)
+     * @param idSup id kierownika.
+     */
     public void addNewLift(String name, String height, String pointsCost, boolean state, int idSup){
         PreparedStatement ps1;
         PreparedStatement ps2;
@@ -127,6 +137,12 @@ public class SkiLiftAdmin {
         }
     }
 
+    /**
+     * Metoda obsługująca mianowanie innego kierownika na zarządcę wyciągu.
+     * @param supId id mianowanego kierownika.
+     * @param liftId id wyciągu.
+     * @return Zwarca false jeżeli kierownik jest już zarządcą wybranego wyciągu.
+     */
     public boolean promoteNewLiftSupervisor(int supId,int liftId){
         String query="SELECT * from zarzadcy WHERE  kierownik_id=? AND wyciag_id=? AND do IS NULL";
         String query1="INSERT INTO zarzadcy (od,do,kierownik_id,wyciag_id) VALUES(now(),NULL,?,?)";
@@ -141,7 +157,7 @@ public class SkiLiftAdmin {
                 ps.setInt(2,liftId);
                 ResultSet rs=ps.executeQuery();
                 if(rs.first()){
-                    JOptionPane.showMessageDialog(null,"Wybrany kierownik jest już zarządzcom wyciągu '"+getSkiLiftName(liftId)+"'");
+                    JOptionPane.showMessageDialog(null,"Wybrany kierownik jest już zarządzcą wyciągu '"+getSkiLiftName(liftId)+"'");
                     return false;
                 }
                ps1=MySQLConnection.getConnection().prepareStatement(query1);
@@ -155,6 +171,11 @@ public class SkiLiftAdmin {
         return true;
     }
 
+    /**
+     * Metoda odpowiedzialna za usuwanie swojego prawa do zarządzania wyciągiem.
+     * @param liftId id wyciągu.
+     * @return Zwaraca false jeżeli użytkownik jest jedynym zarządcą danego wyciagu.
+     */
     public boolean quitManagingLift(int liftId){
     String query="SELECT * FROM zarzadcy WHERE kierownik_id!=? AND wyciag_id=? AND do IS NULL";
     String query1="UPDATE zarzadcy SET do=now() WHERE wyciag_id=? AND kierownik_id=? AND do IS NULL";
@@ -198,6 +219,11 @@ public class SkiLiftAdmin {
             lastError = e.getMessage();
         }
     }
+
+    /**
+     * Metoda usuwająca wyciąg.
+     * @param liftId id wyciągu.
+     */
     public void deleteSkiLift(int liftId){
         String query=  "INSERT INTO wyciag_dane (koszt_pkt,stan,wyciag_id,kierownik_id) SELECT koszt_pkt, stan, wyciag_id,kierownik_id FROM wyciag_dane WHERE id=(select id FROM wyciag_dane WHERE wyciag_id=? \n" +
                         "ORDER BY od DESC limit 1); ";

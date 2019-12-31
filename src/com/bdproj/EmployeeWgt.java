@@ -19,7 +19,6 @@ public class EmployeeWgt extends Employee {
     private Uptime uptime;
 
     private MainView mainView;
-    // TODO: Migracja kodu tworzenie biletow do klasy Tickets.#Karol# !!DONE!!
     private String onlyNumbersRegEx = "^(?!(0))[0-9]{0,}$";
     public EmployeeWgt(MainView mainView, SystemUser user) {
         super(user);
