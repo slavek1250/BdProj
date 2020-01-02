@@ -172,7 +172,8 @@ public class TicketUseReport implements HtmlReport {
         if(!fetchAllData()) return false;
 
         try {
-            htmlReport = Files.readString(Paths.get(HTML_TEMPLATE_PATH));
+            //htmlReport = Files.readString(Paths.get(HTML_TEMPLATE_PATH));
+            htmlReport = new String(Files.readAllBytes(Paths.get(HTML_TEMPLATE_PATH)));
         }
         catch (IOException ex) {
             lastError = ex.getMessage();
