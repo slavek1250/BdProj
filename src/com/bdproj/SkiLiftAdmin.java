@@ -69,6 +69,11 @@ public class SkiLiftAdmin {
         return skiLift == null ? -1 : Integer.parseInt(skiLift.get(SkiLiftsListEnum.ID));
     }
 
+    /**
+     * Getter.
+     * @param id Numer id wyciągu.
+     * @return Zwraca nazwę wyciągu.
+     */
     protected String getSkiLiftName(Integer id) {
         EnumMap<SkiLiftsListEnum, String> skiLift = skiLiftsList.stream()
                 .filter(lift -> id.toString().equals(lift.get(SkiLiftsListEnum.ID)))
@@ -76,6 +81,12 @@ public class SkiLiftAdmin {
                 .orElse(null);
         return skiLift == null ? "" : skiLift.get(SkiLiftsListEnum.NAME);
     }
+
+    /**
+     * Getter.
+     * @param id Numer id wyciągu.
+     * @return Zwraca koszt punkotwy wyciągu.
+     */
     protected String getSkiLiftPoints(Integer id) {
         EnumMap<SkiLiftsListEnum, String> skiLift = skiLiftsList.stream()
                 .filter(lift -> id.toString().equals(lift.get(SkiLiftsListEnum.ID)))
@@ -84,6 +95,12 @@ public class SkiLiftAdmin {
         return skiLift == null ? "" : skiLift.get(SkiLiftsListEnum.POINTS);
 
     }
+
+    /**
+     * Getter.
+     * @param id Numer id wyciągu.
+     * @return Zwraca stan wyciągu.
+     */
     protected String getSkiLiftState(Integer id) {
         EnumMap<SkiLiftsListEnum, String> skiLift = skiLiftsList.stream()
                 .filter(lift -> id.toString().equals(lift.get(SkiLiftsListEnum.ID)))

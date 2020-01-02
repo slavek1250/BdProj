@@ -20,6 +20,12 @@ public class EmployeeWgt extends Employee {
 
     private MainView mainView;
     private String onlyNumbersRegEx = "^(?!(0))[0-9]{0,}$";
+
+    /**
+     * Domyślny konstruktor.
+     * @param mainView Obiekt głównego widoku aplikacji.
+     * @param user Obiekt zalogowanego użytkownika systemu.
+     */
     public EmployeeWgt(MainView mainView, SystemUser user) {
         super(user);
         this.mainView = mainView;
@@ -44,16 +50,28 @@ public class EmployeeWgt extends Employee {
         loadPriceListItem();
     }
 
+    /**
+     * Getter.
+     * @return Zwraca panel widoku.
+     */
     public JPanel getPanel() {
         return panelMain;
     }
 
+    /**
+     * Getter.
+     * @return Zwraca id pozycji słownika cennika.
+     */
     private int getId(){
         String selectedPriceItem = boxSelectPriceList.getSelectedItem().toString();
         Integer priceListId = Integer.parseInt(selectedPriceItem.replaceAll("\\..*", ""));
         return priceListId;
     }
 
+    /**
+     * Metoda obsługujaca drukowanie nowych biletów.
+     * Sprawdza czy wybrano cennik z listy oraz czy podana liczba punktów jest daną liczbową.
+     */
     private void createNewTicket() {
         if (boxSelectPriceList.getSelectedIndex() == -1) {
             JOptionPane.showMessageDialog(null, "Nie wybrano cennika z listy.");
@@ -81,6 +99,13 @@ public class EmployeeWgt extends Employee {
         }
     }
 
+    /**
+     * Metoda obsługująca doładowywanie biletów.
+     * Sprawdza:
+     *  -stan wybranego biletu (czy nie został on już zablokowany)
+     *  -czy podany bilet istnieje w bazie
+     *  -czy liczba punktów oraz numer biletu są liczbą
+     */
     private void topUpTicket() {
         if (boxSelectPriceList.getSelectedIndex() == -1) {
             JOptionPane.showMessageDialog(null, "Nie wybrano cennika z listy.");
@@ -132,7 +157,10 @@ public class EmployeeWgt extends Employee {
             }
         }
 
-private void blockTicket(){
+    /**
+     * Metoda odpowiadająca za blokowanie istniejącego biletu.
+     */
+    private void blockTicket(){
     int response=JOptionPane.showConfirmDialog(null, "Czy na pewno chcesz zablokować bilet","Potwierdzenie",JOptionPane.YES_NO_OPTION);
     if(response==JOptionPane.YES_OPTION) {
         String ticketnumber = txtDeleteTicketNo.getText();
