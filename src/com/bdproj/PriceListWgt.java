@@ -12,21 +12,34 @@ import java.util.Date;
 import java.util.EnumMap;
 import java.util.Vector;
 
+/**
+ * Kalsa odpowiedzialna za GUI cennika.
+ * @see PriceList
+ */
 public class PriceListWgt extends PriceList {
-    private JTable tabPriceList;
-    private JButton btnSaveNewPriceList;
-    private JLabel lblPriceListAuthor;
-    private JLabel lblPriceListSince;
-    private JComboBox boxSelectPriceList;
-    private JButton btnDeletePriceList;
-    public JPanel panelMain;
-    private JXDatePicker dateValidSince;
-    private JButton btnPrintPriceList;
+    private JTable tabPriceList;            /**< Tabela cannika. */
+    private JButton btnSaveNewPriceList;    /**< Przycisk zapisu nowego / modyfikacji cennika. */
+    private JLabel lblPriceListAuthor;      /**< Etykieta autora. */
+    private JLabel lblPriceListSince;       /**< Etykieta daty początku obowiązywania cennika. */
+    private JComboBox boxSelectPriceList;   /**< ComboBox do wyboru cennika. */
+    private JButton btnDeletePriceList;     /**< Przycisk usuwania cannika. */
+    public JPanel panelMain;                /**< Panel widoku. */
+    private JXDatePicker dateValidSince;    /**< Wybieranie daty wdrożenia cennika. */
+    private JButton btnPrintPriceList;      /**< Przycisk drukowania cennika. */
 
+    /**
+     * Wyrażenie regularne walidujące format ceny.
+     */
     private final String PRICE_VALIDATOR = "[0-9]+(.[0-9]{1,2})?";
+    /**
+     * Indeks kolumny w tabeli zawieracjącej cenny.
+     */
     private final int PRICE_COLUMN = 2;
 
-
+    /**
+     * Domyślny konstruktor.
+     * @param user Obiekt użytkownika systemu.
+     */
     PriceListWgt(SystemUser user) {
         super(user);
         loadHeaders();
@@ -40,6 +53,10 @@ public class PriceListWgt extends PriceList {
         dateValidSince.setFormats(DATE_FORMAT);
     };
 
+    /**
+     * Metoda odświeżająca dane lokalne, danymi z bazy.
+     * @see loadHeaders()
+     */
     public void refresh() {
         String currentPriceList = boxSelectPriceList.getSelectedItem().toString();
         loadHeaders();
@@ -47,6 +64,10 @@ public class PriceListWgt extends PriceList {
         loadPriceList();
     }
 
+    /**
+     * Matoda ładująca do ComboBox nagłówki cenników.
+     * @see PriceList::fetchPriceListsHeaders()
+     */
     private void loadHeaders() {
         if(!super.fetchPriceListsHeaders()) {
             JOptionPane.showMessageDialog(panelMain, super.getLastError());
@@ -65,6 +86,9 @@ public class PriceListWgt extends PriceList {
         }
     }
 
+    /**
+     * Callback zmiany obecnie wybranego cennika. Pobiera szczegóły nowo wybranego cennika.
+     */
     private void priceListSelectionHasChanged() {
         if(boxSelectPriceList.getSelectedIndex() != -1) {
             String selectedPriceListName = boxSelectPriceList.getSelectedItem().toString();
@@ -77,6 +101,10 @@ public class PriceListWgt extends PriceList {
         }
     }
 
+    /**
+     * Metoda uzupełniająca pola GUI pobranym lokalnie cennikiem.
+     * @see PriceList::fetchSinglePriceList()
+     */
     private void loadPriceList() {
 
         if(!super.fetchSinglePriceList()) {
@@ -134,6 +162,14 @@ public class PriceListWgt extends PriceList {
         }
     }
 
+    /**
+     * Metoda zapisująca cennik. Sprawdza czy:
+     *  - wprowadzona została jakakolwiek zmiana,
+     *  - wybrana data nie posiada przypisanego już cennika w bazie.
+     * Jeżeli jest to aktualny cenniki to zapisuje jako nowy, jeżeli jeszcze niewszedł w życie zapisuje zmiany.
+     * @see PriceList::saveAsNewPriceList()
+     * @see PriceList::updateCurrentPriceList()
+     */
     private void savePriceList() {
 
         boolean anyPriceHasChanged = false;
@@ -203,6 +239,10 @@ public class PriceListWgt extends PriceList {
         }
     }
 
+    /**
+     * Metoda usuwająca cennik bieżący cennik. Operacja możliwa tylko i wyłączenie jeżeli cennik jeszcze niewszedł w życie.
+     * @see PriceList::deleteCurrentPriceList()
+     */
     private void deletePriceList() {
         int resp = JOptionPane.showConfirmDialog(panelMain, "Czy na pewno chcesz usunąć ten cennik?\nUwaga! Operacja nieodwracalna!", "Potwierdź", JOptionPane.YES_NO_OPTION);
         if(resp == JOptionPane.NO_OPTION) {
@@ -219,6 +259,11 @@ public class PriceListWgt extends PriceList {
         }
     }
 
+    /**
+     * Metoda odpowiedzialna za wydruk cennika do pliku pdf.
+     * @see PriceListPrint
+     * @see Reports
+     */
     private void printPriceList() {
         if(isDataBaseIsEmpty()) return;
 
