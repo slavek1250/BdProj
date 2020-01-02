@@ -158,7 +158,7 @@ public class Tickets {
     }
 
     /**
-     * Metoda odpowiedzialna za doładowanie istniejącego karnetu.
+     * Metoda odpowiedzialna za doładowanie istniejącego karnetu oraz obliczanie aktualnego stanu punkotwego klienta.
      * @param ticketId id istniejącego karnetu.
      * @param points Liczba punktów, o jaką karnet zostanie doładowany.
      * @param priceListItemId id pozycji cennika.
