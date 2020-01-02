@@ -166,7 +166,7 @@ public class PriceListWgt extends PriceList {
      * Metoda zapisująca cennik. Sprawdza czy:
      *  - wprowadzona została jakakolwiek zmiana,
      *  - wybrana data nie posiada przypisanego już cennika w bazie.
-     * Jeżeli jest to aktualny cenniki to zapisuje jako nowy, jeżeli jeszcze niewszedł w życie zapisuje zmiany.
+     * Jeżeli jest to aktualny cenniki to zapisuje jako nowy, jeżeli jeszcze nie wszedł w życie zapisuje zmiany.
      * @see PriceList::saveAsNewPriceList()
      * @see PriceList::updateCurrentPriceList()
      */
