@@ -124,6 +124,9 @@ public class MainWin implements MainView {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setVisible(true);
 
+        ImageIcon img = new ImageIcon("skiLift.ico");
+        frame.setIconImage(img.getImage());
+
         if(!MySQLConnection.readConnParamsFromFile()) {
             JOptionPane.showMessageDialog(mainWin.panelMain, MySQLConnParams.getLastError());
             frame.dispatchEvent(new WindowEvent(frame, WindowEvent.WINDOW_CLOSING));
