@@ -7,58 +7,60 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
+/**
+ * Klasa GUI przeznaczona dla kierowników.
+ */
 
 public class SupervisorWgt extends Supervisor {
-    private JPanel panelMain;
-    private JTabbedPane tabbedPane;
-    private JTextField txtNameNewEmpl;
-    private JTextField txtSurnameNewEmpl;
-    private JButton btnAddNewEmpl;
-    private JComboBox boxSelectEditEmpl;
-    private JTextField txtNameEditEmpl;
-    private JTextField txtSurnameEditEmpl;
-    private JButton btnSaveEditEmpl;
-    private JButton btnDeleteEmpl;
-    private JTextField txtNameNewLift;
-    private JTextField txtHeightNewLift;
-    private JCheckBox checkStateNewLift;
-    private JComboBox boxSelectEditLift;
-    private JTextField txtPointsCostEditLift;
-    private JCheckBox checkStateEditLift;
-    private JButton btnDeleteLift;
-    private JButton btnSaveEditLift;
-    private JComboBox boxLiftRepSelect;
-    private JButton btnLogout;
-    private JTextField txtPointsCostNewLift;
-    private JTextField txtTicketUseRepNo;
-    private JButton btnPrintLiftRep;
-    private JLabel lblHello;
-    private JButton btnPrintTicketUseRep;
-    private JButton btnDelAdminPrivLift;
-    private JButton btnMakeSupervisorEmpl;
-    private JTextField txtSurnameSupervisor;
-    private JTextField txtNameSupervisor;
-    private JButton btnSaveSupervisor;
-    private JButton btnQuitJobSupervisor;
-    private JComboBox boxSupervisorSelectLift;
-    private JButton btnMakeAdminLift;
-    private JComboBox boxSupervisorSelectEmpl;
-    private JButton btnChangeSupervisorEmpl;
-    private JButton btnNewAddLift;
-    private JXDatePicker dateLiftRepSince;
-    private JXDatePicker dateLiftRepTo;
-    private JButton btnEmpNewPass;
-    private JLabel lblUpTime;
+    private JPanel panelMain; /** <Panel główny.*/
+    private JTabbedPane tabbedPane; /** <Obsługa zakładek.*/
+    private JTextField txtNameNewEmpl;/** <Pole tekstowe do wpisania imienia nowego pracownika.*/
+    private JTextField txtSurnameNewEmpl; /** <Pole tekstowe do wpisania nazwiska nowego pracownika.*/
+    private JButton btnAddNewEmpl; /** <Przycisk dodawania nowego użytkownika.*/
+    private JComboBox boxSelectEditEmpl; /** <Combobox do wybierania pracowników.*/
+    private JTextField txtNameEditEmpl; /** <Pole tekstowe wyświetlające imie wybranego z listy pracownika.*/
+    private JTextField txtSurnameEditEmpl; /** <Pole tekstowe wyświetlające nazwisko wybranego z listy pracownika.*/
+    private JButton btnSaveEditEmpl; /** <Przycisk do zapisywania modyfikacji danych pracownika.*/
+    private JButton btnDeleteEmpl; /** <Przycisk do usuwania pracownika.*/
+    private JTextField txtNameNewLift; /** <Pole tekstowe do wpisania nazwy nowego wyciągu.*/
+    private JTextField txtHeightNewLift; /** <Pole tekstowe do wpisania wysokości nowego wyciągu.*/
+    private JCheckBox checkStateNewLift; /** <Checkbox do określenia stanu nowego wyciągu (włączony/wyłączony).*/
+    private JComboBox boxSelectEditLift; /** <Combobox do wybierania wyciągu.*/
+    private JTextField txtPointsCostEditLift; /** <Pole tekstowe wyświetlające liczbę punktów wybranego wyciągu.*/
+    private JCheckBox checkStateEditLift; /** <Checkbox wyświetlający stan wybranego wyciągu.*/
+    private JButton btnDeleteLift; /** <Przycisk do usuwania wyciągu.*/
+    private JButton btnSaveEditLift; /** <Przycisk do zapisywania modyfikacji danych wyciągu.*/
+    private JComboBox boxLiftRepSelect; /** <Combobox do wybierania wyciągu.*/
+    private JButton btnLogout; /** <Przycisk do wylogowania.*/
+    private JTextField txtPointsCostNewLift; /** <Pole tekstowe do wpisania ilości punktów nowego wyciągu.*/
+    private JTextField txtTicketUseRepNo; /** <Pole tekstowe do wpisania numeru biletu dla którego ma się wygenerować raport.*/
+    private JButton btnPrintLiftRep; /** <Przycisk do drukowania raportu o wyciągu.*/
+    private JLabel lblHello; /** <Pole wyświetlające imie aktulanie zalogowanego użytkownika.*/
+    private JButton btnPrintTicketUseRep; /** <Przycisk do drukowania raportu o użyciu danego biletu.*/
+    private JButton btnDelAdminPrivLift; /** <Przycisk do usuwania prawa kierownika nad danym wyciągiem.*/
+    private JButton btnMakeSupervisorEmpl; /** <Przycisk do promowania wybranego pracownika na kierownika.*/
+    private JTextField txtSurnameSupervisor; /** <Pole tekstowe wyświetlające imie aktualnie zalogowanego kierownika.*/
+    private JTextField txtNameSupervisor; /** <Pole tekstowe wyświetlające nazwisko aktualnie zalogowanego kierownika.*/
+    private JButton btnSaveSupervisor; /** <Przycisk do zapisywania modyfikacji danych aktualnie zalogowanego kierownika.*/
+    private JButton btnQuitJobSupervisor; /** <Przycisk do usuwania aktualnie zalogowanego kierownika.*/
+    private JComboBox boxSupervisorSelectLift; /** <Combobox do wybierania wyciągu. */
+    private JButton btnMakeAdminLift; /** <Przycisk do mianowania wybranego kierownika na zarządzce wyciągu.*/
+    private JComboBox boxSupervisorSelectEmpl; /** <Combobox do wybierania z kierownika z listy.*/
+    private JButton btnChangeSupervisorEmpl; /** <Przycisk do zmiany wybranego pracownika do innego kierownika.*/
+    private JButton btnNewAddLift; /** <Przycisk do dodwania nowego wyciągu.*/
+    private JXDatePicker dateLiftRepSince; /** <Pole służące do wyboru daty od.*/
+    private JXDatePicker dateLiftRepTo; /** <Pole służące do wyboru daty do.*/
+    private JButton btnEmpNewPass; /** <Przycisk do generownia nowego hasła dla pracownika.*/
+    private JLabel lblUpTime; /** <Pole wyświetlające czas jaki użytkownik jest zalogowany w systemie.*/
 
-    private MainView mainView;
+    private MainView mainView; /**<Główny panel GUI. */
 
-    private final String NAME_REG_EX = "^[A-ZĄĆĘŁŃÓŚŹŻ]{1}[a-ząćęłńóśźż]{1,49}$";
-    private final String SURNAME_REG_EX = "^[A-ZĄĆĘŁŃÓŚŹŻ]{1}(([a-ząćęłńóśźż]+)(-[A-ZĄĆĘŁŃÓŚŹŻ]{1}[a-ząćęłńóśźż]+)?)$";
-    private final int SURNAME_MAX_LENGTH = 50;
-    private final String DATE_FORMAT = "yyyy-MM-dd";
-
-    private String onlyNumbersRegEx = "^(?!(0))[0-9]{0,}$";
-    private Uptime uptime;
+    private final String NAME_REG_EX = "^[A-ZĄĆĘŁŃÓŚŹŻ]{1}[a-ząćęłńóśźż]{1,49}$"; /**<Zmienna pomocnicza do sprawdzania poprawności wpisanego imienia.*/
+    private final String SURNAME_REG_EX = "^[A-ZĄĆĘŁŃÓŚŹŻ]{1}(([a-ząćęłńóśźż]+)(-[A-ZĄĆĘŁŃÓŚŹŻ]{1}[a-ząćęłńóśźż]+)?)$"; /**<Zmienna pomocnicza do sprawdzania poprawności wpisanego nazwiska.*/
+    private final int SURNAME_MAX_LENGTH = 50; /**<Zmienna pomocnicza do sprawdzania maksymalnej długości nazwiska.*/
+    private final String DATE_FORMAT = "yyyy-MM-dd"; /**<Zmienna pomocnicza do ustalania formatu daty.*/
+    private String onlyNumbersRegEx = "^(?!(0))[0-9]{0,}$"; /**<Zmienna pomocnicza do sprawdzania poprawności wpisanej liczby.*/
+    private Uptime uptime; /**<Obiekt do liczenia czasu zalogowania w systemie.*/
 
     /**
      * Domyślny konstruktor.
@@ -316,6 +318,13 @@ public class SupervisorWgt extends Supervisor {
         }
     }
 
+    /**
+     * Metoda dodająca nowego pracownika do systemu. Sprawdzana jest poprawność wpisanych danych, generowany jest login oraz hasło dla pracownika. Sprawdzane jest również czy taki login już nie istnieje w systemie.
+     * @see PassGen
+     * @see newlogin()
+     * @see EmployeeAdmin::checkSameLogin()
+     * @see EmployeeAdmin::addNewUser()
+     */
     private void addUser(){
 
         String name = txtNameNewEmpl.getText();
@@ -344,6 +353,12 @@ public class SupervisorWgt extends Supervisor {
         }
     }
 
+    /**
+     *
+     * @param name Imie nowego pracownika.
+     * @param surname Nazwisko nowego pracownika.
+     * @return Zwraca login w postaci iiinnncccc, gdzie: i-pierwsze trzy litery imienia, n- pierwsze trzy litery nazwiska, c- cyfry losowo wygenerowane od 0-9.
+     */
     private String newLogin(String name, String surname) {
         Random rand = new Random();
         String randNumber = String.format("%04d", rand.nextInt(10000));
@@ -356,6 +371,10 @@ public class SupervisorWgt extends Supervisor {
         return login;
     }
 
+    /**
+     * Metoda do wybierania pracownika z Comboboxa a następnie umieszczenie imienia i nazwiska w polach tekstowych.
+     * @see getEmployeeId()
+     */
     private void chooseUser() {
         if (boxSelectEditEmpl.getSelectedIndex() == -1) {
             return;
@@ -365,18 +384,43 @@ public class SupervisorWgt extends Supervisor {
         txtSurnameEditEmpl.setText(getEmployeeSurname(id));
     }
 
+    /**
+     * Metoda do pobierania id wybranego pracownika z Combobox.
+     * @return Zwraca id wybranego pracownika.
+     * @see getIdFromComboBox()
+     */
     private Integer getEmployeeId() {
         return getIdFromComboBox(boxSelectEditEmpl);
     }
+    /**
+     * Metoda do pobierania id wybranego kierownika z Combobox.
+     * @return Zwraca id wybranego kierownika.
+     */
     private Integer getSupervisorId() {
         return getIdFromComboBox(boxSupervisorSelectEmpl);
     }
+    /**
+     * Metoda do pobierania id wybranego kierownika z Combobox.
+     * @return Zwraca id wybranego kierownika.
+     * @see getIdFromComboBox()
+     */
     private Integer getLiftSupervisorId() {
         return getIdFromComboBox(boxSupervisorSelectLift);
     }
+    /**
+     * Metoda do pobierania id wybranego wyciągu z Combobox.
+     * @return Zwraca id wybranego wyciągu.
+     * @see getIdFromComboBox()
+     */
     private Integer getLiftId() {
         return getIdFromComboBox(boxSelectEditLift);
     }
+
+    /**
+     * Metoda która pobiera do zmiennej cała linie wybranego tekstu z Comboboxa, a następnie usuwa wszystko co znajduje się za liczbą.
+     * @param comboBox Obiekt Combobox z którego chcemy wyciągnąć indeks.
+     * @return Zwraca indeks z wybranego Comboboxa.
+     */
     private Integer getIdFromComboBox(JComboBox comboBox) {
         if(comboBox.getSelectedIndex() != -1) {
             String selectedEmp = comboBox.getSelectedItem().toString(); // Id. nazwisko imie
@@ -385,6 +429,10 @@ public class SupervisorWgt extends Supervisor {
         return -1;
     }
 
+    /**
+     * Metoda służąca do zapisywania modyfikacji danych pracownika. Sprawdzane jest czy dane się zmieniły oraz czy nowe dane pracownika są w poprawnym formacie.
+     * @see EmployeeAdmin::saveModChanges()
+     */
     private void saveEmployeeMod() {
         if (boxSelectEditEmpl.getSelectedIndex() == -1) {
             JOptionPane.showMessageDialog(null, "Nie wybrano żadnego pracownika z listy.");
@@ -418,6 +466,10 @@ public class SupervisorWgt extends Supervisor {
         }
     }
 
+    /**
+     * Metoda służąca do usuwania pracownika.
+     * @see EmployeeAdmin::deleteEmployee()
+     */
     private void deleteEmployee() {
         if (boxSelectEditEmpl.getSelectedIndex() == -1) {
             JOptionPane.showMessageDialog(null, "Nie wybrano żadnego pracownika z listy.");
@@ -434,6 +486,11 @@ public class SupervisorWgt extends Supervisor {
         }else{return;}
     }
 
+    /**
+     * Metoda służąca do zmiany awansowania pracownika na kierownika. Aby dokonać awansu należy również wpisać hasło dla obecnie zalogowanego kierownika, które jest potwierdzeniem wykonania awansu.
+     * @see EmployeeAdmin::checkSamePassword()
+     * @see EmployeeAdmin::promoteToSupervisor()
+     */
     private void promoteToSupervisor() {
         if (boxSelectEditEmpl.getSelectedIndex() == -1) {
             JOptionPane.showMessageDialog(null, "Nie wybrano żadnego pracownika z listy.");
@@ -473,6 +530,10 @@ public class SupervisorWgt extends Supervisor {
         }
     }
 
+    /**
+     * Metoda służąca do przypisania jednego z pracowników podległych pod obecnie zalogowanego kierownika, do innego kierownika w systemie.
+     * @see EmployeeAdmin::changeEmployeeSupervisor()
+     */
     private void changeEmployeeSupervisor() {
         if (boxSelectEditEmpl.getSelectedIndex() == -1) {
             JOptionPane.showMessageDialog(null, "Nie wybrano żadnego pracownika z listy.");
@@ -498,6 +559,10 @@ public class SupervisorWgt extends Supervisor {
         }
     }
 
+    /**
+     * Metoda służąca do generacji nowego hasła dla pracownika.
+     * @see EmployeeAdmin::changeEmployeePass()
+     */
     private void newEmpPassword() {
         if (boxSelectEditEmpl.getSelectedIndex() == -1) {
             JOptionPane.showMessageDialog(null, "Nie wybrano żadnego pracownika z listy.");
@@ -514,6 +579,11 @@ public class SupervisorWgt extends Supervisor {
         else{return;}
     }
 
+    /**
+     * Metoda służąca do dodawania nowego wyciągu.
+     * @see SystemUser::getId()
+     * @see SkiLiftAdmin::addNewLift()
+     */
     private void addLift(){
         String name = txtNameNewLift.getText();
         String height = txtHeightNewLift.getText();
@@ -539,7 +609,10 @@ public class SupervisorWgt extends Supervisor {
             }
         }
     }
-
+    /**
+     * Metoda do wybierania wyciągu z Comboboxa a następnie umieszczenie nazwy wyciągu w polu tekstowym oraz stanu wyciągu w CheckBox.
+     * @see getLiftId()
+     */
     private void chooseLift() {
         if (boxSelectEditLift.getSelectedIndex() == -1) {
             return;
@@ -552,6 +625,13 @@ public class SupervisorWgt extends Supervisor {
         checkStateEditLift.setSelected(state);
     }
 
+    /**
+     * Metoda służąca do dodania nowego kierownika w systemie uprawnień do kierownia danym wyciągiem. Sprawdzane jest czy wybrany kierownik nie jest już zarządzca danego wyciągu. Potwierdzeniem tego działania jest wpisanie przez kierownika obecnie zalogowanego w systemie swojego hasła.
+     * @see getLiftSupervisorId()
+     * @see getLiftId()
+     * @see EmployeeAdmin::checkSamePassword
+     * @see SkiLiftAdmin::promoteNewLiftSupervisor()
+     */
     private void promoteNewLiftOwner() {
         if (boxSelectEditLift.getSelectedIndex() == -1) {
             JOptionPane.showMessageDialog(null, "Nie wybrano żadnego wyciągu z listy.");
@@ -590,6 +670,11 @@ public class SupervisorWgt extends Supervisor {
         }
     }
 
+    /**
+     * Metoda służąca do usunięcia swoich praw do zarządzania danym wyciągiem.
+     * @see getLiftId()
+     * @see SkiLiftAdmin::quitManagingLift()
+     */
     private void quitManagingLift(){
         if (boxSelectEditLift.getSelectedIndex() == -1) {
             JOptionPane.showMessageDialog(null, "Nie wybrano żadnego wyciągu z listy.");
@@ -606,6 +691,13 @@ public class SupervisorWgt extends Supervisor {
         }
     }
 
+    /**
+     * Metoda służąca do zapisywania modyfikacji danych danego wyciągu. Sprawdzane jest również czy dokonane zostały zmiany i czy wprowadzone dane są poprawne.
+     * @see getLiftId()
+     * @see SkiLiftAdmin::getSkiLiftState()
+     * @see SkiLiftAdmin::getSkiLiftPoints()
+     * @see SkiLiftAdmin::saveSkiLiftChanges()
+     */
     private void saveLiftMod() {
         if (boxSelectEditLift.getSelectedIndex() == -1) {
             JOptionPane.showMessageDialog(null, "Nie wybrano żadnego wyciągu z listy.");
@@ -667,6 +759,11 @@ public class SupervisorWgt extends Supervisor {
         }
     }
 
+    /**
+     * Metoda służąca do usuwania danego wyciągu.
+     * @see getLiftId()
+     * @see SkiLiftAdmin::deleteSkiLift()
+     */
         private void deleteSkiLift () {
             if (boxSelectEditLift.getSelectedIndex() == -1) {
                 JOptionPane.showMessageDialog(null, "Nie wybrano żadnego wyciągu z listy.");

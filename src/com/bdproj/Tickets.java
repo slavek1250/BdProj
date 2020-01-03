@@ -15,8 +15,8 @@ public class Tickets {
     private String lastError; /**< Opis ostatniego błędu. */
     private SystemUser systemUser; /**< Obiekt obecnie zalogowanego użytkownika systemu. */
 
-    private enum PriceListEnum { ID_PRICE_LIST_ITEM, ID_PRICE_LIST_DICTIONARY, NAME, PRICE };
-    private ArrayList<EnumMap<PriceListEnum, String>> currentPriceList;
+    private enum PriceListEnum { ID_PRICE_LIST_ITEM, ID_PRICE_LIST_DICTIONARY, NAME, PRICE }; /** <Enum z danymi dla cennika.*/
+    private ArrayList<EnumMap<PriceListEnum, String>> currentPriceList; /** <Lista z danymi dla cennika.*/
 
     /**
      * Getter.
@@ -25,7 +25,10 @@ public class Tickets {
     public String getLastError() {
         return lastError;
     }
-
+    /**
+     * Metoda odpowiedzialna za pobranie listy aktualnego cennika.
+     * @return Zwraca true jeżeli operacja zakończyła się sukcesem.
+     */
     public boolean fetchCurrentPriceList() {
         String query =
                 "select  pc.id as 'poz_cennik_id', sc.id as 'slownik_cennik_id', sc.nazwa, pc.cena\n" +
