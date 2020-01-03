@@ -15,9 +15,15 @@ public class SkiLiftAdmin {
     public enum SkiLiftsListEnum { ID, NAME, POINTS, STATE }; /** < Dane dotyczące wyciągu. */
     public ArrayList<EnumMap<SkiLiftsListEnum, String>> skiLiftsList = null; /** < Obiekt do przechowywania listy wyciągów. */
     private String lastError; /**< Opis ostatniego błędu. */
-
+    /**
+     * Metoda zapisująca dane obecnie zalogowanego kierownika.
+     * @param user Obiekt zawierający dane obecnie zalogowanego użytkownika.
+     */
     public SkiLiftAdmin(SystemUser user) { systemUser = user; }
-
+    /**
+     * Metoda odpowiedzialna za pobranie listy wyciągów którymi zarządza obecnie zalogowany kierownik.
+     * @return Zwraca true jeżeli operacja zakończyła się sukcesem.
+     */
     public boolean fetchSkiLifts() {
 
         String query = "select w.id, w.nazwa, wd.koszt_pkt, wd.stan\n" +
@@ -59,14 +65,6 @@ public class SkiLiftAdmin {
      */
     public String getLastError() {
         return lastError;
-    }
-// DO USUNIĘCIA????
-    protected Integer getSkiLiftId(String name) {
-        EnumMap<SkiLiftsListEnum, String> skiLift = skiLiftsList.stream()
-                .filter(lift -> name.equals(lift.get(SkiLiftsListEnum.NAME)))
-                .findAny()
-                .orElse(null);
-        return skiLift == null ? -1 : Integer.parseInt(skiLift.get(SkiLiftsListEnum.ID));
     }
 
     /**
@@ -220,6 +218,13 @@ public class SkiLiftAdmin {
         }
         return true;
     }
+
+    /**
+     * Metoda zapisująca zmodyfikowane dane wyciągu.
+     * @param points Nowy koszt punktowy wyciągu.
+     * @param state Nowy stan wyciągu.
+     * @param liftId Id wyciągu dla którego mają zostać dokonane zmiany.
+     */
     public void saveSkiLiftChanges(String points,String state,int liftId) {
       String query=  "INSERT INTO wyciag_dane(od, koszt_pkt, stan, nieistniejacy, wyciag_id, kierownik_id) VALUES(now(), ?,?,0,?,?)";
         if(!MySQLConnection.prepareConnection()) {

@@ -4,14 +4,25 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+/**
+ * Klasa odpowiedzialna za dodawanie, usuwanie i modyfikacje pracowników.
+ */
 
 public class EmployeeAdmin {
-    private SystemUser systemUser;
+    private SystemUser systemUser; /**< Obiekt obecnie zalogowanego użytkownika systemu. */
+    /**
+     * Metoda zapisująca dane obecnie zalogowanego kierownika.
+     * @param user Obiekt zawierający dane obecnie zalogowanego użytkownika.
+     */
+    public EmployeeAdmin(SystemUser user) {systemUser = user; }
 
-    public EmployeeAdmin(SystemUser user) {
-        systemUser = user;
-    }
-
+    /**
+     * Metoda służąca do dodawania nowego pracownika.
+     * @param name Imie nowego pracownika.
+     * @param surname Nazwisko nowego pracownika.
+     * @param username Login nowego pracownika.
+     * @param password Hasło nowego pracownika.
+     */
     public void addNewUser(String name, String surname, String username, String password) {
         PreparedStatement ps;
         String query = "INSERT INTO pracownicy (nazwisko,imie,login,haslo,kierownik_id) VALUES (?,?,?,MD5(?),?)";
@@ -31,6 +42,11 @@ public class EmployeeAdmin {
         }
     }
 
+    /**
+     * Metoda sprawdzająca czy istnieje w bazie dokładnie taki sam login.
+     * @param login Login którego poprawność ma zostać sprawdzona.
+     * @return Zwraca true, jeżeli w bazie istnieje dokładnie taki sam login.
+     */
     public boolean checkSameLogin(String login) {
         boolean ans = false;
         PreparedStatement ps;
@@ -53,6 +69,12 @@ public class EmployeeAdmin {
         return ans;
     }
 
+    /**
+     * Metoda sprawdzająca zgodność haseł.
+     * @param id Id kierownika, dla którego ma zostać sprawdzone hasło.
+     * @param password Hasło kierownika.
+     * @return Zwraca true, jeżeli hasła są takie same.
+     */
     public boolean checkSamePassword(int id, String password) {
         boolean ans = false;
         PreparedStatement ps;
@@ -76,6 +98,12 @@ public class EmployeeAdmin {
         return ans;
     }
 
+    /**
+     * Metoda zapisująca modyfikacje danych pracownika.
+     * @param id Id pracownika dla którego zmieniane są dane.
+     * @param name Nowe imie pracownika.
+     * @param surname Nowe nazwisko pracownika.
+     */
     public void saveModChanges(int id, String name, String surname) {
         int givenLogin = id;
         PreparedStatement ps;
@@ -93,6 +121,10 @@ public class EmployeeAdmin {
         }
     }
 
+    /**
+     * Metoda usuwająca pracownika.
+     * @param id Id pracownika który ma zostać usunięty.
+     */
     public void deleteEmployee(int id) {
         PreparedStatement ps;
         ResultSet rs;
@@ -124,6 +156,10 @@ public class EmployeeAdmin {
         }
     }
 
+    /**
+     * Metoda odpowiedzialna za awansowanie pracownika na kierownika. Przepisywane są dane do tabeli z kierownikami i status pracownika jest ustawiany na zwolniony.
+     * @param id Id pracownika który ma zostać awansowany.
+     */
     public void promoteToSupervisor(int id) {
         String query1 = "INSERT INTO kierownik (nazwisko,imie,login,haslo) SELECT nazwisko,imie,login,haslo FROM pracownicy WHERE id=?";
         if (MySQLConnection.prepareConnection()) {
@@ -141,6 +177,11 @@ public class EmployeeAdmin {
         }
     }
 
+    /**
+     * Metoda służąca do podległego pracownika do innego kierownika.
+     * @param empId Id pracownika który ma zostać przeniesiony.
+     * @param supId Id kierownika do którego ma zostać przeniesiony pracownik.
+     */
     public void changeEmployeeSupervisor(int empId, int supId) {
         String query = "UPDATE pracownicy SET kierownik_id=? WHERE id=?";
         if (MySQLConnection.prepareConnection()) {
@@ -155,6 +196,11 @@ public class EmployeeAdmin {
         }
     }
 
+    /**
+     * Metoda do zmiany hasła pracownika.
+     * @param id Id pracownika dla którego hasło ma zostać zmienione.
+     * @param pass Nowo wygenerowane hasło pracownika.
+     */
     public void changeEmployeePass(int id,String pass) {
 
         String query = "UPDATE pracownicy SET haslo=MD5(?) WHERE id=?";

@@ -3,23 +3,26 @@ import javax.swing.*;
 import java.awt.event.ItemEvent;
 import java.util.ArrayList;
 
+/**
+ * Klasa GUI przeznaczona dla pracowników.
+ */
 public class EmployeeWgt extends Employee {
-    private JPanel panelMain;
-    private JButton btnLogout;
-    private JTextField txtTicketNo;
-    private JCheckBox checkNewTicket;
-    private JTextField txtTicketPoints;
-    private JComboBox boxSelectPriceList;
-    private JButton btnPrintTicket;
-    private JButton btnTopUp;
-    private JTextField txtDeleteTicketNo;
-    private JButton btnDeleteTicket;
-    private JLabel lblHello;
-    private JLabel lblUptime;
-    private Uptime uptime;
+    private JPanel panelMain; /** <Panel główny.*/
+    private JButton btnLogout; /** <Przycisk wylogowania.*/
+    private JTextField txtTicketNo; /** <Pole tekstowe do wpisania numeru biletu.*/
+    private JCheckBox checkNewTicket; /** <Checkbox określający czy jest to nowy bilet.*/
+    private JTextField txtTicketPoints; /** <Pole tekstowe do wpisania liczby punktów.*/
+    private JComboBox boxSelectPriceList; /** <Combobox do wybierania pozycji z cennika.*/
+    private JButton btnPrintTicket; /** <Przycisk do dodania nowego biletu.*/
+    private JButton btnTopUp; /** <Przycisk do doładowania biletu.*/
+    private JTextField txtDeleteTicketNo; /** <Pole tekstowe do wpisania numeru biletu który ma być usunięty.*/
+    private JButton btnDeleteTicket; /** <Przcisk do usuwania biletu.*/
+    private JLabel lblHello; /** <Pole wyświetlające imie akutalnie zalogowanego pracownika.*/
+    private JLabel lblUptime; /** <Pole wyświetlające czas jaki pracownik jest zalogowany w systemie.*/
+    private Uptime uptime; /** <Obiekt do liczenia czasu zalogowania w systemie.*/
 
     private MainView mainView;
-    private String onlyNumbersRegEx = "^(?!(0))[0-9]{0,}$";
+    private String onlyNumbersRegEx = "^(?!(0))[0-9]{0,}$"; /** <Zmienna pomocnicza do sprawdzania czy wpisane dane to tylko liczby od 0-9*/
 
     /**
      * Domyślny konstruktor.
@@ -71,6 +74,9 @@ public class EmployeeWgt extends Employee {
     /**
      * Metoda obsługujaca drukowanie nowych biletów.
      * Sprawdza czy wybrano cennik z listy oraz czy podana liczba punktów jest daną liczbową.
+     * @see Tickets::getPrice()
+     * @see Tickets::getPriceListItemId()
+     * @see Tickets::newTicket()
      */
     private void createNewTicket() {
         if (boxSelectPriceList.getSelectedIndex() == -1) {
@@ -105,6 +111,10 @@ public class EmployeeWgt extends Employee {
      *  -stan wybranego biletu (czy nie został on już zablokowany)
      *  -czy podany bilet istnieje w bazie
      *  -czy liczba punktów oraz numer biletu są liczbą
+     * @see Tickets::getPrice()
+     * @see Tickets::getPriceListItemId()
+     * @see Tickets::checkTicketParameters()
+     * @see Tickets::newTopUpTicket()
      */
     private void topUpTicket() {
         if (boxSelectPriceList.getSelectedIndex() == -1) {
@@ -141,6 +151,10 @@ public class EmployeeWgt extends Employee {
         }
     }
 
+    /**
+     * Metoda sprawdzająca czy stan Checkboxa i ustawiająca odpowiednie parametry pól tekstowych i przycisków w GUI.
+     * @param e Obiekt sprawdzający czy zaszła jakaś akcja w Checkboxie.
+     */
     private void newTicketSlot(ItemEvent e) {
             if(e.getStateChange()==ItemEvent.SELECTED){
                 btnPrintTicket.setEnabled(true);
@@ -159,6 +173,7 @@ public class EmployeeWgt extends Employee {
 
     /**
      * Metoda odpowiadająca za blokowanie istniejącego biletu.
+     * @see Tickets::blockTicket()
      */
     private void blockTicket(){
     int response=JOptionPane.showConfirmDialog(null, "Czy na pewno chcesz zablokować bilet","Potwierdzenie",JOptionPane.YES_NO_OPTION);
@@ -169,6 +184,10 @@ public class EmployeeWgt extends Employee {
     else{return;}
 }
 
+    /**
+     * Metoda odpowiadająca za wybranie z Comboboxa odpowiedniej danej.
+     * @see Tickets::getPriceListItem()
+     */
     private void loadPriceListItem (){
 
         ArrayList listItem = tickets.getPriceListItem();
