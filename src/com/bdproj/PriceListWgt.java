@@ -13,11 +13,11 @@ import java.util.EnumMap;
 import java.util.Vector;
 
 /**
- * Kalsa odpowiedzialna za GUI cennika.
+ * Klasa odpowiedzialna za GUI cennika.
  * @see PriceList
  */
 public class PriceListWgt extends PriceList {
-    private JTable tabPriceList;            /**< Tabela cannika. */
+    private JTable tabPriceList;            /**< Tabela cennika. */
     private JButton btnSaveNewPriceList;    /**< Przycisk zapisu nowego / modyfikacji cennika. */
     private JLabel lblPriceListAuthor;      /**< Etykieta autora. */
     private JLabel lblPriceListSince;       /**< Etykieta daty początku obowiązywania cennika. */
@@ -32,7 +32,7 @@ public class PriceListWgt extends PriceList {
      */
     private final String PRICE_VALIDATOR = "[0-9]+(.[0-9]{1,2})?";
     /**
-     * Indeks kolumny w tabeli zawieracjącej cenny.
+     * Indeks kolumny w tabeli zawieracjącej ceny.
      */
     private final int PRICE_COLUMN = 2;
 
@@ -65,7 +65,7 @@ public class PriceListWgt extends PriceList {
     }
 
     /**
-     * Matoda ładująca do ComboBox nagłówki cenników.
+     * Metoda ładująca do ComboBox nagłówki cenników.
      * @see PriceList::fetchPriceListsHeaders()
      */
     private void loadHeaders() {
@@ -166,7 +166,7 @@ public class PriceListWgt extends PriceList {
      * Metoda zapisująca cennik. Sprawdza czy:
      *  - wprowadzona została jakakolwiek zmiana,
      *  - wybrana data nie posiada przypisanego już cennika w bazie.
-     * Jeżeli jest to aktualny cenniki to zapisuje jako nowy, jeżeli jeszcze niewszedł w życie zapisuje zmiany.
+     * Jeżeli jest to aktualny cenniki to zapisuje jako nowy, jeżeli jeszcze nie wszedł w życie zapisuje zmiany.
      * @see PriceList::saveAsNewPriceList()
      * @see PriceList::updateCurrentPriceList()
      */
