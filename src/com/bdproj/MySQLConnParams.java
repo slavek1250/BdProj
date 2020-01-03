@@ -110,7 +110,8 @@ public class MySQLConnParams {
 
         String confString;
         try {
-            confString = Files.readString(Paths.get(CONF_FILE_PATH));
+            //confString = Files.readString(Paths.get(CONF_FILE_PATH));
+            confString = new String(Files.readAllBytes(Paths.get(CONF_FILE_PATH)));
         }
         catch (IOException ex) {
             lastError = ex.getMessage();

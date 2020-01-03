@@ -44,7 +44,8 @@ public class PriceListPrint implements HtmlReport {
      */
     public boolean generatePriceListHtml() {
         try {
-            htmlPriceList = Files.readString(Paths.get(HTML_TEMPLATE_PATH));
+            //htmlPriceList = Files.readString(Paths.get(HTML_TEMPLATE_PATH));
+            htmlPriceList = new String(Files.readAllBytes(Paths.get(HTML_TEMPLATE_PATH)));
         }
         catch (IOException ex) {
             lastError = ex.getMessage();
