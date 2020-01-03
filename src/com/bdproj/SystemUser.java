@@ -191,6 +191,7 @@ public class SystemUser {
      * Metoda odpowiedzialna za ustawinie flagi w bazie że kierownik się zwolnił z pracy.
      * Prawo do wykonania tej metody posiadają użytkownicy należący do grupy kierowników.
      * Przed ustawnienim flagi sprawdzane jest czy:
+     *  - istenieją w systemie inni niezwolnieni kierownicy.
      *  - kierownik ma pod sobą jakiegokolwiek pracownika, jeżeli tak anuluje operację.
      *  - kierownik jest jedynym zarzadcą jakiegokolwiek wyciągu, jeżeli tak anuluje operację.
      * @return Zwraca true jeżeli wykonywanie operacji zakończyło się sukecesem.
@@ -206,6 +207,7 @@ public class SystemUser {
         String query2 = "select concat(imie, ' ', nazwisko, ' - ', login) as 'pracownik' from pracownicy where zwolniony = 0 and kierownik_id = ?;";
         String query3 = "update kierownik set zwolniony = 1 where id = ?;";
         String query4 = "update zarzadcy set do=now() where kierownik_id = ?;";
+        String query5 = "select count(k.id) as l_kier from kierownik k where k.zwolniony=0;";
 
         if(!MySQLConnection.prepareConnection()) {
             lastError = MySQLConnection.getLastError();
@@ -217,6 +219,16 @@ public class SystemUser {
         }
 
         try {
+            PreparedStatement ps5 = MySQLConnection.getConnection().prepareStatement(query5);
+            ResultSet rs5 = ps5.executeQuery();
+            if(rs5.next()) {
+                int supervisorsCount = rs5.getInt("l_kier");
+                if(supervisorsCount == 1) {
+                    lastError = "Jesteś jednynym niezwolnionym kierownikiem.\nNie możesz zwolnić się z pracy.";
+                    return false;
+                }
+            }
+
             PreparedStatement ps1 = MySQLConnection.getConnection().prepareStatement(query1);
             ps1.setInt(1, id);
             ResultSet rs1 = ps1.executeQuery();
