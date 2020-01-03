@@ -590,15 +590,15 @@ public class SupervisorWgt extends Supervisor {
         String pointsCost = txtPointsCostNewLift.getText();
         int idSup = systemUser.getId();
         boolean state = checkStateNewLift.isSelected();
-        if(!name.matches("")) {JOptionPane.showMessageDialog(null,"Nazwa wyciągu nie może być pusta!");return;}
+        if(name.matches("")) {JOptionPane.showMessageDialog(null,"Nazwa wyciągu nie może być pusta!");return;}
         if(!height.matches(onlyNumbersRegEx) || !pointsCost.matches(onlyNumbersRegEx)||height.matches("") ||pointsCost.matches("") ){
             JOptionPane.showMessageDialog(null,"Niedozwolone dane wejściowe. Wysokość i koszt powinny być liczbą!");
         }
         else {
-            int response= JOptionPane.showConfirmDialog(null, "Czy na pewno chcesz dodać wyciąg?","Confirm",JOptionPane.YES_NO_OPTION);
+            int response= JOptionPane.showConfirmDialog(null, "Czy na pewno chcesz dodać wyciąg "+name+" ?","Confirm",JOptionPane.YES_NO_OPTION);
             if(response==JOptionPane.YES_OPTION) {
                 skiLiftAdmin.addNewLift(name, height, pointsCost, state, idSup);
-                JOptionPane.showMessageDialog(null, "Dodano wyciąg");
+                JOptionPane.showMessageDialog(null, "Pomyślnie dodano nowy wyciąg.");
                 if(!skiLiftAdmin.fetchSkiLifts()) {
                     JOptionPane.showMessageDialog(panelMain, skiLiftAdmin.getLastError());
                     return;
@@ -606,6 +606,10 @@ public class SupervisorWgt extends Supervisor {
                 loadSkiLifts();
                 skiLiftAdmin.fetchSkiLifts();
                 loadSkiLifts();
+                txtNameNewLift.setText(null);
+                txtHeightNewLift.setText(null);
+                txtPointsCostNewLift.setText(null);
+                checkStateNewLift.setSelected(false);
             }
         }
     }

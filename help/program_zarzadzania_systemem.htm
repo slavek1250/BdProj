@@ -4,9 +4,44 @@
 <meta name="GENERATOR" content="Microsoft&reg; HTML Help Workshop 4.1">
 <Title>Program zarz¹dzania systemem</Title>
 </HEAD>
-<BODY>
+<BODY style="background-color:powderblue;">
 
-<h1>hi</h1>
+<h1>Okno Logowania</h1>
+<img src="panel_logowania.png" alt="okno logowania" width="683" height="362" > <br>
+<p>Po uruchomieniu programu zarz¹dzania systemem na ekranie wyœwietli siê okno logowania. Nale¿y w tym miejscu podaj 10-znakowy login u¿ytkownika oraz 8-znakowe has³o dla u¿ytkownika o podanym loginie. Login sk³ada siê z trzech pierwszych liter imienia, trzech pierwszych liter nazwiska oraz ci¹gu czterech cyfr, które zostaj¹ wygenerowane automatycznie przy utworzeniu u¿ytkownika, podobnie jak has³o. W przypadku gdy login nie spe³nia podanych wczeœniej wymagañ pojawia siê komunikat o b³êdnym loginie. Jeœli login spe³nia podane wczeœniej wymagania, ale w systemie nie ma u¿ytkownika o podanym loginie, b¹dŸ has³o jest niepoprawne, wyœwietli siê komunikat informuj¹cy, i¿ w systemie nie ma u¿ytkownika o podanych danych. W przypadku wpisania danych odpowiadaj¹cych znajduj¹cemu siê w bazie u¿ytkownikowi Operacja logowania przebiegnie pomyœlnie i u¿ytkownik zostanie przekierowany do panelu pracownika b¹dŸ do panelu kierownika, w zale¿noœci od posiadanych uprawnieñ.</p>
+<h1>Widok Pracownika</h1>
+<p>Po zalogowaniu siê na dane u¿ytkownika widniej¹cego w systemie jako zwyk³y pracownik, otworzy siê okno pracownika. Z tego poziomu mo¿na korzystaæ z nastêpuj¹cych funkcjonalnoœci:</p>
+<!--wstawiæ odpowiedni screenshot-->
+<img src="widok_pracownika.png" alt="okno 'widok pracownika'" width="683" height="362" > <br>
+<h2>Do³adowanie Biletu</h2>
+<p>Podstawow¹ funkcjonalnoœci¹ dostêpn¹ w panelu pracownika jest do³adowywanie biletów. W tym celu nale¿y podaæ odpowiednie dane do programu: numer biletu, który chcemy do³adowaæ oraz liczbê punktów, jak¹ chcemy na nim umieœciæ. Trzeba te¿ wybraæ pozycjê z cennika. ¯adne z tych pól nie mo¿e pozostaæ puste. W pola "numer biletu" oraz "liczba punktów" nie mo¿na wpisaæ liter, spacji b¹dŸ bia³ych znaków, obydwie dane musz¹ byæ liczbami. Do³adowanie nie powiedzie siê, jeœli w bazie nie ma biletu o podanym numerze, b¹dŸ bilet o tym numerze zosta³ zablokowany. Po wpisaniu poprawnych danych pojawi siê okienko z zapytaniem o potwierdzenie do³adowania, wyœwietlony zostanie te¿ koszt do³adowania. Po potwierdzeniu wyœwietlona zostanie informacja o poprawnym wykonaniu do³adowania, wraz z numerem biletu oraz ³¹cznej liczbie znajduj¹cych siê na nim punktów.</p>
+<h2>Wydruk Nowego Biletu</h2>
+<!--wstawiæ odpowiedni screenshot-->
+<p>Zaznaczaj¹c odpowiedni¹ opcjê, mo¿emy wydrukowaæ nowy bilet dla klienta. Zostaje wtedy automatycznie przydzielony numer biletu. Nale¿y wybraæ pozycjê z cennika oraz wybraæ pocz¹tkow¹ liczbê punktów znajduj¹c¹ siê na bilecie. Wydruk biletu nie uda siê, jeœli pozycja z cennika nie zostanie wybrana, b¹dŸ w okienku z liczb¹ punktów zostan¹ w pisane niepoprawne dane. Nie mo¿na wpisaæ tam liter, bia³ych znaków b¹dŸ spacji. Program wymaga, aby wprowadzone dane by³y liczb¹. W przypadku poprawnego wyboru danych pogram zapyta o potwierdzenie wydruku biletu oraz wyœwietli jego cenê. Po potwierdzeniu wydruku w bazie pojawi siê nowy bilet wraz z wygenerowanym numerem oraz znajduj¹cymi siê na nim punktami.</p>
+<h2>Zablokowanie Biletu</h2>
+<p>Ostatni¹ czynnoœci¹, któr¹ mo¿na wykonaæ z poziomu panelu pracownika jest zablokowanie biletu. Nale¿y podaæ w tym celu jako dane wejœciowe numer biletu, który chcemy zablokowaæ. Ponownie, numer biletu musi byæ liczb¹, nie mo¿e zawieraæ liter, bia³ych znaków i spacji. Po wpisaniu poprawnych danych pojawi siê okno z zapytaniem o potwierdzenie zablokowania biletu. Po zaakceptowaniu czynnoœæ zostanie wykonana, jeœli w bazie istnieje aktywny bilet o takim numerze. W przeciwnym wypadku wyswietlone zostanie odpowiednie okno informuj¹ce, ¿e dany bilet nie istnieje w bazie, b¹dŸ zosta³ ju¿ wczeœniej zablokowany.</p>
+<h1>Widok Kierownika</h1>
+<p>Po zalogowaniu siê na dane u¿ytkownika z uprawnieniami kierowniczymi uzyskamy dostêp do panelu kierownika. Wewn¹trz tego panelu mamy dostêp do nastêpuj¹cuch opcji:</p>
+<h2>Panel "Pracownicy"</h2>
+<!--wstawiæ odpowiedni screenshot-->
+<img src="pracownicy.png" alt="okno 'pracownicy'" width="683" height="362" > <br>
+
+<h2>Panel "Wyci¹gi"</h2>
+<!--wstawiæ odpowiedni screenshot-->
+<img src="wyci¹gi.png" alt="okno 'wyci¹gi'" width="683" height="362" > <br>
+
+<h2>Panel "Raporty"</h2>
+<!--wstawiæ odpowiedni screenshot-->
+<img src="raporty.png" alt="okno 'raporty'" width="683" height="362" > <br>
+
+<h2>Panel "Cennik"</h2>
+<!--wstawiæ odpowiedni screenshot-->
+<img src="cennik.png" alt="okno 'cennik'" width="683" height="362" > <br>
+
+<h2>Panel "Moje Dane"</h2>
+<!--wstawiæ odpowiedni screenshot-->
+<img src="moje_dane.png" alt="okno 'moje dane'" width="683" height="362" > <br>
+W tym Panelu mo¿emy zmieniæ swoje dane osobowe, mianowicie swoje imiê i nazwisko. Aby system zaakceptowa³ zmianê, w polach "imiê" oraz "nazwisko" musz¹ byæ odpowiednie dane: w tych polach nie mog¹ znajdowaæ siê cyfry, spacje oraz bia³e znaki. Oprócz tego pierwsza litera imienia i nazwiska musi byæ wpisana wielk¹ liter¹. <br>Drug¹ czynnoœci¹, któr¹ mo¿emy wykonaæ w tym panelu jest zwolnienie siê z pracy. Po kliæniêciu odpowiedniego przycisku program spyta siê o potwierdzenie rezygnacji z pracy. W przypadku poprawnego zwolnienia pojawi siê na ekranie stosowny komunikat, a nastêpnie u¿ytkownik zostanie automatycznie wylogowany z systemu. Zwolnienie siê z pracy nie powiedzie siê, jeœli kierownik ma choæ jednego podlegaj¹cego mu pracownika. Jeœli kierownik chce siê zwolniæ, musi on najpierw wszystkich podleg³ych pracowników zwolniæ b¹dŸ przenieœ pod innego kierownika.
 
 </BODY>
 </HTML>
