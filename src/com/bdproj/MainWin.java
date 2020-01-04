@@ -110,12 +110,11 @@ public class MainWin implements MainView {
      * @param args Argumenty uruchomieniowe programu.
      */
     public static void main(String[] args) {
+        System.getProperty("file.encoding","UTF-8");
         frame = new JFrame("Wyciąg Narciarski u Skoczka");
         systemUser = new SystemUser();
         MainWin mainWin = new MainWin();
-
         frame.setContentPane(mainWin.panelMain);
-
         frame.setSize(300, 250);
         frame.setLocation(screenSize.width/2-frame.getSize().width/2,screenSize.height/2-frame.getSize().height/2);
         frame.setSize(512, 300);

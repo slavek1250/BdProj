@@ -734,9 +734,7 @@ public class SupervisorWgt extends Supervisor {
         } else {
             pointsBool = false;
         }
-        if (!(Boolean.compare(state, givenState) == 0)) {
-            pointsBool = !point.matches(skiLiftAdmin.getSkiLiftPoints(liftId));
-            if (Boolean.compare(state, givenState) == 1) {
+            if (!(Boolean.compare(state, givenState)  == 0)) {
                 stateBool = true;
                 state1 = state ? "Włączony" : "Wyłaczony";
                 state2 = givenState ? "Włączony" : "Wyłączony";
@@ -761,7 +759,7 @@ public class SupervisorWgt extends Supervisor {
                 checkStateEditLift.setSelected(false);
             }
         }
-    }
+
 
     /**
      * Metoda służąca do usuwania danego wyciągu.
