@@ -9,12 +9,48 @@
 </OBJECT>
 <UL>
 	<LI> <OBJECT type="text/sitemap">
-		<param name="Name" value="Program obs&sup3;ugi bilet&oacute;w">
+		<param name="Name" value="Ekran pocz&sup1;tkowy">
+		<param name="Local" value="Ekran pocz¹tkowy.htm">
+		</OBJECT>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="1. Program obs&sup3;ugi bilet&oacute;w">
 		<param name="Local" value="program_obslugi_biletow.htm">
 		</OBJECT>
 	<LI> <OBJECT type="text/sitemap">
-		<param name="Name" value="Program zarz&sup1;dzania systemem">
+		<param name="Name" value="2. Program zarz&sup1;dzania systemem">
 		<param name="Local" value="program_zarzadzania_systemem.htm">
+		</OBJECT>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="2.1. Okno Logowania">
+		<param name="Local" value="2. Okno Logowania.htm">
+		</OBJECT>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="2.2 Widok Pracownika">
+		<param name="Local" value="2.2 Widok Pracownika.htm">
+		</OBJECT>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="2.3 Widok Kierownika">
+		<param name="Local" value="2.3 Widok Kierownika.htm">
+		</OBJECT>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="2.3.1 Panel &quot;Pracownicy&quot;">
+		<param name="Local" value="2.3.1 Widok Kierownika_Panel Pracownicy.htm">
+		</OBJECT>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="2.3.2 Panel &quot;Wyci&sup1;gi&quot;">
+		<param name="Local" value="2.3.2 Widok Kierownika_Panel Wyciagi.htm">
+		</OBJECT>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="2.3.3 Panel &quot;Raporty&quot;">
+		<param name="Local" value="2.3.3 Widok Kierownika_Panel Raporty.htm">
+		</OBJECT>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="2.3.4 Panel &quot;Cennik&quot;">
+		<param name="Local" value="2.3.4 Widok Kierownika_Panel Cennik.htm">
+		</OBJECT>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="2.3.5 Panel &quot;Moje dane&quot;">
+		<param name="Local" value="2.3.5 Widok Kierownika_Panel Moje_Dane.htm">
 		</OBJECT>
 </UL>
 </BODY></HTML>
