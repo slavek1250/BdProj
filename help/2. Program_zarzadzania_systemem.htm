@@ -1,0 +1,77 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<HTML>
+<HEAD>
+<meta name="GENERATOR" content="Microsoft&reg; HTML Help Workshop 4.1">
+<Title>Program zarz¹dzania systemem</Title>
+</HEAD>
+<BODY style="background-color:powderblue;">
+
+<h1>Program zarz¹dzania systemem</h1>
+<p>Ten program jest dostêpny dla pracowników stacji: zarówno zwykwych, jak i kierowników. Z poziomu tego programu osoby zatrudnione w  stacji narciarskiej wykonuj¹ swoje obowi¹zki oraz maj¹ dostêp do funkcjonalnoœci przys³uguj¹cej im zgodnie ze stanowiskiem. Po w³¹czeniu programu u¿ytkownikowi przed oczami uka¿e siê ekran logowania do systemu</p>
+<!--
+<h1>Okno Logowania</h1>
+<img src="panel_logowania_v2.png" alt="okno logowania" > <br>
+<p>Po uruchomieniu programu zarz¹dzania systemem na ekranie wyœwietli siê okno logowania. Nale¿y w tym miejscu podaj 10-znakowy login u¿ytkownika oraz 8-znakowe has³o dla u¿ytkownika o podanym loginie. Login sk³ada siê z trzech pierwszych liter imienia, trzech pierwszych liter nazwiska oraz ci¹gu czterech cyfr, które zostaj¹ wygenerowane automatycznie przy utworzeniu u¿ytkownika, podobnie jak has³o. W przypadku gdy login nie spe³nia podanych wczeœniej wymagañ pojawia siê komunikat o b³êdnym loginie. Jeœli login spe³nia podane wczeœniej wymagania, ale w systemie nie ma u¿ytkownika o podanym loginie, b¹dŸ has³o jest niepoprawne, wyœwietli siê komunikat informuj¹cy, i¿ w systemie nie ma u¿ytkownika o podanych danych. W przypadku wpisania danych odpowiadaj¹cych znajduj¹cemu siê w bazie u¿ytkownikowi operacja logowania przebiegnie pomyœlnie i u¿ytkownik zostanie przekierowany do panelu pracownika b¹dŸ do panelu kierownika, w zale¿noœci od posiadanych uprawnieñ.</p>
+<h1>Widok Pracownika</h1>
+<p>Po zalogowaniu siê na dane u¿ytkownika widniej¹cego w systemie jako zwyk³y pracownik, otworzy siê okno pracownika. Z tego poziomu mo¿na korzystaæ z nastêpuj¹cych funkcjonalnoœci:</p>
+<img src="widok_pracownika_v2.png" alt="okno 'widok pracownika'" > <br>
+<h2>Do³adowanie Biletu</h2>
+<p>Podstawow¹ funkcjonalnoœci¹ dostêpn¹ w panelu pracownika jest do³adowywanie biletów. W tym celu nale¿y podaæ odpowiednie dane do programu: numer biletu, który chcemy do³adowaæ oraz liczbê punktów, jak¹ chcemy na nim umieœciæ. Trzeba te¿ wybraæ pozycjê z cennika. ¯adne z tych pól nie mo¿e pozostaæ puste. W pola "numer biletu" oraz "liczba punktów" nie mo¿na wpisaæ liter, spacji, symboli matematycznych b¹dŸ bia³ych znaków, obydwie dane musz¹ byæ liczbami. Do³adowanie nie powiedzie siê, jeœli w bazie nie ma biletu o podanym numerze, b¹dŸ bilet o tym numerze zosta³ zablokowany. Po wpisaniu poprawnych danych pojawi siê okienko z zapytaniem o potwierdzenie do³adowania, wyœwietlony zostanie te¿ koszt do³adowania. Po potwierdzeniu wyœwietlona zostanie informacja o poprawnym wykonaniu do³adowania, wraz z numerem biletu oraz ³¹cznej liczbie znajduj¹cych siê na nim punktów.</p>
+<h2>Wydruk Nowego Biletu</h2>
+<p>Zaznaczaj¹c odpowiedni¹ opcjê, mo¿emy wydrukowaæ nowy bilet dla klienta. Zostaje wtedy automatycznie przydzielony numer biletu. Nale¿y wybraæ pozycjê z cennika oraz wybraæ pocz¹tkow¹ liczbê punktów znajduj¹c¹ siê na bilecie. Wydruk biletu nie uda siê, jeœli pozycja z cennika nie zostanie wybrana, b¹dŸ w okienku z liczb¹ punktów zostan¹ wpisane niepoprawne dane. Nie mo¿na wpisaæ tam liter, bia³ych znaków, symboli matematycznych b¹dŸ spacji. Program wymaga, aby wprowadzone dane by³y liczb¹. W przypadku poprawnego wyboru danych pogram zapyta o potwierdzenie wydruku biletu oraz wyœwietli jego cenê. Po potwierdzeniu wydruku w bazie pojawi siê nowy bilet wraz z wygenerowanym numerem oraz znajduj¹cymi siê na nim punktami.</p>
+<h2>Zablokowanie Biletu</h2>
+<p>Ostatni¹ czynnoœci¹, któr¹ mo¿na wykonaæ z poziomu panelu pracownika jest zablokowanie biletu. Nale¿y podaæ w tym celu jako dane wejœciowe numer biletu, który chcemy zablokowaæ. Ponownie, numer biletu musi byæ liczb¹, nie mo¿e zawieraæ liter, bia³ych znaków, symboli matematycznych i spacji. Po wpisaniu poprawnych danych pojawi siê okno z zapytaniem o potwierdzenie zablokowania biletu. Po zaakceptowaniu czynnoœæ zostanie wykonana, jeœli w bazie istnieje aktywny bilet o takim numerze. W przeciwnym wypadku wyswietlone zostanie odpowiednie okno informuj¹ce, ¿e dany bilet nie istnieje w bazie, b¹dŸ zosta³ ju¿ wczeœniej zablokowany.</p>
+
+<h1>Widok Kierownika</h1>
+<p>Po zalogowaniu siê na dane u¿ytkownika z uprawnieniami kierowniczymi uzyskamy dostêp do panelu kierownika. Wewn¹trz tego panelu mamy dostêp do nastêpuj¹cuch opcji:</p>
+
+<h2>Panel "Pracownicy"</h2>
+<!--wstawiæ odpowiedni screenshot-->
+<img src="pracownicy_v2.png" alt="okno 'pracownicy'" > <br>
+<p>Ten panel s³u¿y do zarz¹dzania pracownikami w systemie. Pierwsz¹ z dostêpnych funkcjonalnoœci jest dodawanie nowych pracowników do bazy. Aby poprawnie dodaæ pracownika do bazy nake¿y wpisaæ imiê i nazwisko nowego pracownika w odpowiednie pola w poprawnym formacie. Zarówno imiê jak i nazwisko mo¿e sk³adaæ siê wy³¹cznie z liter, co najmniej dwóch, oraz musi zaczynaæ siê wielk¹ liter¹. Po poprawnym wpisaniu danych oraz potwierdzeniu czynnoœci nowy u¿ytkownik zostaje dodany do bazy ze statusem pracownika, wygenerowany zostaje jego login i has³o. Nowy pracownik automatycznie zostaje przydzielony pod kierownika, który go doda³.<br>
+Oprócz dodawania nowych pracowników u¿ytkownik z poziomu tego panelu modyfikowaæ danie pracowników ju¿ znajduj¹cych siê w bazie i podlegaj¹cych zalogowanemu kierownikowi. W tym celu nale¿y wybraæ pracownika z listy ( w miejscu, przy którym jest napisane "wybierz pracownika" ). Po wybraniu pracownika mo¿emy wykonaæ nastêpuj¹ce czynnoœci:</p>
+<ul style="list-style-type:square;" >
+<li>Mianowaæ nowego kierownika: Aby mianowaæ wybranego pracownika kierownikiem, wystarczy po wybraniu nazwiska klikn¹c wskazany przycisk. Czynnoœæ t¹ trzeba potwierdziæ swoim has³em. Po potwierdzeniu wybrany u¿ytkownik zostaje kierownikie i nie widnieje ju¿ na liœcie pracowników.</li>
+<li>Przekazaæ pracownika nowemu kierownikowi: W tym celu nale¿y wybraæ kierownika z listy kierowników oraz nacisn¹æ przycisk "zmieñ kierownika". Od momentu potwierdzenia operacji wybrany pracownik podlega nowemu kierownikowi. </li>
+<li>zmieniæ dane osobowe pracownika: Po wybraniu pracownika z listy mo¿na zmieniæ jego imie i nazwisko w bazie danych. Wystarczy wpisaæ nowe dane w odpowiednie pola, automatycznie wype³nione dotychczasowymi danymi, oraz potwierdziæ zmiany. W przypadku próby zapisania zmian danych bez faktycznej zmiany danych wyœwietli siê okno o braku wprowadzonych zmian.</li>
+<li>Usuniêcie pracownika: Najprostsza czynnoœæ do wykonania. W celu usuniêcia pracownika po wybraniu nazwiska z listy wystarczy klikn¹æ przycisk podpisany "Usuñ pracownika" oraz potwierdziæ czynnoœæ. Pracownik od tego momentu nie bêdie ju¿ d³u¿ej widnia³ na liœcie pracowników.</li>
+<li>Zmiana has³a pracownika: Równie¿ bardzo prosta czynnoœæ do wykonania. Aby zmieniæ has³o podleg³ego pracownika wybranego z listy wystarczy klikn¹æ przycisk podpisany "Wygeneruj has³o" oraz potwierdziæ czynnoœæ. Po wykonaniu operacji nowe has³o zostanie wygenerowane i przypisane do wybranego pracownika.</li>
+</ul>
+
+<h2>Panel "Wyci¹gi"</h2>
+<!--wstawiæ odpowiedni screenshot-->
+<img src="wyci¹gi_v2.png" alt="okno 'wyci¹gi'" > <br>
+<p>Z tego panelu u¿ytkownik mo¿e rozporz¹dzaæ wyci¹gami. Pierwsz¹ czynnoœci¹ dostêpn¹ dla kierownika jest utworzenie nowego wyci¹gu. Aby stworzyæ nowy wyci¹g nale¿y okreœliæ jego nazwê, wysokoœæ, koszt w punktach i stan. Zarówno koszt jak i wysokoœæ musz¹ byæ liczbamy naturanymi, program nie dopuszcza liter, bia³ych znaków, symboli matematycznych oraz spacji. W przypadku nazwy nie ma ograniczeñ. System dopuszcza wiele wyci¹gów o tej samej nazwie, gdy¿ ka¿dy wyci¹g w momencie utworzenia otrzymuje unikalny numer id. Po wpisaniu poprawnych danych oraz potwierdzeniu operacji wyci¹g zostanie dodany do bazy, a kierownik, który go utworzy³, zostanie jego zarz¹dc¹.<br>
+Z poziomu tego panelu mamy te¿ dostêp do modyfikacji wyci¹gów znajduj¹cych siê w bazie, którymi zarz¹dza zalogowany u¿ytkownik.Po wybraniu wyci¹gu z listy dostêpne s¹ nastêpuj¹ce operacje:</p>
+<ul style="list-style-type:square;" >
+<li>Mianowanie nowego kierownika: Po wybraniu wyci¹gu nale¿y wypraæ z listy kierownika, któremu chcemy nadaæ prawa do koordynowania wyci¹giem oraz nacisn¹æ przycisk "Mianuj na zarz¹dcê". Czynnoœæ t¹ trzeba potwierdziæ has³em. Po potwierdzeniu operacji wybrany kierownik otrzyma prawa do koordynowania wyci¹giem.</li>
+<li>Rezygnacja z zarz¹dzania wyci¹giem: U¿ytkownik zarz¹daj¹cy wyci¹giem ma mo¿liwoœæ zrezygnowania z praw do koordynowania wyci¹giem. W tym celu nale¿y klikn¹æ przycisk "Usuñ". Po potwierdzeniu u¿ytkownik straci prawa do zarz¹dzania wyci¹giem. System nie pozwoli u¿ytkownikowi zrezygnowaæ z roli zarz¹dcy wyci¹gu, jeœli jest on jego  jedynym koordynatorem, gdy¿ wyci¹g nie mo¿e pozostaæ bez zarz¹dcy.</li>
+<li>Zmiana danych wyci¹gu: U¿ytkownik posiadaj¹cy prawa do zarz¹dzania wyci¹giem mo¿e zmieniæ jego stan oraz koszt skorzystania z wyci¹gu w punktach. W celu zmiany tych danych nale¿y wprowadziæ nowe wartoœci podanych atrybutów oraz zapisaæ zmiany. Po potwierdzeniu nowe wartoœci zaczn¹ obowi¹zywaæ. Próba zapisania zmian bez wprowadzenia nowych danych nie powiedzie siê.</li>
+<li>Usuniêcie wyci¹gu: Kierownik posiadaj¹cy prawa do zarz¹dzania wyci¹giem ma mo¿liwoœæ usuniêcia go. W tym celu nale¿y klikn¹æ przycisk "Usuñ wyci¹g" oraz potwierdziæ czynnoœæ. Po potwierdzeniu wyci¹g zostanie usuniêty i ¿aden z zarz¹dców nie bêdzie mia³ do niego dostêpu.</li>
+</ul>
+
+<h2>Panel "Raporty"</h2>
+<!--wstawiæ odpowiedni screenshot-->
+<img src="raporty_v2.png" alt="okno 'raporty'" > <br>
+<p>Wchodz¹c w zak³adkê "Raporty" mamy mo¿liwoœæ utworzenia raportów z funkcjonowania stacji. Dostêpne do wydrukowania s¹ dwa rodzaje raportów:</p>
+<ul style="list-style-type:square;" >
+<li>Raport u¿yæ wyci¹gu: Aby wygenerowaæ raport u¿yæ wyci¹gu nale¿y wybraæ wyci¹g z listy oraz datê pocz¹tkow¹ i koñcow¹, któr¹ raport ma obejmowaæ. Data koñcowa raportu nie mo¿e póŸniejsza ni¿ aktualna data. Data pocz¹tkowa raportu nie mo¿e byæ póŸniejsza ani taka sama jak wybrana data koñcowa. Wygenerowanie raportu nie powiedzie siê, jeœli w podanych ramach czasowych wyci¹g nie by³ w stanie u¿ytku, b¹dŸ nie istnia³ w bazie. Po wprowadzeniu poprawnich danych otworzy siê okno zapisu pliku. Po wybraniu nazwy pliku, typu oraz œcie¿ki mo¿na zapisaæ raport. Przyk³adowy raport u¿yæ wyci¹gu wygl¹da nastêpuj¹co:</li>
+<!--Wstawiæ szablon raportu-->
+<li>Raport u¿yæ biletu: W celu wygenerowania raportu u¿yæ biletu nale¿y podaæ numer biletu, dla którego chcemy uzyskaæ raport. Numer biletu musi byæ liczb¹, w tym polu nie mo¿na wpisaæ liter, bia³ych znaków, symboli matematycznych ani spacji. Wygenerowanie biletu nie powiedzie siê, jeœli w bazie nie ma biletu o podanym numerze. Po wybraniu istniej¹cego biletu mo¿na wygenerowaæ raport, otworzy siê okno zapisu. Po wpisaniu nazwy pliku, wybraniu typu oraz œcie¿ki mo¿na zapisaæ plik. Przyk³adowy raport u¿yæ wyci¹gu wygl¹da nastêpuj¹co:</li>
+<!--Wstawiæ szablon raportu-->
+</ul>
+
+<h2>Panel "Cennik"</h2>
+<!--wstawiæ odpowiedni screenshot-->
+<img src="cennik_v2.png" alt="okno 'cennik'" > <br>
+<p>W zak³adce "Cennik" mo¿emy ustawiæ ceny punktów, które kupuje siê na biletach. Do ka¿dej pozycji w cenniku nale¿y przypisaæ cenê pojedynczego punktu w z³otówkach. Jeœli cena przy danej pozycji nie jest liczb¹ ca³kowit¹ nale¿y podaæ czêœæ u³amkow¹ ( czyli grosze )po kropce, nie nale¿y u¿ywaæ w tym celu przecinka. Czyli cena podana powinna byæ w formacie: 'z³otówki.grosze'. Nie wolno w cenniku wpisywaæ liczb ujemnych, zabronione jest te¿ wpisywanie liter, spacji czy symboli matematycznych, pole nie mo¿e te¿ pozostaæ puste. Kiedy wszystkie pola zostan¹ poprawnie wype³nione mo¿na zapisaæ podany cennik. Jeœli wczeœniej w systemie nie ma ¿adnego cennika to nowemu cennikowi automatycznie zostanie przypisana aktualna data i cennik od tego momentu jest wi¹¿¹cy. Jeœli w bazie jest ju¿ jakiœ cennik, to tworz¹c nowy nale¿y wybraæ datê od której bêdzie on aktywny. Nie mo¿na wybraæ daty wczeœniejszej ni¿ obecna, ani daty obecnej. Cennik, który zosta³ wprowadzony do bazy, ale nie jest jeszcze wa¿ny mo¿na usun¹æ z bazy, natomiast cennika aktualnie wa¿nego usun¹æ nie mo¿na. W pasku na górze mo¿emy wybraæ, na którym cenniku chcemy pracowaæ. Próba zapisania nowego cennika bez wczeœniejszego wprowadzenia zmian w cenie/cenach nie powiedzie siê.<br>
+Osobn¹ opcj¹ dostêpn¹ z tego panelu jest drukowanie cennika. Po klikniêciu tego przycisku wyœwietli siê nam menu, w którym mo¿emy cennik zapisaæ jako plik na aktualnym komputerze wybieraj¹c nazwê pliku, typ oraz œcie¿kê do pliku. Zapisanie nie powiedzie siê, jeœli pole z nazw¹ pliku pozostawimy puste.</p>
+
+<h2>Panel "Moje Dane"</h2>
+<!--wstawiæ odpowiedni screenshot-->
+<img src="moje_dane_v2.png" alt="okno 'moje dane'" > <br>
+<p>W tym Panelu mo¿emy zmieniæ swoje dane osobowe, mianowicie swoje imiê i nazwisko. Aby system zaakceptowa³ zmianê, w polach "imiê" oraz "nazwisko" musz¹ byæ odpowiednie dane: w tych polach nie mog¹ znajdowaæ siê cyfry, spacje, symbole matematyczne oraz bia³e znaki. Oprócz tego pierwsza litera imienia i nazwiska musi byæ wpisana wielk¹ liter¹. <br>Drug¹ czynnoœci¹, któr¹ mo¿emy wykonaæ w tym panelu jest zwolnienie siê z pracy. Po kliæniêciu odpowiedniego przycisku program spyta siê o potwierdzenie rezygnacji z pracy. W przypadku poprawnego zwolnienia pojawi siê na ekranie stosowny komunikat, a nastêpnie u¿ytkownik zostanie automatycznie wylogowany z systemu. Zwolnienie siê z pracy nie powiedzie siê, jeœli kierownik ma choæ jednego podlegaj¹cego mu pracownika. Jeœli kierownik chce siê zwolniæ, musi on najpierw wszystkich podleg³ych pracowników zwolniæ b¹dŸ przenieœ pod innego kierownika. Niemo¿liwe jest te¿ zwolnienie siê z pracy, jeœli zalogowany u¿ytkownik jest jedynym kierownikiem w systemie.</p>
+-->
+
+</BODY>
+</HTML>
