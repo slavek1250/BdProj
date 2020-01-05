@@ -10,16 +10,16 @@
 		<param name="Name" value="zarz퉐zanie biletami">
 		<param name="Local" value="2.2 Widok Pracownika.htm">
 		<param name="Name" value="u퓓cie biletu">
-		<param name="Local" value="1. Program_obslugi_biletow.htm">
+		<param name="Local" value="program_obslugi_biletow.htm">
 		</OBJECT>
 	<LI> <OBJECT type="text/sitemap">
 		<param name="Name" value="cennik">
-		<param name="Name" value="Panel "Cennik"">
+		<param name="Name" value="Panel ">
 		<param name="Local" value="2.3.4 Widok Kierownika_Panel Cennik.htm">
 		</OBJECT>
 	<LI> <OBJECT type="text/sitemap">
 		<param name="Name" value="dane kierownika">
-		<param name="Name" value="Panel "moje dane"">
+		<param name="Name" value="Panel ">
 		<param name="Local" value="2.3.5 Widok Kierownika_Panel Moje_Dane.htm">
 		</OBJECT>
 	<LI> <OBJECT type="text/sitemap">
@@ -29,7 +29,7 @@
 		<param name="Name" value="Widok Kierownika: Pracownicy">
 		<param name="Local" value="2.3.1 Widok Kierownika_Panel Pracownicy.htm">
 		<param name="Name" value="Widok Kierownika: Wyci퉓i">
-		<param name="Local" value="2.3.2 Widok Kierownika_Panel Wyci퉓i.htm">
+		<param name="Local" value="2.3.2 Widok Kierownika_Panel Wyciagi.htm">
 		<param name="Name" value="Widok Kierownika: Raporty">
 		<param name="Local" value="2.3.3 Widok Kierownika_Panel Raporty.htm">
 		<param name="Name" value="Widok Kierownika: Cennik">
@@ -40,7 +40,7 @@
 	<LI> <OBJECT type="text/sitemap">
 		<param name="Name" value="klient">
 		<param name="Name" value="Widok klienta">
-		<param name="Local" value="1. Program_obslugi_biletow.htm">
+		<param name="Local" value="program_obslugi_biletow.htm">
 		</OBJECT>
 	<LI> <OBJECT type="text/sitemap">
 		<param name="Name" value="logowanie">
@@ -49,7 +49,7 @@
 		</OBJECT>
 	<LI> <OBJECT type="text/sitemap">
 		<param name="Name" value="pracownicy">
-		<param name="Name" value="Panel "Pracownicy"">
+		<param name="Name" value="Panel ">
 		<param name="Local" value="2.3.1 Widok Kierownika_Panel Pracownicy.htm">
 		</OBJECT>
 	<LI> <OBJECT type="text/sitemap">
@@ -59,13 +59,13 @@
 		</OBJECT>
 	<LI> <OBJECT type="text/sitemap">
 		<param name="Name" value="raporty">
-		<param name="Name" value="Panel "Raporty">
+		<param name="Name" value="Panel ">
 		<param name="Local" value="2.3.3 Widok Kierownika_Panel Raporty.htm">
 		</OBJECT>
 	<LI> <OBJECT type="text/sitemap">
 		<param name="Name" value="wyci&sup1;gi">
-		<param name="Name" value="Panel "Wyci퉓i"">
-		<param name="Local" value="2.3.2 Widok Kierownika_Panel Wyci퉓i.htm">
+		<param name="Name" value="Panel ">
+		<param name="Local" value="2.3.2 Widok Kierownika_Panel Wyciagi.htm">
 		</OBJECT>
 </UL>
 </BODY></HTML>
