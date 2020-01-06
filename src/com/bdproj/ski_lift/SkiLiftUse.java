@@ -1,6 +1,6 @@
 package com.bdproj.ski_lift;
 
-import com.bdproj.MySQLConnection;
+import com.bdproj.db.MySQLConnection;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
