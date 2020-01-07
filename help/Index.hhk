@@ -9,7 +9,7 @@
 		<param name="Name" value="bilety">
 		<param name="Name" value="zarz¹dzanie biletami">
 		<param name="Local" value="2.2 Widok Pracownika.htm">
-		<param name="Name" value="u¿ycie biletu">
+		<param name="Name" value="panel klienta">
 		<param name="Local" value="program_obslugi_biletow.htm">
 		</OBJECT>
 	<LI> <OBJECT type="text/sitemap">
@@ -36,11 +36,6 @@
 		<param name="Local" value="2.3.4 Widok Kierownika_Panel Cennik.htm">
 		<param name="Name" value="Widok Kierownika: Moje Dane">
 		<param name="Local" value="2.3.5 Widok Kierownika_Panel Moje_Dane.htm">
-		</OBJECT>
-	<LI> <OBJECT type="text/sitemap">
-		<param name="Name" value="klient">
-		<param name="Name" value="Widok klienta">
-		<param name="Local" value="program_obslugi_biletow.htm">
 		</OBJECT>
 	<LI> <OBJECT type="text/sitemap">
 		<param name="Name" value="logowanie">
