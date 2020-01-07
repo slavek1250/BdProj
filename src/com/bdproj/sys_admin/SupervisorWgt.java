@@ -554,6 +554,7 @@ public class SupervisorWgt extends Supervisor {
             JOptionPane.showMessageDialog(null, "Nowym kierownikiem " + getEmployeeName(empId) + " " + getEmployeeSurname(empId) + " jest: " + getSupervisorName(supId) + " " + getSupervisorSurname(supId));
             fetchEmployees();
             loadEmployees();
+            boxSupervisorSelectEmpl.setSelectedIndex(-1);
             txtSurnameEditEmpl.setText(null);
             txtNameEditEmpl.setText(null);
         } else {

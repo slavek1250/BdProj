@@ -229,7 +229,7 @@ public class PriceListWgt extends PriceList {
             boolean success = super.isPresentPriceList() ? saveAsNewPriceList(validSince, newPriceListItems) : updateCurrentPriceList(validSince, newPriceListItems);
 
             if (success) {
-                JOptionPane.showMessageDialog(panelMain, "Zakończono operację opwodzeniem.");
+                JOptionPane.showMessageDialog(panelMain, "Zakończono operację pwodzeniem.");
             } else {
                 JOptionPane.showMessageDialog(panelMain, super.getLastError());
             }

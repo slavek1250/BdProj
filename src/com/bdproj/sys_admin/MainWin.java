@@ -113,7 +113,7 @@ public class MainWin implements MainView {
             showEmployeeView();
         }
         else {
-            JOptionPane.showMessageDialog(panelMain, "Nie jesteś użytkownikiem systemu.");
+            JOptionPane.showMessageDialog(panelMain, systemUser.getLastError());
         }
     }
 

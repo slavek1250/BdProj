@@ -197,7 +197,7 @@ public class SkiLiftWin extends SkiLiftUse {
      */
     public static void showHelp() {
         try {
-            Runtime.getRuntime().exec("hh.exe help/UserManual.chm");
+            Runtime.getRuntime().exec("hh.exe help/ClientManual.chm");
         }
         catch (IOException e) {
             JOptionPane.showMessageDialog(null, "Niestety, nie można otworzyć pliku pomocy.");

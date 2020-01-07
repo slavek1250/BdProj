@@ -106,6 +106,7 @@ public class SystemUser {
                     userType = UserType.EMPLOYEE;
                 }
                 else {
+                    lastError = "Nie jesteś użytkownikiem systemu.";
                     return userType;
                 }
 
