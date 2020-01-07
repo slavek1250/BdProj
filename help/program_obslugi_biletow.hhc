@@ -13,10 +13,6 @@
 		<param name="Local" value="Ekran pocz¹tkowy.htm">
 		</OBJECT>
 	<LI> <OBJECT type="text/sitemap">
-		<param name="Name" value="1. Program obs&sup3;ugi bilet&oacute;w">
-		<param name="Local" value="program_obslugi_biletow.htm">
-		</OBJECT>
-	<LI> <OBJECT type="text/sitemap">
 		<param name="Name" value="2. Program zarz&sup1;dzania systemem">
 		<param name="Local" value="program_zarzadzania_systemem.htm">
 		</OBJECT>
@@ -51,6 +47,10 @@
 	<LI> <OBJECT type="text/sitemap">
 		<param name="Name" value="2.3.5 Panel &quot;Moje dane&quot;">
 		<param name="Local" value="2.3.5 Widok Kierownika_Panel Moje_Dane.htm">
+		</OBJECT>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="3. Program obs&sup3;ugi bilet&oacute;w">
+		<param name="Local" value="program_obslugi_biletow.htm">
 		</OBJECT>
 </UL>
 </BODY></HTML>
