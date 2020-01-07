@@ -1,11 +1,13 @@
 package com.bdproj.ski_lift;
 
-import com.bdproj.MySQLConnParams;
-import com.bdproj.MySQLConnection;
+import com.bdproj.db.MySQLConnParams;
+import com.bdproj.db.MySQLConnection;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.KeyEvent;
 import java.awt.event.WindowEvent;
+import java.io.IOException;
 import java.util.ArrayList;
 
 /**
@@ -169,6 +171,17 @@ public class SkiLiftWin extends SkiLiftUse {
         frame.setLocation(screenSize.width/2-frame.getSize().width/2,screenSize.height/2-frame.getSize().height/2);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
+        JMenuBar menubar = new JMenuBar();
+        JMenu menu = new JMenu("Pomoc");
+        JMenuItem help = new JMenuItem("Pomoc");
+        help.addActionListener(actionEvent -> showHelp());
+        help.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F1, 0));
+        menu.add(help);
+        menubar.add(menu);
+        frame.setJMenuBar(menubar);
+
+        frame.setVisible(true);
+
         if(!MySQLConnection.readConnParamsFromFile()) {
             JOptionPane.showMessageDialog(null, MySQLConnParams.getLastError());
             frame.dispatchEvent(new WindowEvent(frame, WindowEvent.WINDOW_CLOSING));
@@ -177,5 +190,17 @@ public class SkiLiftWin extends SkiLiftUse {
         SkiLiftWin skiLiftWin = new SkiLiftWin();
         frame.setContentPane(skiLiftWin.panelMain);
         frame.setVisible(true);
+    }
+
+    /**
+     * Metoda wyświetlająca pomoc użytkownika.
+     */
+    public static void showHelp() {
+        try {
+            Runtime.getRuntime().exec("hh.exe help/UserManual.chm");
+        }
+        catch (IOException e) {
+            JOptionPane.showMessageDialog(null, "Niestety, nie można otworzyć pliku pomocy.");
+        }
     }
 }
