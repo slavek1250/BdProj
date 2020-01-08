@@ -1,4 +1,4 @@
-# BdProj
+# System obsługi stacji narciarskich
 Projekt z Baz Danych II
 
 # Twórcy:
